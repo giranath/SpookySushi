@@ -7,11 +7,19 @@ set(CMAKE_CXX_STANDARD 17)
 # Get dependencies
 find_package(SDL2 REQUIRED)
 
+# Game engine's
+add_library(spooky-engine
+        engine/sdl/window.cpp
+        engine/sdl/window.hpp)
+target_link_libraries(spooky-engine
+        ${SDL2_LIBRARIES})
+target_include_directories(spooky-engine
+        PUBLIC ${SDL2_INCLUDE_DIRS})
+
 # Game executable
 add_executable(spooky-sushi
         src/main.cpp
         )
 target_link_libraries(spooky-sushi
-        ${SDL2_LIBRARIES})
-target_include_directories(spooky-sushi
-        PRIVATE ${SDL2_INCLUDE_DIRS})
+        spooky-engine)
+#target_include_directories(spooky-sushi)
