@@ -20,8 +20,8 @@ target_include_directories(spooky-engine
 
 # Game executable
 add_executable(spooky-sushi
+        src/game_loop.hpp
         src/main.cpp
         )
 target_link_libraries(spooky-sushi
         spooky-engine)
-#target_include_directories(spooky-sushi)
