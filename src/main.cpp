@@ -1,4 +1,5 @@
 #include "../engine/sdl/window.hpp"
+#include "../engine/sdl/event.hpp"
 #include <SDL.h>
 
 #include <iostream>
@@ -18,13 +19,14 @@ int main() {
 
     bool is_running = true;
     while(is_running) {
-        SDL_Event event;
-        while(SDL_PollEvent(&event)) {
-            if(event.type == SDL_QUIT) {
+        auto event = sushi::wait_event();
+
+        for(const SDL_Event& ev : sushi::poll_event_iterator{}) {
+            std::cout << "Event" << std::endl;
+            if(ev.type == SDL_QUIT) {
                 is_running = false;
             }
         }
-
     }
 
     SDL_Quit();
