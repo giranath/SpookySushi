@@ -5,22 +5,31 @@
 #include <GL/gl3w.h>
 #include <SDL_opengl.h>
 #include <iostream>
+#include <iterator>
 
 namespace gl {
 
 bool enable_debug_messages() noexcept;
 
-template<typename OutIt>
-void get_extensions(OutIt iterator) noexcept {
-    GLint extension_count = 0;
-    glGetIntegerv(GL_NUM_EXTENSIONS, &extension_count);
+class extension_iterator : public std::iterator<std::input_iterator_tag, std::string, std::string, const std::string*, const std::string&> {
+    std::string extension;
+    GLint count;
+    GLint index;
 
-    for(GLint i = 0; i < extension_count; ++i) {
-        const char* extension = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
-        *iterator = extension;
-        ++iterator;
-    }
-}
+    extension_iterator(const std::string& extension, GLint index, GLint count);
+public:
+    extension_iterator();
+
+    extension_iterator& operator++();
+    extension_iterator operator++(int);
+    bool operator==(const extension_iterator& other) const noexcept;
+    bool operator!=(const extension_iterator& other) const noexcept;
+    pointer operator->() const noexcept;
+    reference operator*() const noexcept;
+
+    friend extension_iterator begin(extension_iterator it) noexcept;
+    friend extension_iterator end(extension_iterator& it) noexcept;
+};
 
 }
 

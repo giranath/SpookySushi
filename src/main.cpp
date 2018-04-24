@@ -1,5 +1,6 @@
 #include "../engine/sdl/window.hpp"
 #include "../engine/sdl/event.hpp"
+#include "../engine/opengl/debug.hpp"
 #include "game_loop.hpp"
 
 #include <toml.hpp>
@@ -21,6 +22,13 @@ int main() {
 
     game_loop loop;
     sushi::window main_window = create_window(toml::get<toml::Table>(configs.at("window")));
+
+    gl3wInit();
+
+    for(const std::string& extension : gl::extension_iterator{}) {
+        std::cout << extension << std::endl;
+    }
+
     loop.run([&main_window]() {
         for(const SDL_Event& ev : sushi::poll_event_iterator{}) {
             if(ev.type == SDL_QUIT) {

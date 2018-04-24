@@ -20,6 +20,10 @@ window& window::operator=(window&& other) noexcept {
 }
 
 window::~window() {
+    if(gl_ctx_) {
+        SDL_GL_DeleteContext(gl_ctx_);
+    }
+
     if(window_) {
         SDL_DestroyWindow(window_);
     }
@@ -103,7 +107,12 @@ window_builder& window_builder::as_borderless() noexcept {
 }
 
 window window_builder::build() {
-    return window{SDL_CreateWindow(title.c_str(), x, y, width, height, flags)};
+    window w{SDL_CreateWindow(title.c_str(), x, y, width, height, flags)};
+    if(flags & SDL_WINDOW_OPENGL) {
+        w.gl_ctx_ = SDL_GL_CreateContext(w.window_);
+    }
+
+    return w;
 }
 
 }

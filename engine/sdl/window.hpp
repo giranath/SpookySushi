@@ -13,6 +13,7 @@ class window {
     friend window_builder;
 
     SDL_Window* window_ = nullptr;
+    SDL_GLContext gl_ctx_ = {};
 
     explicit window(SDL_Window* owned) noexcept;
 public:

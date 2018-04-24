@@ -144,4 +144,67 @@ bool enable_debug_messages() noexcept {
     return is_ok;
 }
 
+//
+// Extension iterator
+//
+
+extension_iterator::extension_iterator(const std::string& extension, GLint index, GLint count)
+: extension(extension)
+, count{count}
+, index{index}{
+
+}
+
+extension_iterator::extension_iterator()
+: extension{}
+, count{0}
+, index{0} {
+    glGetIntegerv(GL_NUM_EXTENSIONS, &count);
+
+    if(count > 0) {
+        extension = std::string(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, index)));
+    }
+}
+
+extension_iterator& extension_iterator::operator++() {
+    ++index;
+    if(index < count) {
+        extension = std::string(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, index)));
+    }
+
+    return *this;
+}
+
+extension_iterator extension_iterator::operator++(int) {
+    extension_iterator old = *this;
+
+    ++(*this);
+
+    return old;
+}
+
+bool extension_iterator::operator==(const extension_iterator& other) const noexcept {
+    return index == other.index;
+}
+
+bool extension_iterator::operator!=(const extension_iterator& other) const noexcept {
+    return index != other.index;
+}
+
+extension_iterator::pointer extension_iterator::operator->() const noexcept {
+    return &extension;
+}
+
+extension_iterator::reference extension_iterator::operator*() const noexcept {
+    return extension;
+}
+
+extension_iterator begin(extension_iterator it) noexcept {
+    return it;
+}
+
+extension_iterator end(extension_iterator& it) noexcept {
+    return extension_iterator{"", it.count, it.count};
+}
+
 }
