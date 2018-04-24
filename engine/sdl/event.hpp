@@ -6,7 +6,6 @@
 #include <iterator>
 #include <optional>
 
-
 namespace sushi {
 
 class poll_event_iterator : public std::iterator<std::input_iterator_tag, SDL_Event, SDL_Event, SDL_Event*, SDL_Event&>{

@@ -11,6 +11,7 @@ sushi::window create_window(const toml::Table& window_configs) {
     return builder.with_centered_position()
             .with_dimensions(toml::get_or(window_configs, "width", 800), toml::get_or(window_configs, "height", 600))
             .with_opengl()
+            .as_resizable()
             .build();
 }
 
