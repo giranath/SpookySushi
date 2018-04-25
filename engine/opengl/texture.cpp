@@ -8,7 +8,7 @@
 #include <SDL2/SDL_image.h>
 #endif
 
-namespace gl {
+namespace sushi { namespace gl {
 
 texture::texture() noexcept
 : raw{0} {
@@ -92,4 +92,4 @@ texture texture::load_from_path(const char* path) noexcept {
     return texture{};
 }
 
-}
+}}

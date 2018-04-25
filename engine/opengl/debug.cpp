@@ -5,7 +5,7 @@
 #include <iterator>
 #include <algorithm>
 
-namespace gl {
+namespace sushi { namespace gl {
 
 std::ostream& print_opengl_severity(std::ostream& os, GLenum severity) {
     switch(severity) {
@@ -207,4 +207,4 @@ extension_iterator end(extension_iterator& it) noexcept {
     return extension_iterator{"", it.count, it.count};
 }
 
-}
+}}

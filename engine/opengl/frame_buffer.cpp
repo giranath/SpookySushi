@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-namespace gl {
+namespace sushi { namespace gl {
 
 const frame_buffer frame_buffer::SCREEN{};
 
@@ -55,4 +55,4 @@ frame_buffer frame_buffer::make() noexcept {
     return frame_buffer(id);
 }
 
-}
+}}

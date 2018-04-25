@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-namespace gl {
+namespace sushi { namespace gl {
 
 vertex_array::vertex_array(GLuint vao) noexcept
 : vao{vao} {
@@ -47,5 +47,4 @@ vertex_array vertex_array::make() noexcept {
     return vertex_array(vao);
 }
 
-
-}
+}}

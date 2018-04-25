@@ -1,7 +1,7 @@
 #ifndef MMAP_DEMO_BIND_HPP
 #define MMAP_DEMO_BIND_HPP
 
-namespace gl {
+namespace sushi { namespace gl {
 
 // Traits to verify that a resource is bindable
 template<typename T>
@@ -16,7 +16,6 @@ void bind(const T& t) noexcept {
     t.bind();
 }
 
-
-}
+}}
 
 #endif

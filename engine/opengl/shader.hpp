@@ -8,7 +8,7 @@
 #include <iostream>
 #include <string>
 
-namespace gl {
+namespace sushi { namespace gl {
 struct vertex_shader_type {
     static const GLenum value = GL_VERTEX_SHADER;
 };
@@ -144,6 +144,6 @@ struct is_shader<const typed_shader<T>&> {
     static const bool value = true;
 };
 
-}
+}}
 
 #endif

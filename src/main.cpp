@@ -2,7 +2,6 @@
 #include "../engine/sdl/event.hpp"
 #include "../engine/opengl/debug.hpp"
 #include "game_loop.hpp"
-#include "../engine/async/job.hpp"
 
 #include <toml.hpp>
 #include <fstream>
@@ -28,7 +27,7 @@ int main() {
     gl3wInit();
 
     // List opengl extensions
-    for(const std::string& extension : gl::extension_iterator{}) {
+    for(const std::string& extension : sushi::gl::extension_iterator{}) {
         std::cout << extension << std::endl;
     }
 

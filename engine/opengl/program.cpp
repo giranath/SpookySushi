@@ -1,6 +1,6 @@
 #include "program.hpp"
 
-namespace gl {
+namespace sushi { namespace gl {
 
 program::link_status::link_status(bool is_linked, const std::string& msg)
 : is_linked{is_linked}
@@ -67,4 +67,4 @@ void program::bind() const noexcept {
     glUseProgram(prog);
 }
 
-}
+}}

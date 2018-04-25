@@ -13,7 +13,7 @@
 #include <string>
 #include <algorithm>
 
-namespace gl {
+namespace sushi { namespace gl {
 
 template<typename ptr>
 struct is_pointer_like {
@@ -118,7 +118,6 @@ struct is_bindable<program> {
     static const bool value = true;
 };
 
-}
-
+}}
 
 #endif

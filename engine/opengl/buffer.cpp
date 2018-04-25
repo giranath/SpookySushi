@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-namespace gl {
+namespace sushi { namespace gl {
 
 buffer::buffer(GLuint vbo) noexcept
 : vbo{vbo} {
@@ -46,4 +46,4 @@ buffer buffer::make() noexcept {
     return buffer(vbo);
 }
 
-}
+}}

@@ -1,7 +1,7 @@
 #include "render_buffer.hpp"
 #include <algorithm>
 
-namespace gl {
+namespace sushi { namespace gl {
 
 render_buffer::render_buffer(GLuint id)
 : id{id} {
@@ -45,4 +45,4 @@ render_buffer render_buffer::make() noexcept {
     return render_buffer(id);
 }
 
-}
+}}

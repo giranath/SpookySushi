@@ -1,6 +1,6 @@
 #include "shader.hpp"
 
-namespace gl {
+namespace sushi { namespace gl {
 
 shader::shader(GLenum type) noexcept
 : raw(glCreateShader(type)){
@@ -70,4 +70,4 @@ shader::operator GLuint() const noexcept {
     return raw;
 }
 
-}
+}}

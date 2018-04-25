@@ -7,7 +7,7 @@
 
 #include "bind.hpp"
 
-namespace gl {
+namespace sushi { namespace gl {
 
 class texture {
     GLuint raw;
@@ -52,6 +52,6 @@ struct is_bindable<texture_bind<TARGET>> {
     static const bool value = true;
 };
 
-}
+}}
 
 #endif

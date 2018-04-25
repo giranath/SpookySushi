@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace gl {
+namespace sushi { namespace gl {
 
 struct scalar_tag {};
 struct vector_tag {};
@@ -152,6 +152,6 @@ public:
     }
 };
 
-}
+}}
 
 #endif //MMAP_DEMO_UNIFORM_HPP

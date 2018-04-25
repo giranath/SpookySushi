@@ -6,7 +6,7 @@
 
 #include "bind.hpp"
 
-namespace gl {
+namespace sushi { namespace gl {
 class frame_buffer {
     GLuint id;
 
@@ -52,6 +52,6 @@ struct is_bindable<framebuffer_bind<TARGET>> {
     static const bool value = true;
 };
 
-}
+}}
 
 #endif //MMAP_DEMO_FRAME_BUFFER_HPP

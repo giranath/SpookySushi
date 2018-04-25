@@ -7,7 +7,7 @@
 
 #include "bind.hpp"
 
-namespace gl {
+namespace sushi { namespace gl {
 class vertex_array {
     GLuint vao {};
 
@@ -40,6 +40,7 @@ template<>
 struct is_bindable<vertex_array> {
     static const bool value = true;
 };
-}
+
+}}
 
 #endif
