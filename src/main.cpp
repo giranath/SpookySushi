@@ -17,10 +17,6 @@ sushi::window create_window(const toml::Table& window_configs) {
             .build();
 }
 
-struct enormous_object {
-    char data[1024];
-};
-
 int main() {
     std::ifstream config_stream("asset/config.toml");
     auto configs = toml::parse(config_stream);
@@ -35,17 +31,6 @@ int main() {
     for(const std::string& extension : gl::extension_iterator{}) {
         std::cout << extension << std::endl;
     }
-
-    enormous_object big_fat;
-    //std::cout << sizeof(big_fat) << std::endl;
-    sushi::job* j = new sushi::job{};
-    sushi::job::make_closure(j, [big_fat](sushi::job& job) {
-        std::cout << "YOUHOU!!!" << std::endl;
-    });
-    j->run();
-
-
-    delete j;
 
     // Start of game loop
     loop.run([&main_window]() {

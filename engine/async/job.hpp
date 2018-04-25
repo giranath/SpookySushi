@@ -55,7 +55,7 @@ public:
     }
 
     template<typename Function>
-    static typename std::enable_if<(sizeof(Function) <= PADDING_SIZE)>::type make_closure(job* j, Function fn) {
+    static typename std::enable_if<(sizeof(Function) <= PADDING_SIZE)>::type make_closure(job* j, Function fn, job* parent = nullptr) {
         auto t = sizeof(Function);
         auto job_fn = [](job& the_job) {
             const auto& function = the_job.data<Function>();
@@ -65,12 +65,12 @@ public:
             function.~Function();
         };
 
-        new(j) job(job_fn);
+        new(j) job(job_fn, parent);
         j->construct_data<Function>(fn);
     }
 
     template<typename Function>
-    static typename std::enable_if<(sizeof(Function) > PADDING_SIZE)>::type make_closure(job* j, Function fn) {
+    static typename std::enable_if<(sizeof(Function) > PADDING_SIZE)>::type make_closure(job* j, Function fn, job* parent = nullptr) {
         auto job_fn = [](job& the_job) {
             Function* function = the_job.data<Function*>();
 
@@ -84,7 +84,7 @@ public:
             }
         };
 
-        new(j) job(job_fn);
+        new(j) job(job_fn, parent);
         Function* dynamic_alloc = new Function{fn};
         j->set_data(dynamic_alloc);
     }
