@@ -30,7 +30,12 @@ window::~window() {
 }
 
 void window::swap(window& other) noexcept {
-    std::swap(window_, other.window_);
+    using std::swap;
+    swap(window_, other.window_);
+}
+
+window::operator SDL_Window*() noexcept {
+    return window_;
 }
 
 window_builder::window_builder(std::string_view title)

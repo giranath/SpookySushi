@@ -25,6 +25,8 @@ public:
     ~window() noexcept;
 
     void swap(window& other) noexcept;
+
+    explicit operator SDL_Window*() noexcept;
 };
 
 class window_builder {
