@@ -36,7 +36,7 @@ public:
     : fn(fn)
     , parent(nullptr)
     , unfinished_count(1)
-    , padding{0}{
+    , padding{0} {
 
     }
 

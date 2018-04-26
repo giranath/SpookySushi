@@ -12,6 +12,7 @@ add_library(sushi-engine
         $<TARGET_OBJECTS:sushi-async>
         $<TARGET_OBJECTS:sushi-platform>)
 target_link_libraries(sushi-engine
+        ${CMAKE_THREAD_LIBS_INIT}
         ${SDL2_LIBRARIES}
         gl3w)
 target_include_directories(sushi-engine

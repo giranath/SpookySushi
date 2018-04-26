@@ -3,6 +3,7 @@
 #include "../engine/opengl/debug.hpp"
 #include "../engine/async/job.hpp"
 #include "game_loop.hpp"
+#include "../engine/async/worker.hpp"
 
 #include <toml.hpp>
 #include <fstream>
@@ -41,6 +42,7 @@ int main() {
     huge_data huge;
     static_assert(std::is_pod<huge_data>::value);
 
+    /*
     sushi::async::job j([](sushi::async::job& job) {
         auto message = job.data<std::string>();
 
@@ -59,6 +61,18 @@ int main() {
     other.execute();
     assert(other.is_finished());
     assert(j.is_finished());
+     */
+    sushi::async::job j([](sushi::async::job& job) {
+        std::cout << "job done!" << std::endl;
+    });
+    sushi::async::worker worker;
+    worker.start();
+
+    std::cout << "waiting..." << std::endl;
+    worker.wait_for(&j, std::chrono::seconds(10));
+    std::cout << "waited" << std::endl;
+
+    worker.stop();
 
     // Start of game loop
     loop.run([&main_window]() {
