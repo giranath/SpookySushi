@@ -6,11 +6,16 @@
 #include <thread>
 #include <atomic>
 #include <chrono>
+#include <deque>
+#include <mutex>
 
 namespace sushi { namespace async {
 
+class engine;
+
 class worker {
 public:
+    friend engine;
     enum class mode {
         background,
         foreground
@@ -24,8 +29,14 @@ private:
     std::atomic<mode> mode_;
     std::atomic<state> state_;
     std::thread thread;
+    std::thread::id thread_id;
+    std::deque<job*> job_queue;
+    std::mutex queue_mutex;
 
+    job* pop_job() noexcept;
     job* next_job() noexcept;
+    job* steal() noexcept;
+
     void execute_next_job() noexcept;
     void run() noexcept;
 public:
@@ -44,6 +55,8 @@ public:
 
     // Wait with timeout
     bool wait_for(job* j, std::chrono::high_resolution_clock::duration timeout) noexcept;
+
+    void push(job* j) noexcept;
 };
 
 }}

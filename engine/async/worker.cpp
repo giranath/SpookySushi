@@ -2,7 +2,37 @@
 
 namespace sushi { namespace async {
 
+job* worker::pop_job() noexcept {
+    std::lock_guard<std::mutex> lock(queue_mutex);
+    if(!job_queue.empty()) {
+        job* j = job_queue.front();
+        job_queue.pop_front();
+
+        return j;
+    }
+
+    return nullptr;
+}
+
 job* worker::next_job() noexcept {
+    job* local_job = pop_job();
+
+    if(local_job) {
+        return local_job;
+    }
+
+    // TODO: Steal job from other worker
+}
+
+job* worker::steal() noexcept {
+    std::lock_guard<std::mutex> lock(queue_mutex);
+    if(!job_queue.empty()) {
+        job* j = job_queue.back();
+        job_queue.pop_back();
+
+        return j;
+    }
+
     return nullptr;
 }
 
@@ -42,6 +72,10 @@ void worker::start() noexcept {
 
     if(mode_ == mode::background) {
         thread = std::thread(&worker::run, std::ref(*this));
+        thread_id = thread.get_id();
+    }
+    else {
+        thread_id = std::this_thread::get_id();
     }
 }
 
@@ -68,6 +102,11 @@ bool worker::wait_for(job* j, std::chrono::high_resolution_clock::duration timeo
     }
 
     return j->is_finished();
+}
+
+void worker::push(job* j) noexcept {
+    std::lock_guard<std::mutex> lock(queue_mutex);
+    job_queue.push_back(j);
 }
 
 }}

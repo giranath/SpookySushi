@@ -4,6 +4,7 @@
 #include "../engine/async/job.hpp"
 #include "game_loop.hpp"
 #include "../engine/async/worker.hpp"
+#include "../engine/async/engine.hpp"
 
 #include <toml.hpp>
 #include <fstream>
@@ -17,6 +18,8 @@ sushi::window create_window(const toml::Table& window_configs) {
             .as_resizable()
             .build();
 }
+
+std::mutex cout_mutex;
 
 int main() {
     std::ifstream config_stream("asset/config.toml");
@@ -34,45 +37,6 @@ int main() {
     for(const std::string& extension : sushi::gl::extension_iterator{}) {
         std::cout << extension << std::endl;
     }
-
-    struct huge_data {
-        int d[1024];
-    };
-
-    huge_data huge;
-    static_assert(std::is_pod<huge_data>::value);
-
-    /*
-    sushi::async::job j([](sushi::async::job& job) {
-        auto message = job.data<std::string>();
-
-        std::cout << message << std::endl;
-    });
-    std::string message = "Yo bitch!";
-    sushi::async::job other;
-    sushi::async::job::make_closure(&other, &j, [&message, huge](sushi::async::job& job) {
-        std::cout << message << std::endl;
-    });
-    j.emplace<std::string>("Hello world!");
-    j.execute();
-
-    assert(!j.is_finished());
-
-    other.execute();
-    assert(other.is_finished());
-    assert(j.is_finished());
-     */
-    sushi::async::job j([](sushi::async::job& job) {
-        std::cout << "job done!" << std::endl;
-    });
-    sushi::async::worker worker;
-    worker.start();
-
-    std::cout << "waiting..." << std::endl;
-    worker.wait_for(&j, std::chrono::seconds(10));
-    std::cout << "waited" << std::endl;
-
-    worker.stop();
 
     // Start of game loop
     loop.run([&main_window]() {

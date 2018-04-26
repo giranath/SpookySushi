@@ -3,4 +3,6 @@ add_library(sushi-async OBJECT
         job.hpp
         worker.cpp
         worker.hpp
+        engine.cpp
+        engine.hpp
         )
