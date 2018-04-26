@@ -38,6 +38,28 @@ int main() {
         std::cout << extension << std::endl;
     }
 
+    sushi::async::engine engine(std::thread::hardware_concurrency() - 1);
+    engine.start();
+
+    auto start = std::chrono::high_resolution_clock::now();
+    sushi::async::job root_job;
+    for(int i = 0; i < 100; ++i) {
+        sushi::async::worker* background = engine.next_background();
+        auto* job = new sushi::async::job([](sushi::async::job& job) {
+            {
+                std::lock_guard<std::mutex> lock(cout_mutex);
+                std::cout << "#" << job.data<int>() << std::endl;
+            }
+            std::this_thread::sleep_for(std::chrono::seconds(job.data<int>() % 3));
+        }, &root_job);
+        job->store(i);
+        background->push(job);
+    }
+
+    engine.foreground()->wait_for(&root_job);
+    auto duration = std::chrono::high_resolution_clock::now() - start;
+    std::cout << "took " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << " ms" << std::endl;
+
     // Start of game loop
     loop.run([&main_window]() {
         // Handle inputs
@@ -55,4 +77,6 @@ int main() {
         // Proceed to loop again
         return true;
     });
+
+    engine.stop();
 }

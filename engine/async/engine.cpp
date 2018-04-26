@@ -9,9 +9,9 @@ engine::engine(std::size_t background_count)
 : workers{}
 , background_roundrobin(1)
 , rd{static_cast<unsigned long>(std::chrono::system_clock::now().time_since_epoch().count())}{
-    workers.push_back(std::make_unique<worker>(worker::mode::foreground));
+    workers.push_back(std::make_unique<worker>(*this, worker::mode::foreground));
     for(std::size_t i = 0; i < background_count; ++i) {
-        workers.push_back(std::make_unique<worker>(worker::mode::background));
+        workers.push_back(std::make_unique<worker>(*this, worker::mode::background));
     }
 }
 
@@ -54,34 +54,33 @@ const worker* engine::random_background() const noexcept {
 }
 
 worker* engine::next_background() noexcept {
-    std::size_t next_id = background_roundrobin.load(std::memory_order_acquire);
+    std::lock_guard<std::mutex> lock(roundrobin_mutex);
 
-    assert(next_id >= 1);
-    assert(next_id < workers.size());
+    assert(background_roundrobin >= 1);
+    assert(background_roundrobin < workers.size());
 
-    worker* w = workers[next_id].get();
+    worker* w = workers[background_roundrobin].get();
 
-    next_id = next_id + 1;
-    if(next_id >= workers.size()) {
-        next_id = 1;
+    ++background_roundrobin;
+    if(background_roundrobin >= workers.size()) {
+        background_roundrobin = 1;
     }
-
-    background_roundrobin.store(next_id, std::memory_order_release);
 
     return w;
 }
 
 const worker* engine::next_background() const noexcept {
-    std::size_t next_id = background_roundrobin.load(std::memory_order_acquire);
+    std::lock_guard<std::mutex> lock(roundrobin_mutex);
 
-    worker* w = workers[next_id].get();
+    assert(background_roundrobin >= 1);
+    assert(background_roundrobin < workers.size());
 
-    next_id = next_id + 1;
-    if(next_id > workers.size()) {
-        next_id = 1;
+    worker* w = workers[background_roundrobin].get();
+
+    ++background_roundrobin;
+    if(background_roundrobin >= workers.size()) {
+        background_roundrobin = 1;
     }
-
-    background_roundrobin.store(next_id, std::memory_order_release);
 
     return w;
 }

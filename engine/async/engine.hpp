@@ -6,12 +6,14 @@
 #include <vector>
 #include <random>
 #include <memory>
+#include <mutex>
 
 namespace sushi { namespace async {
 
 class engine {
     std::vector<std::unique_ptr<worker>> workers;
-    mutable std::atomic_size_t background_roundrobin;
+    mutable std::size_t background_roundrobin;
+    mutable std::mutex roundrobin_mutex;
     mutable std::default_random_engine rd;
 public:
     explicit engine(std::size_t background_count);

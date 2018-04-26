@@ -1,4 +1,7 @@
 #include "worker.hpp"
+#include "engine.hpp"
+
+#include <cassert>
 
 namespace sushi { namespace async {
 
@@ -21,7 +24,10 @@ job* worker::next_job() noexcept {
         return local_job;
     }
 
-    // TODO: Steal job from other worker
+    worker* other = owner.random_background();
+    if(other != this) return other->steal();
+
+    return nullptr;
 }
 
 job* worker::steal() noexcept {
@@ -50,8 +56,9 @@ void worker::run() noexcept {
     }
 }
 
-worker::worker(mode m)
-: mode_(m)
+worker::worker(engine& owner, mode m)
+: owner(owner)
+, mode_(m)
 , state_(state::idle)
 , thread{}{
 
@@ -88,6 +95,8 @@ bool worker::running() const noexcept {
 }
 
 bool worker::wait_for(job* j) noexcept {
+    assert(mode_ == mode::foreground);
+
     while(!j->is_finished()) {
         execute_next_job();
     }
@@ -96,6 +105,8 @@ bool worker::wait_for(job* j) noexcept {
 }
 
 bool worker::wait_for(job* j, std::chrono::high_resolution_clock::duration timeout) noexcept {
+    assert(mode_ == mode::foreground);
+
     const std::chrono::time_point start = std::chrono::high_resolution_clock::now();
     while(!j->is_finished() && std::chrono::high_resolution_clock::now() - start < timeout) {
         execute_next_job();

@@ -26,6 +26,7 @@ public:
         stopping
     };
 private:
+    engine& owner;
     std::atomic<mode> mode_;
     std::atomic<state> state_;
     std::thread thread;
@@ -40,7 +41,7 @@ private:
     void execute_next_job() noexcept;
     void run() noexcept;
 public:
-    explicit worker(mode m = mode::background);
+    explicit worker(engine& owner, mode m = mode::background);
     ~worker() noexcept;
 
     mode current_mode() const noexcept;
