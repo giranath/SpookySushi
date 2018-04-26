@@ -2,6 +2,8 @@
 #define SPOOKYSUSHI_WORKER_HPP
 
 #include "job.hpp"
+#include "job_pool.hpp"
+
 #include <cstddef>
 #include <thread>
 #include <atomic>
@@ -33,6 +35,7 @@ private:
     std::thread::id thread_id;
     std::deque<job*> job_queue;
     std::mutex queue_mutex;
+    job_pool jobs_;
 
     job* pop_job() noexcept;
     job* next_job() noexcept;
@@ -41,7 +44,7 @@ private:
     void execute_next_job() noexcept;
     void run() noexcept;
 public:
-    explicit worker(engine& owner, mode m = mode::background);
+    worker(engine& owner, std::size_t max_job_count, mode m = mode::background);
     ~worker() noexcept;
 
     mode current_mode() const noexcept;
@@ -55,9 +58,12 @@ public:
     bool wait_for(job* j) noexcept;
 
     // Wait with timeout
+    // Could wait more than timeout
     bool wait_for(job* j, std::chrono::high_resolution_clock::duration timeout) noexcept;
 
     void push(job* j) noexcept;
+
+    job_pool& pool() noexcept;
 };
 
 }}

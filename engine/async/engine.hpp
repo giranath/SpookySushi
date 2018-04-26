@@ -16,7 +16,7 @@ class engine {
     mutable std::mutex roundrobin_mutex;
     mutable std::default_random_engine rd;
 public:
-    explicit engine(std::size_t background_count);
+    engine(std::size_t background_count, std::size_t max_job_per_worker);
 
     void start() noexcept;
     void stop() noexcept;
@@ -36,6 +36,8 @@ public:
     // Returns the current thread associated worker
     worker* current() noexcept;
     const worker* current() const noexcept;
+
+    void clear_pools() noexcept;
 };
 
 }}

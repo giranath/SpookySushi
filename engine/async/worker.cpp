@@ -56,11 +56,12 @@ void worker::run() noexcept {
     }
 }
 
-worker::worker(engine& owner, mode m)
+worker::worker(engine& owner, std::size_t max_job_count, mode m)
 : owner(owner)
 , mode_(m)
 , state_(state::idle)
-, thread{}{
+, thread{}
+, jobs_(max_job_count) {
 
 }
 
@@ -118,6 +119,10 @@ bool worker::wait_for(job* j, std::chrono::high_resolution_clock::duration timeo
 void worker::push(job* j) noexcept {
     std::lock_guard<std::mutex> lock(queue_mutex);
     job_queue.push_back(j);
+}
+
+job_pool& worker::pool() noexcept {
+    return jobs_;
 }
 
 }}

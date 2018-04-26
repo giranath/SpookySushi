@@ -38,14 +38,16 @@ int main() {
         std::cout << extension << std::endl;
     }
 
-    sushi::async::engine engine(std::thread::hardware_concurrency() - 1);
+    sushi::async::engine engine(std::thread::hardware_concurrency() - 1, 2048);
     engine.start();
 
     auto start = std::chrono::high_resolution_clock::now();
     sushi::async::job root_job;
     for(int i = 0; i < 100; ++i) {
         sushi::async::worker* background = engine.next_background();
-        auto* job = new sushi::async::job([](sushi::async::job& job) {
+        sushi::async::job* job = background->pool().allocate();
+
+        new(job) sushi::async::job([](sushi::async::job& job) {
             {
                 std::lock_guard<std::mutex> lock(cout_mutex);
                 std::cout << "#" << job.data<int>() << std::endl;
