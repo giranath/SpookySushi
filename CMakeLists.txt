@@ -10,6 +10,9 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
 endif(MSVC)
 
+# Project configurations
+set(SUSHI_CACHE_LINE_SIZE 64 CACHE STRING "Specify the cache line size")
+
 # Get dependencies
 find_package(SDL2 REQUIRED)
 find_package(Toml11 REQUIRED)
