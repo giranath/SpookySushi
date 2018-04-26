@@ -125,4 +125,17 @@ job_pool& worker::pool() noexcept {
     return jobs_;
 }
 
+job* worker::make_job(job::job_fn fn, job* parent) noexcept {
+    job* j = pool().allocate();
+
+    if(j) {
+        new(j) job(fn, parent);
+        push(j);
+
+        return j;
+    }
+
+    return nullptr;
+}
+
 }}

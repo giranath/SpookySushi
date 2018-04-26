@@ -45,17 +45,13 @@ int main() {
     sushi::async::job root_job;
     for(int i = 0; i < 100; ++i) {
         sushi::async::worker* background = engine.next_background();
-        sushi::async::job* job = background->pool().allocate();
-
-        new(job) sushi::async::job([](sushi::async::job& job) {
+        background->make_job([](sushi::async::job& job) {
             {
                 std::lock_guard<std::mutex> lock(cout_mutex);
                 std::cout << "#" << job.data<int>() << std::endl;
             }
             std::this_thread::sleep_for(std::chrono::seconds(job.data<int>() % 3));
-        }, &root_job);
-        job->store(i);
-        background->push(job);
+        }, i, &root_job);
     }
 
     engine.foreground()->wait_for(&root_job);

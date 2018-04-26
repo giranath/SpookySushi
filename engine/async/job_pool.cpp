@@ -10,8 +10,11 @@ job_pool::job_pool(std::size_t capacity)
 }
 
 job* job_pool::allocate() noexcept {
-    assert(next_id < static_cast<std::size_t>(jobs_.size()));
-    return &jobs_[next_id++];
+    if(next_id < static_cast<std::size_t>(jobs_.size())) {
+        return &jobs_[next_id++];
+    }
+
+    return nullptr;
 }
 
 void job_pool::clear() {
