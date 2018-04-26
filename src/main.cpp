@@ -1,6 +1,7 @@
 #include "../engine/sdl/window.hpp"
 #include "../engine/sdl/event.hpp"
 #include "../engine/opengl/debug.hpp"
+#include "../engine/async/job.hpp"
 #include "game_loop.hpp"
 
 #include <toml.hpp>
@@ -23,6 +24,8 @@ int main() {
     game_loop loop;
     sushi::window main_window = create_window(toml::get<toml::Table>(configs.at("window")));
 
+    SDL_SetWindowMinimumSize(static_cast<SDL_Window*>(main_window), 800, 600);
+
     // Load Gl3w functions
     gl3wInit();
 
@@ -30,6 +33,32 @@ int main() {
     for(const std::string& extension : sushi::gl::extension_iterator{}) {
         std::cout << extension << std::endl;
     }
+
+    struct huge_data {
+        int d[1024];
+    };
+
+    huge_data huge;
+    static_assert(std::is_pod<huge_data>::value);
+
+    sushi::async::job j([](sushi::async::job& job) {
+        auto message = job.data<std::string>();
+
+        std::cout << message << std::endl;
+    });
+    std::string message = "Yo bitch!";
+    sushi::async::job other;
+    sushi::async::job::make_closure(&other, &j, [&message, huge](sushi::async::job& job) {
+        std::cout << message << std::endl;
+    });
+    j.emplace<std::string>("Hello world!");
+    j.execute();
+
+    assert(!j.is_finished());
+
+    other.execute();
+    assert(other.is_finished());
+    assert(j.is_finished());
 
     // Start of game loop
     loop.run([&main_window]() {
