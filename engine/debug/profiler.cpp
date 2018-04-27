@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iterator>
 #include <iomanip>
+#include <unistd.h>
 
 namespace sushi { namespace debug {
 
@@ -52,9 +53,13 @@ std::ostream& operator<<(std::ostream& os, const profile_event& ev) {
 void profiler::execute_background_task() {
     std::ofstream profile_out("profile.prof", std::ios::binary);
 
-    // Write file header
+    profile_out << "session infos:\n"
+                << "pid:    " << getpid() << "\n"
+                << "system: " << SYSTEM_FULL_NAME << "\n"
+                << "\n";
 
-    profile_out << std::left << std::setw(15) << "thread_id"
+    profile_out << "session events:\n"
+                << std::left << std::setw(15) << "thread_id"
                 << std::setw(20) << "time_point"
                 << std::setw(5) << "type"
                 << std::setw(30) << "name" << std::right << std::endl;
@@ -104,6 +109,15 @@ bool profiler::push(const profile_event& event) {
     if(!res) throw std::runtime_error{"queue is full"};
 
     return res;
+}
+
+scoped_profile::scoped_profile(uint32_t name) noexcept
+: name(name) {
+    profiler::get().push(profile_event{name, profile_event::type::start});
+}
+
+scoped_profile::~scoped_profile() noexcept {
+    profiler::get().push(profile_event{name, profile_event::type::end});
 }
 
 }}

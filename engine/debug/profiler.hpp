@@ -64,6 +64,18 @@ public:
     bool push(const profile_event& event);
 };
 
+class scoped_profile {
+    uint32_t name;
+public:
+    scoped_profile(const scoped_profile&) = delete;
+    scoped_profile& operator=(const scoped_profile&) = delete;
+    scoped_profile(scoped_profile&&) = delete;
+    scoped_profile& operator=(scoped_profile&&) = delete;
+
+    scoped_profile(uint32_t name) noexcept;
+    ~scoped_profile() noexcept;
+};
+
 }}
 
 #endif //SPOOKYSUSHI_PROFILER_HPP

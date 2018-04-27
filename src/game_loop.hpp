@@ -3,6 +3,7 @@
 
 #include "../engine/async/engine.hpp"
 #include "../engine/service/job_service.hpp"
+#include "../engine/debug/profiler.hpp"
 
 #include <toml.hpp>
 #include <SDL.h>
@@ -44,6 +45,7 @@ public:
 
     template<typename FN>
     void run(FN fn) {
+        sushi::debug::profiler::get().start();
         sushi::jobs_service::locate(jobs_.get());
         jobs_->start();
 
@@ -59,6 +61,7 @@ public:
         }
 
         jobs_->stop();
+        sushi::debug::profiler::get().stop();
     }
 
     ~game_loop() {
