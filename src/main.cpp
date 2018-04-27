@@ -44,8 +44,7 @@ int main() {
     auto start = std::chrono::high_resolution_clock::now();
     sushi::async::job root_job;
     for(int i = 0; i < 100; ++i) {
-        sushi::async::worker* background = engine.next_background();
-        background->make_job([](sushi::async::job& job) {
+        engine.make_job(sushi::async::worker::mode::background, [](sushi::async::job& job) {
             {
                 std::lock_guard<std::mutex> lock(cout_mutex);
                 std::cout << "#" << job.data<int>() << std::endl;

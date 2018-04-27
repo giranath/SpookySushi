@@ -116,4 +116,16 @@ void engine::clear_pools() noexcept {
     }
 }
 
+job* engine::make_job(worker::mode mode, job::job_fn fn, job* parent) noexcept {
+    worker* w = nullptr;
+    if(mode == worker::mode::foreground) {
+        w = workers.front().get();
+    }
+    else {
+        w = next_background();
+    }
+
+    return w->make_job(fn, parent);
+}
+
 }}

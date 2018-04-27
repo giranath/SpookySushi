@@ -38,6 +38,37 @@ public:
     const worker* current() const noexcept;
 
     void clear_pools() noexcept;
+
+    // Create a background job
+    job* make_job(worker::mode mode, job::job_fn fn, job* parent = nullptr) noexcept;
+
+    template<typename Data>
+    job* make_job(worker::mode mode, job::job_fn fn, const Data& data, job* parent = nullptr) noexcept {
+        worker* w = nullptr;
+        if(mode == worker::mode::foreground) {
+            w = workers.front().get();
+        }
+            // Creating a background job
+        else {
+            w = next_background();
+        }
+
+        return w->make_job(fn, data, parent);
+    }
+
+    template<typename Closure>
+    job* make_closure(worker::mode mode, Closure closure, job* parent = nullptr) noexcept {
+        worker* w = nullptr;
+        if(mode == worker::mode::foreground) {
+            w = workers.front().get();
+        }
+            // Creating a background job
+        else {
+            w = next_background();
+        }
+
+        return w->make_closure(closure, parent);
+    }
 };
 
 }}
