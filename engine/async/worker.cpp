@@ -48,6 +48,9 @@ void worker::execute_next_job() noexcept {
     if(next) {
         next->execute();
     }
+    else {
+        std::this_thread::yield();
+    }
 }
 
 void worker::run() noexcept {

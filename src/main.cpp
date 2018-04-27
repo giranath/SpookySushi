@@ -5,6 +5,7 @@
 #include "game_loop.hpp"
 #include "../engine/async/worker.hpp"
 #include "../engine/async/engine.hpp"
+#include "../engine/debug/profiler.hpp"
 
 #include <toml.hpp>
 #include <fstream>
@@ -25,6 +26,8 @@ sushi::window create_window(const toml::Table& window_configs) {
     return window;
 }
 
+const uint32_t JOB_PROFILE_NAME = 315135;
+
 int main() {
     std::ifstream config_stream("asset/config.toml");
     auto configs = toml::parse(config_stream);
@@ -40,9 +43,29 @@ int main() {
         std::cout << extension << std::endl;
     }
 
+    std::once_flag once;
+
+    sushi::debug::profiler::get().start();
+    sushi::async::job root;
     // Start of game loop
-    loop.run([&main_window]() {
-        sushi::async::engine& jobs = sushi::jobs_service::get();
+
+
+    loop.run([&main_window, &once, &root]() {
+        std::call_once(once, [&root]() {
+            for(int i = 0; i < 10000; ++i) {
+                sushi::jobs_service::get().make_job(sushi::async::worker::mode::background, [](sushi::async::job &job) {
+                    sushi::debug::profiler::get().push(sushi::debug::profile_event{JOB_PROFILE_NAME, sushi::debug::profile_event::type::start});
+
+                    std::this_thread::sleep_for(std::chrono::milliseconds(3));
+
+                    sushi::debug::profiler::get().push(sushi::debug::profile_event{JOB_PROFILE_NAME, sushi::debug::profile_event::type::end});
+                }, i, &root);
+            }
+        });
+
+        if(sushi::jobs_service::get().foreground()->wait_for(&root, std::chrono::milliseconds(1))) {
+            return false;
+        }
 
         // Handle inputs
         for(const SDL_Event& ev : sushi::poll_event_iterator{}) {
@@ -59,4 +82,6 @@ int main() {
         // Proceed to loop again
         return true;
     });
+
+    sushi::debug::profiler::get().stop();
 }

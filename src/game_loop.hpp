@@ -47,9 +47,15 @@ public:
         sushi::jobs_service::locate(jobs_.get());
         jobs_->start();
 
+        // TODO: Setup profiler
+        std::atomic_uint64_t frame_index(0);
+
         bool is_running = true;
         while(is_running) {
             is_running = fn();
+
+            // Increment to next frame
+            ++frame_index;
         }
 
         jobs_->stop();
