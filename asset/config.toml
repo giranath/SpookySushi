@@ -1,4 +1,24 @@
+# Main window specific configurations
 [window]
+  # The window's initial width [800]
   width = 1024
+
+  # The window's initial height [600]
   height = 768
+
+  # The window's minimum width [640]
+  min_width = 800
+
+  # The window's minimum height [480]
+  min_height = 600
+
+  # The window's title ["Game"]
   title = "Spooky Sushi v.0.1.0"
+
+# Job system specific configurations
+[jobs]
+  # Represents the maximal number of jobs per worker [2048]
+  max_job_count = 1024
+
+  # The number of workers [Number of logical cores)
+  #worker_count = 4

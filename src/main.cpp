@@ -11,24 +11,26 @@
 #include <SDL.h>
 
 sushi::window create_window(const toml::Table& window_configs) {
-    sushi::window_builder builder(toml::get_or<std::string>(window_configs, "title", "SpookySushi"));
-    return builder.with_centered_position()
-            .with_dimensions(toml::get_or(window_configs, "width", 800), toml::get_or(window_configs, "height", 600))
-            .with_opengl()
-            .as_resizable()
-            .build();
-}
+    sushi::window_builder builder(toml::get_or<std::string>(window_configs, "title", "Game"));
+    sushi::window window = builder.with_centered_position()
+                          .with_dimensions(toml::get_or(window_configs, "width", 800), toml::get_or(window_configs, "height", 600))
+                          .with_opengl()
+                          .as_resizable()
+                          .build();
 
-std::mutex cout_mutex;
+
+    SDL_SetWindowMinimumSize(static_cast<SDL_Window*>(window),
+                             toml::get_or(window_configs, "min_width", 640),
+                             toml::get_or(window_configs, "min_height", 480));
+    return window;
+}
 
 int main() {
     std::ifstream config_stream("asset/config.toml");
     auto configs = toml::parse(config_stream);
 
-    game_loop loop;
+    game_loop loop(configs);
     sushi::window main_window = create_window(toml::get<toml::Table>(configs.at("window")));
-
-    SDL_SetWindowMinimumSize(static_cast<SDL_Window*>(main_window), 800, 600);
 
     // Load Gl3w functions
     gl3wInit();
