@@ -5,8 +5,10 @@ add_subdirectory(platform)
 add_subdirectory(opengl)
 add_subdirectory(sdl)
 add_subdirectory(async)
+add_subdirectory(service)
 
 add_library(sushi-engine
+        $<TARGET_OBJECTS:sushi-service>
         $<TARGET_OBJECTS:sushi-opengl>
         $<TARGET_OBJECTS:sushi-sdl>
         $<TARGET_OBJECTS:sushi-async>
