@@ -46,18 +46,16 @@ int main() {
 
     std::once_flag once;
 
-    sushi::async::job root;
     // Start of game loop
-    loop.run([&main_window, &once, &root]() {
-        const std::chrono::high_resolution_clock::time_point start_of_frame = std::chrono::high_resolution_clock::now();
-
+    loop.run(std::chrono::milliseconds(16), [&main_window, &once](game_loop::duration last_frame_duration) {
+        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(last_frame_duration).count() << std::endl;
         sushi::debug::scoped_profile profile(FRAME_PROFILE_NAME);
-        std::call_once(once, [&root]() {
+        std::call_once(once, []() {
             for(int i = 0; i < 10000; ++i) {
                 sushi::jobs_service::get().make_job(sushi::async::worker::mode::background, [](sushi::async::job &job) {
                     sushi::debug::scoped_profile profile(JOB_PROFILE_NAME);
                     std::this_thread::sleep_for(std::chrono::milliseconds(3));
-                }, i, &root);
+                }, i);
             }
         });
 
@@ -72,13 +70,6 @@ int main() {
         // Update game state
 
         // Render current frame
-
-        // If enough time, execute jobs
-        sushi::jobs_service::get().foreground()->wait_for(&root, std::chrono::milliseconds(16));
-        auto now = std::chrono::high_resolution_clock::now();
-        if(now - start_of_frame < std::chrono::milliseconds(16)) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(16) - (now - start_of_frame));
-        }
 
         // Proceed to loop again
         return true;

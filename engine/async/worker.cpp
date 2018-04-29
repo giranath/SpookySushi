@@ -119,6 +119,15 @@ bool worker::wait_for(job* j, std::chrono::high_resolution_clock::duration timeo
     return j->is_finished();
 }
 
+void worker::wait(std::chrono::high_resolution_clock::duration timeout) noexcept {
+    assert(mode_ == mode::foreground);
+
+    const std::chrono::time_point start = std::chrono::high_resolution_clock::now();
+    while(std::chrono::high_resolution_clock::now() - start < timeout) {
+        execute_next_job();
+    }
+}
+
 void worker::push(job* j) noexcept {
     std::lock_guard<std::mutex> lock(queue_mutex);
     job_queue.push_back(j);

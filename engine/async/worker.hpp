@@ -61,6 +61,8 @@ public:
     // Could wait more than timeout
     bool wait_for(job* j, std::chrono::high_resolution_clock::duration timeout) noexcept;
 
+    void wait(std::chrono::high_resolution_clock::duration timeout) noexcept;
+
     void push(job* j) noexcept;
 
     job_pool& pool() noexcept;

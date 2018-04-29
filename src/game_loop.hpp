@@ -37,6 +37,10 @@ class game_loop {
     }
 
 public:
+    using clock = std::chrono::high_resolution_clock;
+    using duration = clock::duration;
+    using time_point = clock::time_point;
+
     explicit game_loop(const toml::Table& configs)
     : jobs_(nullptr){
         setup_sdl(configs);
@@ -44,7 +48,7 @@ public:
     }
 
     template<typename FN>
-    void run(FN fn) {
+    void run(duration target_frame_duration, FN fn) {
         sushi::debug::profiler::get().start();
         sushi::jobs_service::locate(jobs_.get());
         jobs_->start();
@@ -53,8 +57,23 @@ public:
         std::atomic_uint64_t frame_index(0);
 
         bool is_running = true;
+        duration last_frame_duration = target_frame_duration;
         while(is_running) {
-            is_running = fn();
+            const time_point start_of_frame = clock::now();
+
+            is_running = fn(last_frame_duration);
+
+            const time_point end_of_frame = clock::now();
+            const duration frame_duration = end_of_frame - start_of_frame;
+
+            if(frame_duration < target_frame_duration) {
+                const duration missing_duration = target_frame_duration - frame_duration;
+                sushi::jobs_service::get().foreground()->wait(missing_duration);
+                last_frame_duration = clock::now() - start_of_frame;
+            }
+            else {
+                last_frame_duration = frame_duration;
+            }
 
             // Increment to next frame
             ++frame_index;
