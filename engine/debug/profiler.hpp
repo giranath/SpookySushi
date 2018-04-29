@@ -62,6 +62,10 @@ public:
     void stop() noexcept;
 
     bool push(const profile_event& event);
+
+    bool push_start(uint32_t name);
+    bool push_end(uint32_t name);
+    bool push_instant(uint32_t name);
 };
 
 class scoped_profile {

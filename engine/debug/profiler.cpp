@@ -111,13 +111,25 @@ bool profiler::push(const profile_event& event) {
     return res;
 }
 
+bool profiler::push_start(uint32_t name) {
+    return push(profile_event{name, profile_event::type::start});
+}
+
+bool profiler::push_end(uint32_t name) {
+    return push(profile_event{name, profile_event::type::end});
+}
+
+bool profiler::push_instant(uint32_t name) {
+    return push(profile_event{name, profile_event::type::instant});
+}
+
 scoped_profile::scoped_profile(uint32_t name) noexcept
 : name(name) {
-    profiler::get().push(profile_event{name, profile_event::type::start});
+    profiler::get().push_start(name);
 }
 
 scoped_profile::~scoped_profile() noexcept {
-    profiler::get().push(profile_event{name, profile_event::type::end});
+    profiler::get().push_end(name);
 }
 
 }}

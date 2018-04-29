@@ -51,7 +51,3 @@ if __name__ == "__main__":
     print("\"displayTimeUnit\":\"ns\",")
     print("\"meta_system\": \"" + system + "\"")
     print("}")
-
-
-    # TODO: Récupérer le fichier à convertir
-    # TODO: Extraire les informations
