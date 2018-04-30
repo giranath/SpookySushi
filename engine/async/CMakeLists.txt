@@ -8,4 +8,5 @@ add_library(sushi-async OBJECT
         job_pool.cpp
         job_pool.hpp
         scmp_queue.hpp
+        event.hpp
         )
