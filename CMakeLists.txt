@@ -15,6 +15,7 @@ set(SUSHI_CACHE_LINE_SIZE 64 CACHE STRING "Specify the cache line size")
 
 # Get dependencies
 find_package(SDL2 REQUIRED)
+find_package(sdl2_image REQUIRED)
 find_package(Toml11 REQUIRED)
 find_package(gl3w REQUIRED)
 find_package(glm REQUIRED)

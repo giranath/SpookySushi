@@ -3,7 +3,6 @@
 
 #include <GL/gl3w.h>
 #include <SDL_opengl.h>
-#include <fstream>
 
 #include "bind.hpp"
 
@@ -30,7 +29,6 @@ public:
 
     static texture make() noexcept;
     static texture make(uint32_t width, uint32_t height) noexcept;
-    static texture load_from_path(const char* path) noexcept;
 };
 
 template<GLenum TARGET>

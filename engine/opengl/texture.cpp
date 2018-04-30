@@ -2,12 +2,6 @@
 
 #include <algorithm>
 
-#ifdef WIN32
-#include <SDL_image.h>
-#else
-#include <SDL2/SDL_image.h>
-#endif
-
 namespace sushi { namespace gl {
 
 texture::texture() noexcept
@@ -36,7 +30,8 @@ texture& texture::operator=(texture&& other) noexcept {
 }
 
 void texture::swap(texture& other) noexcept {
-    std::swap(raw, other.raw);
+    using std::swap;
+    swap(raw, other.raw);
 }
 
 texture::operator GLuint() const noexcept {
@@ -69,27 +64,6 @@ texture texture::make(uint32_t width, uint32_t height) noexcept {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
     return texture{tex};
-}
-
-texture texture::load_from_path(const char* path) noexcept {
-    SDL_Surface* surface = IMG_Load(path);
-    if(surface) {
-        texture tex = make();
-
-        int mode = GL_RGB;
-        if(surface->format->BytesPerPixel == 4) {
-            mode = GL_RGBA;
-        }
-
-        tex.bind(GL_TEXTURE_2D);
-        glTexImage2D(GL_TEXTURE_2D, 0, mode, surface->w, surface->h, 0, mode, GL_UNSIGNED_BYTE, surface->pixels);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        return tex;
-    }
-
-    return texture{};
 }
 
 }}
