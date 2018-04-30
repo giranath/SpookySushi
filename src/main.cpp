@@ -6,23 +6,39 @@
 #include "../engine/async/worker.hpp"
 #include "../engine/async/engine.hpp"
 #include "../engine/debug/profiler.hpp"
+#include "../engine/ecs/tree_storage.hpp"
+#include "../engine/ecs/indirect_vector_storage.hpp"
 
 #include <toml.hpp>
 #include <fstream>
 #include <SDL.h>
 
-sushi::window create_window(const toml::Table& window_configs) {
-    sushi::window_builder builder(toml::get_or<std::string>(window_configs, "title", "Game"));
+struct window_configs {
+    std::string title;
+    int width;
+    int height;
+    int min_width;
+    int min_height;
+};
+
+void from_toml(const toml::Table& table, window_configs& configs) {
+    configs.width = toml::get_or(table, "width", 800);
+    configs.height = toml::get_or(table, "height", 600);
+    configs.title = toml::get_or<std::string>(table, "title", "Game");
+    configs.min_width = toml::get_or(table, "min_width", 640);
+    configs.min_height = toml::get_or(table, "min_height", 480);
+}
+
+sushi::window create_window(const window_configs& configs) {
+    sushi::window_builder builder(configs.title);
     sushi::window window = builder.with_centered_position()
-                          .with_dimensions(toml::get_or(window_configs, "width", 800), toml::get_or(window_configs, "height", 600))
+                          .with_dimensions(configs.width, configs.height)
                           .with_opengl()
                           .as_resizable()
                           .build();
 
 
-    SDL_SetWindowMinimumSize(static_cast<SDL_Window*>(window),
-                             toml::get_or(window_configs, "min_width", 640),
-                             toml::get_or(window_configs, "min_height", 480));
+    SDL_SetWindowMinimumSize(static_cast<SDL_Window*>(window), configs.min_width, configs.min_height);
     return window;
 }
 
@@ -30,11 +46,27 @@ const uint32_t JOB_PROFILE_NAME = 315135;
 const uint32_t FRAME_PROFILE_NAME = 666;
 
 int main() {
+    sushi::ecs::tree_storage<int> integers_storage;
+    sushi::ecs::indirect_vector_storage<double> doubles_storage;
+
+    integers_storage.emplace(12, 3);
+    doubles_storage.emplace(12, 3.14159);
+
+    for(std::pair<const sushi::ecs::entity, double&>& double_compo : doubles_storage) {
+        double_compo.second = 0.0;
+    }
+
+    for(std::pair<const sushi::ecs::entity, int>& integer : integers_storage) {
+        integer.second = 0;
+    }
+
     std::ifstream config_stream("asset/config.toml");
     auto configs = toml::parse(config_stream);
 
     game_loop loop(configs);
-    sushi::window main_window = create_window(toml::get<toml::Table>(configs.at("window")));
+    window_configs window_confs;
+    from_toml(toml::get<toml::Table>(configs.at("window")), window_confs);
+    sushi::window main_window = create_window(window_confs);
 
     // Load Gl3w functions
     gl3wInit();

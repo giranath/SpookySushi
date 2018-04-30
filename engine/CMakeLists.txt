@@ -6,6 +6,7 @@ add_subdirectory(opengl)
 add_subdirectory(sdl)
 add_subdirectory(async)
 add_subdirectory(service)
+add_subdirectory(ecs)
 add_subdirectory(debug)
 
 add_library(sushi-engine
