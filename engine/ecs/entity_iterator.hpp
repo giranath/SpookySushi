@@ -22,11 +22,6 @@ auto cdr(std::tuple<Ts...> t) {
     return cdr_impl(std::make_index_sequence<sizeof...(Ts) - 1u>(), t);
 }
 
-template<typename T>
-struct as_ref {
-    using type = T&;
-};
-
 namespace ecs {
 
 template<typename... StorageTypes>
@@ -110,12 +105,14 @@ private:
     }
 
     template<typename... Ts>
-    std::tuple<typename std::remove_reference<typename std::iterator_traits<Ts>::value_type::second_type>::type&...> get_components_refs(std::tuple<Ts...> tuple) noexcept {
+    std::tuple<typename std::remove_reference<typename std::iterator_traits<Ts>::value_type::second_type>::type&...>
+    get_components_refs(std::tuple<Ts...> tuple) noexcept {
         return std::tuple_cat(std::make_tuple(std::ref(std::get<0>(tuple)->second)), get_components_refs(cdr(tuple)));
     }
 
     template<typename Ts>
-    std::tuple<typename std::remove_reference<typename std::iterator_traits<Ts>::value_type::second_type>::type&> get_components_refs(std::tuple<Ts> tuple) noexcept {
+    std::tuple<typename std::remove_reference<typename std::iterator_traits<Ts>::value_type::second_type>::type&>
+    get_components_refs(std::tuple<Ts> tuple) noexcept {
         return std::make_tuple(std::ref(std::get<0>(tuple)->second));
     }
 
