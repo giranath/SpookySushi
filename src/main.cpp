@@ -8,6 +8,7 @@
 #include "../engine/debug/profiler.hpp"
 #include "../engine/ecs/tree_storage.hpp"
 #include "../engine/ecs/indirect_vector_storage.hpp"
+#include "../engine/ecs/entity_iterator.hpp"
 
 #include <toml.hpp>
 #include <fstream>
@@ -46,18 +47,35 @@ const uint32_t JOB_PROFILE_NAME = 315135;
 const uint32_t FRAME_PROFILE_NAME = 666;
 
 int main() {
-    sushi::ecs::tree_storage<int> integers_storage;
+    sushi::ecs::indirect_vector_storage<int> integers_storage;
     sushi::ecs::indirect_vector_storage<double> doubles_storage;
+    sushi::ecs::indirect_vector_storage<float> floats_storage;
 
     integers_storage.emplace(12, 3);
     doubles_storage.emplace(12, 3.14159);
+    floats_storage.emplace(12, 3.14159f);
 
-    for(std::pair<const sushi::ecs::entity, double&>& double_compo : doubles_storage) {
-        double_compo.second = 0.0;
+    integers_storage.emplace(2, 351);
+    doubles_storage.emplace(2, 14.2);
+    floats_storage.emplace(2, 3.14159f);
+
+    for(auto p : sushi::ecs::entity_iterator(integers_storage, doubles_storage, floats_storage)) {
+        int a;
+        double b;
+        float c;
+
+        std::tie(a, b, c) = p.second;
+        std::cout << p.first << " " << a << ", " << b << ", " << c << std::endl;
+        std::get<1>(p.second) = 0.0;
     }
 
-    for(std::pair<const sushi::ecs::entity, int>& integer : integers_storage) {
-        integer.second = 0;
+    for(auto p : sushi::ecs::entity_iterator(integers_storage, doubles_storage, floats_storage)) {
+        int a;
+        double b;
+        float c;
+
+        std::tie(a, b, c) = p.second;
+        std::cout << p.first << " " << a << ", " << b << ", " << c << std::endl;
     }
 
     std::ifstream config_stream("asset/config.toml");

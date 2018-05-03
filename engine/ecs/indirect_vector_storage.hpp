@@ -2,6 +2,7 @@
 #define SPOOKYSUSHI_INDIRECT_VECTOR_STORAGE_HPP
 
 #include "entity.hpp"
+#include "storage_traits.hpp"
 
 #include <limits>
 #include <cstddef>
@@ -272,6 +273,13 @@ public:
     const_iterator cend() const noexcept {
         return const_iterator{this, static_cast<entity>(component_indices.size())};
     }
+};
+
+template<typename Component>
+struct storage_traits<indirect_vector_storage<Component>> {
+    using component_type = typename indirect_vector_storage<Component>::component_type;
+    using iterator = typename indirect_vector_storage<Component>::iterator;;
+    using const_iterator = typename indirect_vector_storage<Component>::const_iterator;
 };
 
 }}

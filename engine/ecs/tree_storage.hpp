@@ -1,6 +1,7 @@
 #ifndef SPOOKYSUSHI_TREE_STORAGE_HPP
 #define SPOOKYSUSHI_TREE_STORAGE_HPP
 
+#include "storage_traits.hpp"
 #include "entity.hpp"
 #include <map>
 
@@ -65,6 +66,13 @@ public:
     const_iterator cend() const noexcept {
         return components.cend();
     }
+};
+
+template<typename Component>
+struct storage_traits<tree_storage<Component>> {
+    using component_type = typename tree_storage<Component>::component_type;
+    using iterator = typename tree_storage<Component>::iterator;;
+    using const_iterator = typename tree_storage<Component>::const_iterator;
 };
 
 }}
