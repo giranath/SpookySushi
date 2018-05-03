@@ -48,8 +48,8 @@ const uint32_t FRAME_PROFILE_NAME = 666;
 
 int main() {
     sushi::ecs::indirect_vector_storage<int> integers_storage;
-    sushi::ecs::indirect_vector_storage<double> doubles_storage;
-    sushi::ecs::indirect_vector_storage<float> floats_storage;
+    sushi::ecs::tree_storage<double> doubles_storage;
+    sushi::ecs::tree_storage<float> floats_storage;
 
     integers_storage.emplace(12, 3);
     doubles_storage.emplace(12, 3.14159);
