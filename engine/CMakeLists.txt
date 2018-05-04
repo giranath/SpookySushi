@@ -8,6 +8,7 @@ add_subdirectory(async)
 add_subdirectory(service)
 add_subdirectory(ecs)
 add_subdirectory(debug)
+add_subdirectory(application)
 
 add_library(sushi-engine
         $<TARGET_OBJECTS:sushi-debug>
@@ -16,6 +17,7 @@ add_library(sushi-engine
         $<TARGET_OBJECTS:sushi-sdl>
         $<TARGET_OBJECTS:sushi-async>
         $<TARGET_OBJECTS:sushi-ecs>
+        $<TARGET_OBJECTS:sushi-app>
         $<TARGET_OBJECTS:sushi-platform>)
 target_link_libraries(sushi-engine
         ${CMAKE_THREAD_LIBS_INIT}

@@ -25,7 +25,8 @@ add_subdirectory(engine)
 
 # Game executable
 add_executable(spooky-sushi
-        src/game_loop.hpp
+        src/game.cpp
+        src/game.hpp
         src/main.cpp
         )
 target_link_libraries(spooky-sushi
