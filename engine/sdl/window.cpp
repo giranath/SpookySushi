@@ -34,6 +34,34 @@ void window::swap(window& other) noexcept {
     swap(window_, other.window_);
 }
 
+void window::hide() noexcept {
+    SDL_HideWindow(window_);
+}
+
+void window::show() noexcept {
+    SDL_ShowWindow(window_);
+}
+
+void window::minimize() noexcept {
+    SDL_MinimizeWindow(window_);
+}
+
+void window::maximize() noexcept {
+    SDL_MaximizeWindow(window_);
+}
+
+void window::restore() noexcept {
+    SDL_RestoreWindow(window_);
+}
+
+void window::raise() noexcept {
+    SDL_RaiseWindow(window_);
+}
+
+display window::current_display() noexcept {
+    return display{SDL_GetWindowDisplayIndex(window_)};
+}
+
 window::operator SDL_Window*() noexcept {
     return window_;
 }

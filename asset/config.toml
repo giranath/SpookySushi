@@ -1,5 +1,22 @@
+# Game specific configurations
+[game]
+  # A unique value to identify this game #REQUIRED
+  id = "giranath.spooky-sushi"
+
+  # The name of the game                 #REQUIRED
+  name = "Spooky Sushi"
+
 # Main window specific configurations
 [window]
+  # The window can be resized [false]
+  allow_resize = true
+
+  # The window should initialy open in fullscreen (none|desktop|full)["none"]
+  # none means no fullscreen
+  # desktop means fullscreen at the current desktop resolution
+  # full means fullscreen window
+  fullscreen = "none"
+
   # The window's initial width [800]
   width = 1024
 
@@ -12,13 +29,19 @@
   # The window's minimum height [480]
   min_height = 600
 
+  # The window's maximum width [max usable width]
+  #max_width = 2048
+
+  # The window's maximum height [max usable height]
+  #max_height = 768
+
   # The window's title ["Game"]
   title = "Spooky Sushi v.0.1.0"
 
 # Job system specific configurations
 [jobs]
   # Represents the maximal number of jobs per worker [2048]
-  max_job_count = 2048
+  #max_job_count = 2048
 
   # The number of workers [Number of logical cores)
   #worker_count = 4

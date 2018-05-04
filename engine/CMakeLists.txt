@@ -2,6 +2,7 @@ get_target_property(GL3W_INCLUDE_DIRS gl3w INTERFACE_INCLUDE_DIRECTORIES)
 get_target_property(GL3W_SOURCES gl3w INTERFACE_SOURCES)
 
 add_subdirectory(platform)
+add_subdirectory(core)
 add_subdirectory(opengl)
 add_subdirectory(sdl)
 add_subdirectory(async)

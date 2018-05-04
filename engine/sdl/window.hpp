@@ -1,6 +1,8 @@
 #ifndef SPOOKYSUSHI_WINDOW_HPP
 #define SPOOKYSUSHI_WINDOW_HPP
 
+#include "display.hpp"
+
 #include <SDL.h>
 #include <string>
 #include <string_view>
@@ -25,6 +27,15 @@ public:
     ~window() noexcept;
 
     void swap(window& other) noexcept;
+
+    void hide() noexcept;
+    void show() noexcept;
+    void minimize() noexcept;
+    void maximize() noexcept;
+    void restore() noexcept;
+    void raise() noexcept;
+
+    display current_display() noexcept;
 
     explicit operator SDL_Window*() noexcept;
 };

@@ -1,6 +1,7 @@
 #include "game_loop.hpp"
 #include "../sdl/window.hpp"
 #include "../sdl/event.hpp"
+#include "../sdl/display.hpp"
 #include "../opengl/opengl.hpp"
 
 #include <toml.hpp>
@@ -9,31 +10,105 @@
 namespace sushi {
 
 struct window_configs {
+    enum class fullscreen_mode {
+        none,
+        desktop,
+        full
+    };
+
     std::string title;
     int width;
     int height;
     int min_width;
     int min_height;
+    int max_width;
+    int max_height;
+    bool allow_resize;
+    fullscreen_mode fullscreen;
 };
 
 void from_toml(const toml::Table& table, window_configs& configs) {
     configs.width = toml::get_or(table, "width", 800);
     configs.height = toml::get_or(table, "height", 600);
     configs.title = toml::get_or<std::string>(table, "title", "Game");
-    configs.min_width = toml::get_or(table, "min_width", 640);
-    configs.min_height = toml::get_or(table, "min_height", 480);
+    configs.min_width = toml::get_or(table, "min_width", 0); // 640
+    configs.min_height = toml::get_or(table, "min_height", 0); // 480
+    configs.max_width = toml::get_or(table, "max_width", 0);
+    configs.max_height = toml::get_or(table, "max_height", 0);
+    configs.allow_resize = toml::get_or(table, "allow_resize", false);
+
+    std::string fullscreen = toml::get_or<std::string>(table, "fullscreen", "none");
+    std::transform(std::begin(fullscreen), std::end(fullscreen), std::begin(fullscreen), [](char l) { return std::tolower(l); });
+
+    if(fullscreen == "none") {
+        configs.fullscreen = window_configs::fullscreen_mode::none;
+    }
+    else if(fullscreen == "desktop") {
+        configs.fullscreen = window_configs::fullscreen_mode::desktop;
+    }
+    else if(fullscreen == "full") {
+        configs.fullscreen = window_configs::fullscreen_mode::full;
+    }
+    else {
+        configs.fullscreen = window_configs::fullscreen_mode::none;
+        // TODO: Log warning
+    }
 }
 
 sushi::window create_window(const window_configs& configs) {
     sushi::window_builder builder(configs.title);
-    sushi::window window = builder.with_centered_position()
+    builder.with_centered_position()
             .with_dimensions(configs.width, configs.height)
-            .with_opengl()
-            .as_resizable()
-            .build();
+            .with_opengl();
 
+    if(configs.allow_resize) {
+        builder.as_resizable();
+    }
 
-    SDL_SetWindowMinimumSize(static_cast<SDL_Window*>(window), configs.min_width, configs.min_height);
+    if(configs.fullscreen == window_configs::fullscreen_mode::desktop) {
+        builder.as_desktop_fullscreen();
+    }
+    else if(configs.fullscreen == window_configs::fullscreen_mode::full) {
+        builder.as_fullscreen();
+    }
+
+    sushi::window window = builder.build();
+
+    if(configs.allow_resize) {
+        int min_width = configs.min_width,
+            min_height = configs.min_height,
+            max_width = configs.max_width,
+            max_height = configs.max_height;
+
+        // Setup minimum size
+        if(min_width > 0 || min_height > 0) {
+            if (min_width == 0) {
+                min_width = 640;
+            }
+
+            if (min_height == 0) {
+                min_height = 480;
+            }
+
+            SDL_SetWindowMinimumSize(static_cast<SDL_Window*>(window), min_width, min_height);
+        }
+
+        // Setup maximum size
+        if(max_width > 0 || max_height > 0) {
+            display window_display = window.current_display();
+
+            if(max_width == 0) {
+                max_width = window_display.usable_bounds().width();
+            }
+
+            if(max_height == 0) {
+                max_height = window_display.usable_bounds().height();
+            }
+
+            SDL_SetWindowMaximumSize(static_cast<SDL_Window*>(window), max_width, max_height);
+        }
+    }
+
     return window;
 }
 
@@ -97,6 +172,8 @@ int run_game(base_game& game, const arguments& args) {
     });
 
     game.on_stop();
+
+    return 0;
 }
 
 }
