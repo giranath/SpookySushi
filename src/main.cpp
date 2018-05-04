@@ -9,6 +9,7 @@
 #include "../engine/ecs/tree_storage.hpp"
 #include "../engine/ecs/indirect_vector_storage.hpp"
 #include "../engine/ecs/entity_iterator.hpp"
+#include "../engine/ecs/null_storage.hpp"
 
 #include <toml.hpp>
 #include <fstream>

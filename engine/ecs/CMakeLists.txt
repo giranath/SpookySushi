@@ -4,4 +4,6 @@ add_library(sushi-ecs OBJECT
         tree_storage.hpp
         indirect_vector_storage.hpp
         entity_iterator.hpp
+        null_storage.cpp
+        null_storage.hpp
         )
