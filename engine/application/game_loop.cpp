@@ -9,6 +9,60 @@
 
 namespace sushi {
 
+void sdl_log_output(void* userdata, int category, SDL_LogPriority priority, const char* message) {
+    std::string cat = "org.sdl.";
+    switch(category) {
+        case SDL_LOG_CATEGORY_APPLICATION:
+            cat += "application";
+            break;
+        case SDL_LOG_CATEGORY_ERROR:
+            cat += "error";
+            break;
+        case SDL_LOG_CATEGORY_ASSERT:
+            cat += "assert";
+            break;
+        case SDL_LOG_CATEGORY_SYSTEM:
+            cat += "system";
+            break;
+        case SDL_LOG_CATEGORY_AUDIO:
+            cat += "audio";
+            break;
+        case SDL_LOG_CATEGORY_VIDEO:
+            cat += "video";
+            break;
+        case SDL_LOG_CATEGORY_RENDER:
+            cat += "render";
+            break;
+        case SDL_LOG_CATEGORY_INPUT:
+            cat += "input";
+            break;
+        case SDL_LOG_CATEGORY_TEST:
+            cat += "test";
+            break;
+        case SDL_LOG_CATEGORY_CUSTOM:
+            cat += "custom";
+            break;
+        default:
+            cat += "unspecified";
+            break;
+    }
+
+    switch(priority) {
+        case SDL_LOG_PRIORITY_CRITICAL:
+        case SDL_LOG_PRIORITY_ERROR:
+            log_service::get().log_critical(cat, message);
+            break;
+        case SDL_LOG_PRIORITY_INFO:
+            log_service::get().log_info(cat, message);
+            break;
+        case SDL_LOG_PRIORITY_WARN:
+            log_service::get().log_warning(cat, message);
+            break;
+        default:
+            break;
+    }
+}
+
 struct window_configs {
     enum class fullscreen_mode {
         none,
@@ -51,7 +105,8 @@ void from_toml(const toml::Table& table, window_configs& configs) {
     }
     else {
         configs.fullscreen = window_configs::fullscreen_mode::none;
-        // TODO: Log warning
+        // TODO: Change category
+        log_service::get().log_warning("sushi.config.window", "invalid fullscreen mode in config.toml");
     }
 }
 
@@ -130,6 +185,10 @@ launch_args parse_args(const arguments& args) {
 }
 
 int run_game(base_game& game, const arguments& args) {
+    sushi::debug::logger logger;
+    sushi::log_service::locate(&logger);
+    logger.start();
+
     launch_args launch = parse_args(args);
 
     std::ifstream config_stream(launch.config_path);
@@ -172,6 +231,8 @@ int run_game(base_game& game, const arguments& args) {
     });
 
     game.on_stop();
+
+    logger.stop();
 
     return 0;
 }

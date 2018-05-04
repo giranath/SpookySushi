@@ -4,7 +4,9 @@
 #include "../async/engine.hpp"
 #include "../service/job_service.hpp"
 #include "../debug/profiler.hpp"
+#include "../debug/logger.hpp"
 #include "base_game.hpp"
+#include "../service/log_service.hpp"
 
 #include <toml.hpp>
 #include <SDL.h>
@@ -18,6 +20,8 @@ using arguments = std::vector<argument>;
 
 int run_game(base_game& game, const arguments& args);
 
+void sdl_log_output(void* userdata, int category, SDL_LogPriority priority, const char* message);
+
 class game_loop {
     std::unique_ptr<sushi::async::engine> jobs_;
 
@@ -26,6 +30,8 @@ class game_loop {
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
             throw std::runtime_error("cannot initialize SDL");
         }
+
+        SDL_LogSetOutputFunction(sdl_log_output, nullptr);
     }
 
     void setup_jobs(const toml::Table &configs) {
@@ -50,7 +56,7 @@ public:
     using time_point = clock::time_point;
 
     explicit game_loop(const toml::Table &configs)
-            : jobs_(nullptr) {
+    : jobs_(nullptr) {
         setup_sdl(configs);
         setup_jobs(configs);
     }

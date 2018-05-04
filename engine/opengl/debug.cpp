@@ -112,6 +112,7 @@ void opengl_message_cb(GLenum source, GLenum type, GLuint id, GLenum severity,
 }
 
 bool enable_debug_messages() noexcept {
+    // TODO: Use the logger
     bool is_ok = true;
     // We check if glDebugMessageCallback exists
     GL3WglProc debug_msg_callback_extension = gl3wGetProcAddress("glDebugMessageCallbackARB");

@@ -15,7 +15,7 @@
   # none means no fullscreen
   # desktop means fullscreen at the current desktop resolution
   # full means fullscreen window
-  fullscreen = "none"
+  fullscreen = "nsone"
 
   # The window's initial width [800]
   width = 1024
