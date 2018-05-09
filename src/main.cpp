@@ -1,5 +1,4 @@
 #include "../engine/application/game_loop.hpp"
-#include "../engine/ecs/entity_tree.hpp"
 #include "game.hpp"
 #include <algorithm>
 #include <iterator>
@@ -16,16 +15,6 @@ std::vector<std::string> get_arguments(int argc, char* argv[]) {
 }
 
 int main(int argc, char* argv[]) {
-    sushi::ecs::entity_tree entities;
-    auto it = entities.make();
-    entities.make();
-    entities.make();
-    entities.make(entities.make(it));
-    entities.remove(it);
-    for(sushi::ecs::entity e : entities) {
-        std::cout << e << std::endl;
-    }
-
     game g;
 
     return sushi::run_game(g, get_arguments(argc, argv));
