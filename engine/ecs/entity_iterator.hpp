@@ -1,6 +1,7 @@
 #ifndef SPOOKYSUSHI_ENTITY_ITERATOR_HPP
 #define SPOOKYSUSHI_ENTITY_ITERATOR_HPP
 
+#include "entity.hpp"
 #include "storage_traits.hpp"
 #include <tuple>
 #include <iterator>

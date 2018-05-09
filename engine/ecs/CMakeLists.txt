@@ -6,4 +6,6 @@ add_library(sushi-ecs OBJECT
         entity_iterator.hpp
         null_storage.cpp
         null_storage.hpp
+        entity_tree.cpp
+        entity_tree.hpp
         )
