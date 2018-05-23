@@ -1,5 +1,9 @@
 #include "game.hpp"
 
+#include "../engine/network/tcp_socket.hpp"
+
+#include <iostream>
+
 void game::on_start() {
 
 }

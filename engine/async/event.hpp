@@ -11,46 +11,70 @@ template<typename... Args>
 class event {
 public:
     using handler_fn = std::function<void(Args...)>;
+    using handler_handle = uint16_t;
+
+    static constexpr const handler_handle not_found = std::numeric_limits<handler_handle>::max();
 private:
     static constexpr const std::size_t MAX_HANDLER_COUNT = 128;
     std::array<handler_fn, MAX_HANDLER_COUNT> handlers;
+    std::array<handler_handle, MAX_HANDLER_COUNT> handles;
     std::size_t count;
     std::mutex mutex;
+    handler_handle next_handle;
 
 public:
+    constexpr event()
+    : count(0)
+    , next_handle(0){
+    }
+
     template<typename FN>
-    bool attach(FN&& fn) noexcept {
+    handler_handle attach(FN&& fn) noexcept {
         std::lock_guard<std::mutex> lock(mutex);
 
         if(count < MAX_HANDLER_COUNT) {
+            const handler_handle  handle = next_handle;
+
             handlers[count] = std::forward<FN>(fn);
+            handles[count] = handle;
+
             ++count;
+            ++next_handle;
 
-            return true;
+            return handle;
         }
 
-        return false;
+        return not_found;
     }
 
-    template<typename FN>
-    bool is_attached(const FN& fn) noexcept {
-        for(std::size_t i = 0; i < count; ++i) {
-            if(&handlers[i] == &fn) {
-                return true;
+    bool is_attached(handler_handle handle) noexcept {
+        if(handle != not_found) {
+            for(std::size_t i = 0; i < count; ++i) {
+                if(handles[i] == handle) {
+                    return true;
+                }
             }
         }
 
         return false;
     }
 
-    template<typename FN>
-    void detach(const FN& fn) noexcept {
-        for(std::size_t i = 0; i < count; ++i) {
-            if(&handlers[i] == &fn) {
-                std::swap(handlers[i], handlers[count - 1]);
-                --count;
+    bool detach(handler_handle handle) noexcept {
+        if(handle != not_found) {
+            for(std::size_t i = 0; i < count; ++i) {
+                if(handles[i] == handle) {
+                    using std::swap;
+                    swap(handles[i], handles[count - 1]);
+                    swap(handlers[i], handlers[count - 1]);
+
+                    --count;
+
+                    return true;
+                }
             }
         }
+
+        return false;
     }
 
     void operator()(Args&&... arguments) {

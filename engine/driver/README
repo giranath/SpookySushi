@@ -1,0 +1,5 @@
+The driver folders contains platform or technology specific code
+
+The drivers are statically linked to the engine
+
+Read how to configure the drivers in the CMakeLists.txt

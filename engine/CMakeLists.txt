@@ -1,7 +1,9 @@
 get_target_property(GL3W_INCLUDE_DIRS gl3w INTERFACE_INCLUDE_DIRECTORIES)
 get_target_property(GL3W_SOURCES gl3w INTERFACE_SOURCES)
 
+add_subdirectory(driver)
 add_subdirectory(platform)
+add_subdirectory(network)
 add_subdirectory(core)
 add_subdirectory(opengl)
 add_subdirectory(sdl)
@@ -12,15 +14,18 @@ add_subdirectory(debug)
 add_subdirectory(application)
 
 add_library(sushi-engine
-        $<TARGET_OBJECTS:sushi-debug>
-        $<TARGET_OBJECTS:sushi-service>
+        $<TARGET_OBJECTS:sushi-platform>
+        $<TARGET_OBJECTS:sushi-network>
         $<TARGET_OBJECTS:sushi-opengl>
         $<TARGET_OBJECTS:sushi-sdl>
         $<TARGET_OBJECTS:sushi-async>
+        $<TARGET_OBJECTS:sushi-service>
         $<TARGET_OBJECTS:sushi-ecs>
         $<TARGET_OBJECTS:sushi-app>
-        $<TARGET_OBJECTS:sushi-platform>)
+        $<TARGET_OBJECTS:sushi-debug>
+        )
 target_link_libraries(sushi-engine
+        sushi-drivers
         ${CMAKE_THREAD_LIBS_INIT}
         ${SDL2_LIBRARIES}
         gl3w)
