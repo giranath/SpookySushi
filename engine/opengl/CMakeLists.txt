@@ -1,4 +1,4 @@
-add_library(sushi-opengl OBJECT
+add_library(sushi-opengl
         ${GL3W_SOURCES}
         bind.hpp
         buffer.cpp

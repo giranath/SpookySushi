@@ -1,4 +1,4 @@
-add_library(sushi-async OBJECT
+add_library(sushi-async
         job.cpp
         job.hpp
         worker.cpp

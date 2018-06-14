@@ -36,6 +36,7 @@ private:
     std::deque<job*> job_queue;
     std::mutex queue_mutex;
     job_pool jobs_;
+    int worker_id;
 
     job* pop_job() noexcept;
     job* next_job() noexcept;
@@ -44,7 +45,7 @@ private:
     void execute_next_job() noexcept;
     void run() noexcept;
 public:
-    worker(engine& owner, std::size_t max_job_count, mode m = mode::background);
+    worker(engine& owner, std::size_t max_job_count, mode m = mode::background, int worker_id = -1);
     ~worker() noexcept;
 
     mode current_mode() const noexcept;

@@ -11,24 +11,26 @@ add_subdirectory(async)
 add_subdirectory(service)
 add_subdirectory(ecs)
 add_subdirectory(debug)
-add_subdirectory(application)
+add_subdirectory(rendering)
 
 add_library(sushi-engine
-        $<TARGET_OBJECTS:sushi-platform>
-        $<TARGET_OBJECTS:sushi-network>
-        $<TARGET_OBJECTS:sushi-opengl>
-        $<TARGET_OBJECTS:sushi-sdl>
-        $<TARGET_OBJECTS:sushi-async>
-        $<TARGET_OBJECTS:sushi-service>
-        $<TARGET_OBJECTS:sushi-ecs>
-        $<TARGET_OBJECTS:sushi-app>
-        $<TARGET_OBJECTS:sushi-debug>
+        application/game_loop.cpp
+        application/game_loop.hpp
+        application/base_game.hpp
         )
 target_link_libraries(sushi-engine
-        sushi-drivers
-        ${CMAKE_THREAD_LIBS_INIT}
-        ${SDL2_LIBRARIES}
-        gl3w)
+        PUBLIC sushi-network
+        PUBLIC sushi-opengl
+        PUBLIC sushi-sdl
+        PUBLIC sushi-async
+        PUBLIC sushi-service
+        PUBLIC sushi-ecs
+        PUBLIC sushi-debug
+        PUBLIC sushi-rendering
+        PUBLIC sushi-drivers
+        PRIVATE ${CMAKE_THREAD_LIBS_INIT}
+        PRIVATE ${SDL2_LIBRARIES}
+        PRIVATE gl3w)
 target_include_directories(sushi-engine
         PUBLIC ${SDL2_INCLUDE_DIRS}
         PUBLIC ${GL3W_INCLUDE_DIRS}

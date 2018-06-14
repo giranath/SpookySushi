@@ -1,4 +1,4 @@
-add_library(sushi-network OBJECT
+add_library(sushi-network
         endpoint.cpp
         endpoint.hpp
         ipv4_address.cpp

@@ -1,4 +1,4 @@
-add_library(sushi-sdl OBJECT
+add_library(sushi-sdl
         event.cpp
         event.hpp
         window.cpp

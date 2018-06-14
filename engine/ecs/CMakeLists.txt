@@ -1,4 +1,4 @@
-add_library(sushi-ecs OBJECT
+add_library(sushi-ecs
         entity.hpp
         storage_traits.hpp
         tree_storage.hpp

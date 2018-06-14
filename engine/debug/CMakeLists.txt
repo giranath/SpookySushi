@@ -1,6 +1,11 @@
-add_library(sushi-debug OBJECT
+add_library(sushi-debug
         profiler.cpp
         profiler.hpp
         logger.cpp
         logger.hpp
-        )
+        request.cpp
+        request.hpp
+        response.cpp
+        response.hpp
+        server.cpp
+        server.hpp)

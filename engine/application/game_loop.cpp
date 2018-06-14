@@ -3,6 +3,8 @@
 #include "../sdl/event.hpp"
 #include "../sdl/display.hpp"
 #include "../opengl/opengl.hpp"
+#include "../rendering/renderer_interface.hpp"
+#include "../rendering/opengl_renderer.hpp"
 
 #include <toml.hpp>
 #include <SDL.h>
@@ -199,18 +201,15 @@ int run_game(base_game& game, const arguments& args) {
     from_toml(toml::get<toml::Table>(configs.at("window")), window_confs);
     sushi::window main_window = create_window(window_confs);
 
+    std::unique_ptr<sushi::renderer_interface> renderer = std::make_unique<sushi::opengl_renderer>(main_window);
+
     // Load Gl3w functions
     gl3wInit();
-
-    // List opengl extensions
-    for(const std::string& extension : sushi::gl::extension_iterator{}) {
-        std::cout << extension << std::endl;
-    }
 
     game.on_start();
 
     // Start of game loop
-    loop.run(std::chrono::milliseconds(16), [&game](sushi::game_loop::duration last_frame_duration) {
+    loop.run(std::chrono::milliseconds(16), [&](sushi::game_loop::duration last_frame_duration) {
         // Handle inputs
         for(const SDL_Event& ev : sushi::poll_event_iterator{}) {
             if(ev.type == SDL_QUIT) {
@@ -222,10 +221,12 @@ int run_game(base_game& game, const arguments& args) {
         // Update game state
         game.on_frame(last_frame_duration);
 
-        // Render current frame
-
         // Proceed to loop again
         game.on_late_frame(last_frame_duration);
+
+        // Render current frame
+        renderer->start_frame_rendering();
+        renderer->stop_frame_rendering();
 
         return true;
     });

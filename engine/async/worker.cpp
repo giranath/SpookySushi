@@ -54,17 +54,30 @@ void worker::execute_next_job() noexcept {
 }
 
 void worker::run() noexcept {
+#if 1 // Set thread's affinity
+    if(worker_id >= 0) {
+        cpu_set_t cpuset;
+        CPU_ZERO(&cpuset);
+        CPU_SET(worker_id, &cpuset);
+        int rc = pthread_setaffinity_np(thread.native_handle(), sizeof(cpu_set_t), &cpuset);
+        if (rc != 0) {
+            // TODO: handle error [Log]
+        }
+    }
+#endif
+
     while(running()) {
         execute_next_job();
     }
 }
 
-worker::worker(engine& owner, std::size_t max_job_count, mode m)
+worker::worker(engine& owner, std::size_t max_job_count, mode m, int worker_id)
 : owner(owner)
 , mode_(m)
 , state_(state::idle)
 , thread{}
-, jobs_(max_job_count) {
+, jobs_(max_job_count)
+, worker_id(worker_id) {
 
 }
 
