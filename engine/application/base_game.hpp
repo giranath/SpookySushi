@@ -2,6 +2,7 @@
 #define SPOOKYSUSHI_BASE_GAME_HPP
 
 #include <chrono>
+#include "../rendering/proxy_renderer.hpp"
 
 namespace sushi {
 
@@ -20,6 +21,9 @@ public:
     /// Called at the end of every frame
     /// \param last_frame The last frame's duration
     virtual void on_late_frame(frame_duration last_frame) {};
+
+    /// Called every frame to render the current state
+    virtual void on_render(sushi::proxy_renderer renderer) {};
 
     // Called once when the game is stopped
     virtual void on_stop() = 0;

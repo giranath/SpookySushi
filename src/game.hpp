@@ -8,6 +8,7 @@ public:
     void on_start() override;
     void on_frame(sushi::frame_duration last_frame) override;
     void on_late_frame(sushi::frame_duration last_frame) override;
+    void on_render(sushi::proxy_renderer renderer) override;
     void on_stop() override;
 };
 

@@ -5,6 +5,7 @@
 #include "../opengl/opengl.hpp"
 #include "../rendering/renderer_interface.hpp"
 #include "../rendering/opengl_renderer.hpp"
+#include "../rendering/proxy_renderer.hpp"
 
 #include <toml.hpp>
 #include <SDL.h>
@@ -202,9 +203,7 @@ int run_game(base_game& game, const arguments& args) {
     sushi::window main_window = create_window(window_confs);
 
     std::unique_ptr<sushi::renderer_interface> renderer = std::make_unique<sushi::opengl_renderer>(main_window);
-
-    // Load Gl3w functions
-    gl3wInit();
+    sushi::proxy_renderer proxy_renderer(renderer.get());
 
     game.on_start();
 
@@ -226,6 +225,7 @@ int run_game(base_game& game, const arguments& args) {
 
         // Render current frame
         renderer->start_frame_rendering();
+        // Do all rendering here
         renderer->stop_frame_rendering();
 
         return true;
