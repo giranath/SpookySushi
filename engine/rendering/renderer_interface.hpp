@@ -13,6 +13,9 @@ public:
     /// Check if the renderer is ready
     virtual bool ready() const = 0;
 
+    virtual bool initialize() = 0;
+    virtual void uninitialize() = 0;
+
     virtual void start_frame_rendering() = 0;
     virtual void stop_frame_rendering() = 0;
 };

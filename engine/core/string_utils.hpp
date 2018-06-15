@@ -6,7 +6,7 @@
 namespace sushi {
 
 template<typename... Args>
-std::string formatted_string(const char* format, Args... args) {
+typename std::enable_if<(sizeof...(Args) > 0), std::string>::type formatted_string(const char* format, Args... args) {
     char* raw_ptr = nullptr;
     int res = asprintf(&raw_ptr, format, args...);
 
@@ -19,6 +19,11 @@ std::string formatted_string(const char* format, Args... args) {
     std::free(raw_ptr);
 
     return formatted_string;
+}
+
+template<typename... Args>
+typename std::enable_if<(sizeof...(Args) == 0), std::string>::type formatted_string(const char* format) {
+    return std::string{format};
 }
 
 }

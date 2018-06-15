@@ -53,13 +53,13 @@ void sdl_log_output(void* userdata, int category, SDL_LogPriority priority, cons
     switch(priority) {
         case SDL_LOG_PRIORITY_CRITICAL:
         case SDL_LOG_PRIORITY_ERROR:
-            log_service::get().log_critical(cat, message);
+            log_critical(cat.c_str(), message);
             break;
         case SDL_LOG_PRIORITY_INFO:
-            log_service::get().log_info(cat, message);
+            log_info(cat.c_str(), message);
             break;
         case SDL_LOG_PRIORITY_WARN:
-            log_service::get().log_warning(cat, message);
+            log_warning(cat.c_str(), message);
             break;
         default:
             break;
@@ -108,8 +108,8 @@ void from_toml(const toml::Table& table, window_configs& configs) {
     }
     else {
         configs.fullscreen = window_configs::fullscreen_mode::none;
-        // TODO: Change category
-        log_service::get().log_warning("sushi.config.window", "invalid fullscreen mode in config.toml");
+
+        log_warning("sushi.config.window", "invalid fullscreen mode in config.toml");
     }
 }
 
@@ -205,10 +205,14 @@ int run_game(base_game& game, const arguments& args) {
     std::unique_ptr<sushi::renderer_interface> renderer = std::make_unique<sushi::opengl_renderer>(main_window);
     sushi::proxy_renderer proxy_renderer(renderer.get());
 
+    if(!renderer->initialize()) {
+        return 1;
+    }
+
     game.on_start();
 
     // Start of game loop
-    loop.run(std::chrono::milliseconds(16), [&](sushi::game_loop::duration last_frame_duration) {
+    loop.run(std::chrono::microseconds(16700), [&](sushi::game_loop::duration last_frame_duration) {
         // Handle inputs
         for(const SDL_Event& ev : sushi::poll_event_iterator{}) {
             if(ev.type == SDL_QUIT) {
@@ -225,6 +229,9 @@ int run_game(base_game& game, const arguments& args) {
 
         // Render current frame
         renderer->start_frame_rendering();
+
+        game.on_render(proxy_renderer);
+
         // Do all rendering here
         renderer->stop_frame_rendering();
 
@@ -232,6 +239,8 @@ int run_game(base_game& game, const arguments& args) {
     });
 
     game.on_stop();
+
+    renderer->uninitialize();
 
     logger.stop();
 

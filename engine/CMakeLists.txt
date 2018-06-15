@@ -17,7 +17,7 @@ add_library(sushi-engine
         application/game_loop.cpp
         application/game_loop.hpp
         application/base_game.hpp
-        core/string_utils.hpp)
+        core/string_utils.hpp core/types.hpp)
 target_link_libraries(sushi-engine
         PUBLIC sushi-network
         PUBLIC sushi-opengl

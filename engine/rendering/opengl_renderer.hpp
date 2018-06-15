@@ -2,11 +2,13 @@
 #define SPOOKYSUSHI_OPENGL_RENDERER_HPP
 
 #include "renderer_interface.hpp"
-#include "../sdl/window.hpp"
 
 #include <memory>
 
 namespace sushi {
+
+class window;
+
 class opengl_renderer : public renderer_interface {
     window& target_window;
 
@@ -18,6 +20,10 @@ public:
     virtual ~opengl_renderer();
 
     bool ready() const override;
+
+    bool initialize() override;
+    void uninitialize() override;
+
     void start_frame_rendering() override;
     void stop_frame_rendering() override;
 };
