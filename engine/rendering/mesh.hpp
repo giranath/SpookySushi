@@ -3,18 +3,32 @@
 
 #include "../core/types.hpp"
 #include <vector>
+#include <stdexcept>
 
 namespace sushi {
 
+class invalid_mesh_error : public std::runtime_error {
+public:
+    invalid_mesh_error() : std::runtime_error{"invalid mesh"} {}
+};
+
 class mesh {
-    std::vector<vec3> vertices;
-    std::vector<vec3> normals;
-    std::vector<vec2> uvs;
+    std::vector<vec3> vertices_;
+    std::vector<vec3> normals_;
+    std::vector<vec2> uvs_;
 public:
     /**
      * Construct an empty mesh
      */
     mesh() noexcept = default;
+
+    /**
+     * Construct a mesh
+     */
+    explicit mesh(const std::vector<vec3>& vertices);
+    mesh(const std::vector<vec3>& vertices, const std::vector<vec2>& uvs);
+    mesh(const std::vector<vec3>& vertices, const std::vector<vec3>& normals);
+    mesh(const std::vector<vec3>& vertices, const std::vector<vec2>& uvs, const std::vector<vec3>& normals);
 
     /**
      * Check if this mesh uses uv coordinates
@@ -39,10 +53,9 @@ public:
      */
     std::size_t size() const noexcept;
 
-    void push_vertex(glm::vec3 vertex);
-    void push_vertex(glm::vec3 vertex, glm::vec2 uv);
-    void push_vertex(glm::vec3 vertex, glm::vec3 normal);
-    void push_vertex(glm::vec3 vertex, glm::vec2 uv, glm::vec3 normal);
+    const std::vector<vec3>& vertices() const noexcept;
+    const std::vector<vec2>& uvs() const noexcept;
+    const std::vector<vec3>& normals() const noexcept;
 };
 
 }

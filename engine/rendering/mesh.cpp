@@ -5,52 +5,63 @@
 namespace sushi {
 
 void mesh::clear() noexcept {
-    vertices.clear();
-    uvs.clear();
-    normals.clear();
+    vertices_.clear();
+    uvs_.clear();
+    normals_.clear();
+}
+
+mesh::mesh(const std::vector<vec3>& vertices)
+: vertices_(vertices) {
+
+}
+
+mesh::mesh(const std::vector<vec3>& vertices, const std::vector<vec2>& uvs)
+: vertices_(vertices)
+, uvs_(uvs) {
+    if(vertices.size() != uvs.size()) {
+        throw invalid_mesh_error{};
+    }
+}
+
+mesh::mesh(const std::vector<vec3>& vertices, const std::vector<vec3>& normals)
+: vertices_(vertices)
+, normals_(normals) {
+    if(vertices.size() != normals.size()) {
+        throw invalid_mesh_error{};
+    }
+}
+
+mesh::mesh(const std::vector<vec3>& vertices, const std::vector<vec2>& uvs, const std::vector<vec3>& normals)
+: vertices_(vertices)
+, normals_(normals)
+, uvs_(uvs) {
+    if(vertices.size() != uvs.size() && vertices.size() != normals.size()) {
+        throw invalid_mesh_error{};
+    }
 }
 
 bool mesh::use_uvs() const noexcept {
-    return !uvs.empty();
+    return !uvs_.empty();
 }
 
 bool mesh::use_normals() const noexcept {
-    return !normals.empty();
+    return !normals_.empty();
 }
 
 std::size_t mesh::size() const noexcept {
-    return vertices.size();
+    return vertices_.size();
 }
 
-void mesh::push_vertex(glm::vec3 vertex) {
-    assert(uvs.empty());
-    assert(normals.empty());
-
-    vertices.push_back(vertex);
+const std::vector<vec3>& mesh::vertices() const noexcept {
+    return vertices_;
 }
 
-void mesh::push_vertex(glm::vec3 vertex, glm::vec2 uv) {
-    assert(vertices.size() == uvs.size());
-    assert(normals.empty());
-
-    vertices.push_back(vertex);
-    uvs.push_back(uv);
+const std::vector<vec2>& mesh::uvs() const noexcept {
+    return uvs_;
 }
 
-void mesh::push_vertex(glm::vec3 vertex, glm::vec3 normal) {
-    assert(vertices.size() == normals.size());
-    assert(uvs.empty());
-
-    vertices.push_back(vertex);
-    normals.push_back(normal);
-}
-
-void mesh::push_vertex(glm::vec3 vertex, glm::vec2 uv, glm::vec3 normal) {
-    assert(vertices.size() == uvs.size() == normals.size());
-
-    vertices.push_back(vertex);
-    uvs.push_back(uv);
-    normals.push_back(normal);
+const std::vector<vec3>& mesh::normals() const noexcept {
+    return normals_;
 }
 
 }
