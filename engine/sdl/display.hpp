@@ -2,7 +2,7 @@
 #define SPOOKYSUSHI_DISPLAY_HPP
 
 #include "../core/rect.hpp"
-#include "../platform/optional.hpp"
+#include "../core/optional.hpp"
 
 #include <iterator>
 
@@ -32,7 +32,7 @@ public:
     recti usable_bounds() const noexcept;
     const char* name() const noexcept;
 
-    optional<dpi_infos> dpi() const noexcept;
+    Optional<dpi_infos> dpi() const noexcept;
 };
 
 class display_iterator : public std::iterator<std::forward_iterator_tag,

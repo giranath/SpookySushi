@@ -1,10 +1,11 @@
 #ifndef SPOOKYSUSHI_EVENT_HPP
 #define SPOOKYSUSHI_EVENT_HPP
 
+#include "../core/optional.hpp"
+
 #include <SDL.h>
 
 #include <iterator>
-#include <optional>
 
 namespace sushi {
 
@@ -31,7 +32,7 @@ public:
     friend poll_event_iterator end(const poll_event_iterator&) noexcept;
 };
 
-std::optional<SDL_Event> wait_event() noexcept;
+Optional<SDL_Event> wait_event() noexcept;
 
 }
 

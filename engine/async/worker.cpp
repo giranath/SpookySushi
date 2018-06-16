@@ -1,3 +1,4 @@
+#include "../platform/host_infos.hpp"
 #include "worker.hpp"
 #include "engine.hpp"
 
@@ -54,7 +55,7 @@ void worker::execute_next_job() noexcept {
 }
 
 void worker::run() noexcept {
-#if 1 // Set thread's affinity
+#if SUSHI_SUPPORT_THREAD_AFFINITY
     if(worker_id >= 0) {
         cpu_set_t cpuset;
         CPU_ZERO(&cpuset);

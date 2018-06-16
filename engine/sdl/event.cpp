@@ -60,11 +60,11 @@ poll_event_iterator end(const poll_event_iterator&) noexcept {
     return poll_event_iterator(false);
 }
 
-std::optional<SDL_Event> wait_event() noexcept {
+Optional<SDL_Event> wait_event() noexcept {
     SDL_Event ev;
 
     if(SDL_WaitEvent(&ev)) {
-        return std::optional<SDL_Event>(ev);
+        return Optional<SDL_Event>(ev);
     }
 
     return {};

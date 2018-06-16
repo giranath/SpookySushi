@@ -8,7 +8,7 @@ namespace sushi { namespace async {
 engine::engine(std::size_t background_count, std::size_t max_job_per_worker)
 : workers{}
 , background_roundrobin(1)
-, rd{static_cast<unsigned long>(std::chrono::system_clock::now().time_since_epoch().count())}{
+, rd{static_cast<std::default_random_engine::result_type>(std::chrono::system_clock::now().time_since_epoch().count())}{
     workers.push_back(std::make_unique<worker>(*this, max_job_per_worker, worker::mode::foreground));
     for(std::size_t i = 0; i < background_count; ++i) {
         workers.push_back(std::make_unique<worker>(*this, max_job_per_worker, worker::mode::background, i + 1));

@@ -12,6 +12,8 @@ endif(MSVC)
 
 # Project configurations
 set(SUSHI_CACHE_LINE_SIZE 64 CACHE STRING "Specify the cache line size")
+include(cmake/detect_std_support.cmake)
+include(cmake/detect_kernel_support.cmake)
 
 # Get dependencies
 find_package(SDL2 REQUIRED)

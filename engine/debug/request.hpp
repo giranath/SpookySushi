@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <iostream>
 
 // TODO: Serialization facilities
 
