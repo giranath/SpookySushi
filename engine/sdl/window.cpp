@@ -19,7 +19,7 @@ window& window::operator=(window&& other) noexcept {
     return *this;
 }
 
-window::~window() {
+window::~window() noexcept {
     if(gl_ctx_) {
         SDL_GL_DeleteContext(gl_ctx_);
     }
