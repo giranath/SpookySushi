@@ -1,8 +1,9 @@
-#include <fstream>
 #include "game.hpp"
-#include "../engine/rendering/static_mesh_builder.hpp"
-#include "../engine/service/static_mesh_builder_service.hpp"
-#include "../engine/opengl/opengl.hpp"
+#include <rendering/static_mesh_builder.hpp>
+#include <service/static_mesh_builder_service.hpp>
+#include <opengl/opengl.hpp>
+
+#include <fstream>
 
 sushi::StaticMeshPtr g_cube_mesh;
 sushi::gl::program g_program;
@@ -65,7 +66,9 @@ void game::on_start() {
 }
 
 void game::on_frame(sushi::frame_duration last_frame) {
-
+    main_camera.local_position().z = -2.5f;
+    main_camera.local_position().x = -2.5f;
+    main_camera.local_position().y =  0.f;
 }
 
 void game::on_late_frame(sushi::frame_duration last_frame) {
@@ -74,6 +77,9 @@ void game::on_late_frame(sushi::frame_duration last_frame) {
 
 void game::on_render(sushi::ProxyRenderer renderer) {
     sushi::gl::bind(g_program);
+
+    auto projection_view_model_uniform = g_program.find_uniform<sushi::Mat4x4>("ProjectionViewModel");
+    projection_view_model_uniform.set(main_camera.projection() * main_camera.view());
     g_cube_mesh->render();
 }
 

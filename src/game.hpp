@@ -1,9 +1,11 @@
 #ifndef SPOOKYSUSHI_GAME_HPP
 #define SPOOKYSUSHI_GAME_HPP
 
-#include "../engine/application/base_game.hpp"
+#include <application/base_game.hpp>
+#include <rendering/camera.hpp>
 
 class game : public sushi::base_game {
+    sushi::Camera main_camera;
 public:
     void on_start() override;
     void on_frame(sushi::frame_duration last_frame) override;
