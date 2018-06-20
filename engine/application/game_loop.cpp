@@ -6,6 +6,7 @@
 #include "../rendering/renderer_interface.hpp"
 #include "../rendering/opengl_renderer.hpp"
 #include "../rendering/proxy_renderer.hpp"
+#include "../service/static_mesh_builder_service.hpp"
 
 #include <toml.hpp>
 #include <SDL.h>
@@ -202,8 +203,9 @@ int run_game(base_game& game, const arguments& args) {
     from_toml(toml::get<toml::Table>(configs.at("window")), window_confs);
     sushi::window main_window = create_window(window_confs);
 
-    std::unique_ptr<sushi::renderer_interface> renderer = std::make_unique<sushi::opengl_renderer>(main_window);
-    sushi::proxy_renderer proxy_renderer(renderer.get());
+    std::unique_ptr<sushi::RendererInterface> renderer = std::make_unique<sushi::OpenGLRenderer>(main_window);
+    sushi::StaticMeshBuilderService::locate(&renderer->static_mesh_builder());
+    sushi::ProxyRenderer proxy_renderer(renderer.get());
 
     if(!renderer->initialize()) {
         return 1;

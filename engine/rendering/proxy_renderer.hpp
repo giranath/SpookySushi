@@ -5,10 +5,10 @@
 
 namespace sushi {
 
-class proxy_renderer {
-    renderer_interface* renderer;
+class ProxyRenderer {
+    RendererInterface* renderer;
 public:
-    explicit proxy_renderer(renderer_interface* renderer) noexcept;
+    explicit ProxyRenderer(RendererInterface* renderer) noexcept;
 };
 
 }

@@ -23,7 +23,7 @@ public:
     virtual void on_late_frame(frame_duration last_frame) {};
 
     /// Called every frame to render the current state
-    virtual void on_render(sushi::proxy_renderer renderer) {};
+    virtual void on_render(sushi::ProxyRenderer renderer) {};
 
     // Called once when the game is stopped
     virtual void on_stop() = 0;

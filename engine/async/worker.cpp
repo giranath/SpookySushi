@@ -55,6 +55,7 @@ void worker::execute_next_job() noexcept {
 
 void worker::run() noexcept {
 #if 1 // Set thread's affinity
+    /*
     if(worker_id >= 0) {
         cpu_set_t cpuset;
         CPU_ZERO(&cpuset);
@@ -64,6 +65,7 @@ void worker::run() noexcept {
             // TODO: handle error [Log]
         }
     }
+     */
 #endif
 
     while(running()) {
