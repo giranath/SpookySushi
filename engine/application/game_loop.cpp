@@ -217,9 +217,15 @@ int run_game(base_game& game, const arguments& args) {
     loop.run(std::chrono::microseconds(16700), [&](sushi::game_loop::duration last_frame_duration) {
         // Handle inputs
         for(const SDL_Event& ev : sushi::poll_event_iterator{}) {
-            if(ev.type == SDL_QUIT) {
-                // Loop is interrupted
-                return false;
+            switch(ev.type) {
+                case SDL_QUIT:
+                    return false;
+                    break;
+
+                    // TODO: send event to low level input manager
+                default:
+                    break;
+
             }
         }
 
