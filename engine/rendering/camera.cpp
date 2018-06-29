@@ -12,7 +12,7 @@ Camera::Camera() noexcept
 
 Mat4x4 Camera::projection() const noexcept {
     // TODO: Not hardcode it
-    return glm::perspective(35.f, 800.f / 600.f, 0.1f, 1000.f);
+    return glm::perspective(70.f, 800.f / 600.f, 0.1f, 1000.f);
 }
 
 Mat4x4 Camera::view() const noexcept {
