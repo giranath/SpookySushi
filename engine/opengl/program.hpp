@@ -111,6 +111,8 @@ public:
 
         return uniform<T>{};
     }
+
+    static program make() noexcept;
 };
 
 template<>

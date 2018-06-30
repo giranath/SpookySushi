@@ -20,9 +20,9 @@ using Vec3 = glm::tvec3<FloatPrecision>;
 using Vec4 = glm::tvec4<FloatPrecision>;
 
 // Matrice types
-using Mat2 = glm::tmat2x2<FloatPrecision>;
-using Mat3 = glm::tmat3x3<FloatPrecision>;
-using Mat4 = glm::tmat4x4<FloatPrecision>;
+using Mat2x2 = glm::tmat2x2<FloatPrecision>;
+using Mat3x3 = glm::tmat3x3<FloatPrecision>;
+using Mat4x4 = glm::tmat4x4<FloatPrecision>;
 
 // Quaternion types
 using Quaternion = glm::tquat<FloatPrecision>;

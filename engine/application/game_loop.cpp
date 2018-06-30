@@ -6,6 +6,13 @@
 #include "../rendering/renderer_interface.hpp"
 #include "../rendering/opengl_renderer.hpp"
 #include "../rendering/proxy_renderer.hpp"
+#include "../service/static_mesh_builder_service.hpp"
+#include "../service/input_processor_service.hpp"
+#include "../input/input_factory.hpp"
+#include "../input/input_event.hpp"
+#include "../input/input_processor.hpp"
+#include "../input/input_context.hpp"
+#include "../input/input_handler.hpp"
 
 #include <toml.hpp>
 #include <SDL.h>
@@ -187,6 +194,58 @@ launch_args parse_args(const arguments& args) {
     return a;
 }
 
+constexpr Key sdl_to_sushi_key(int sdl_key) noexcept {
+    switch(sdl_key) {
+        case SDLK_a:
+            return Key::A;
+        case SDLK_w:
+            return Key::W;
+        case SDLK_d:
+            return Key::D;
+        case SDLK_s:
+            return Key::S;
+        default:
+            return Key::Unsupported;
+    }
+}
+
+constexpr MouseButton sdl_to_sushi_mouse_button(int sdl_button) noexcept {
+    switch(sdl_button) {
+        case SDL_BUTTON_LEFT:
+            return MouseButton::Left;
+        case SDL_BUTTON_RIGHT:
+            return MouseButton::Right;
+        case SDL_BUTTON_MIDDLE:
+            return MouseButton::Middle;
+        default:
+            return MouseButton::Unsupported;
+    }
+}
+
+const InputEvent* process_os_event(const SDL_Event& ev, InputFactory& input_factory) {
+    switch(ev.type) {
+        case SDL_KEYDOWN:
+            return input_factory.make_key_event(sdl_to_sushi_key(ev.key.keysym.sym),
+                                                KeyState::Pressed);
+        case SDL_KEYUP:
+            return input_factory.make_key_event(sdl_to_sushi_key(ev.key.keysym.sym),
+                                                KeyState::Released);
+        case SDL_MOUSEMOTION:
+            return input_factory.make_mouse_motion_event(Vec2(ev.motion.x, ev.motion.y),
+                                                         Vec2(ev.motion.xrel, ev.motion.yrel));
+        case SDL_MOUSEBUTTONDOWN:
+            return input_factory.make_mouse_button_event(Vec2(ev.button.x, ev.button.y),
+                                                         sdl_to_sushi_mouse_button(ev.button.button),
+                                                         MouseButtonState::Down, ev.button.clicks);
+        case SDL_MOUSEBUTTONUP:
+            return input_factory.make_mouse_button_event(Vec2(ev.button.x, ev.button.y),
+                                                         sdl_to_sushi_mouse_button(ev.button.button),
+                                                         MouseButtonState::Up, ev.button.clicks);
+        default:
+            return nullptr;
+    }
+}
+
 int run_game(base_game& game, const arguments& args) {
     sushi::debug::logger logger;
     sushi::log_service::locate(&logger);
@@ -202,8 +261,16 @@ int run_game(base_game& game, const arguments& args) {
     from_toml(toml::get<toml::Table>(configs.at("window")), window_confs);
     sushi::window main_window = create_window(window_confs);
 
-    std::unique_ptr<sushi::renderer_interface> renderer = std::make_unique<sushi::opengl_renderer>(main_window);
+    std::unique_ptr<sushi::RendererInterface> renderer = std::make_unique<sushi::OpenGLRenderer>(main_window);
+    sushi::StaticMeshBuilderService::locate(&renderer->static_mesh_builder());
     sushi::ProxyRenderer proxy_renderer(renderer.get());
+
+    sushi::InputFactory input_factory;
+    sushi::InputProcessor input_processor;
+
+    // This is the global interface to the input_processor
+    sushi::InputProcessorFacade input_processor_facade(input_processor);
+    sushi::InputProcessorService::locate(&input_processor_facade);
 
     if(!renderer->initialize()) {
         return 1;
@@ -211,23 +278,49 @@ int run_game(base_game& game, const arguments& args) {
 
     game.on_start();
 
+    std::vector<const InputEvent*> frame_events;
+    frame_events.reserve(256);
+
     // Start of game loop
     loop.run(std::chrono::microseconds(16700), [&](sushi::game_loop::duration last_frame_duration) {
-        // Handle inputs
+        //==============================================================================================================
+        // INPUT HANDLING
+        //==============================================================================================================
         for(const SDL_Event& ev : sushi::poll_event_iterator{}) {
+            // Handle quit event first
             if(ev.type == SDL_QUIT) {
-                // Loop is interrupted
                 return false;
+            }
+            else {
+                // Try to convert os event to input event
+                const InputEvent* event = process_os_event(ev, input_factory);
+
+                // If the event is a recognized input event
+                if(event) {
+                    frame_events.push_back(event);
+                }
             }
         }
 
-        // Update game state
+        input_processor.process(frame_events);
+
+        //==============================================================================================================
+        // UPDATE CURRENT FRAME STATE
+        //==============================================================================================================
+        // TODO: Pre frame update
+
         game.on_frame(last_frame_duration);
+
+        // TODO: Frame update
 
         // Proceed to loop again
         game.on_late_frame(last_frame_duration);
 
-        // Render current frame
+        // TODO: Post frame update
+
+        //==============================================================================================================
+        // RENDER CURRENT FRAME
+        //==============================================================================================================
         renderer->start_frame_rendering();
 
         game.on_render(proxy_renderer);

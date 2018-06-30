@@ -15,6 +15,9 @@ set(SUSHI_CACHE_LINE_SIZE 64 CACHE STRING "Specify the cache line size")
 include(cmake/detect_std_support.cmake)
 include(cmake/detect_kernel_support.cmake)
 
+set(SUSHI_RENDERING_BACKEND "OpenGL" CACHE STRING "Specify the rendering backend to use")
+set_property(CACHE SUSHI_RENDERING_BACKEND PROPERTY STRINGS OpenGL)
+
 # Get dependencies
 find_package(SDL2 REQUIRED)
 find_package(sdl2_image REQUIRED)

@@ -2,8 +2,8 @@
 
 namespace sushi {
 
-ProxyRenderer::ProxyRenderer(sushi::renderer_interface* renderer) noexcept
-: renderer(renderer){
+ProxyRenderer::ProxyRenderer(RendererInterface* renderer) noexcept
+: renderer(renderer) {
 
 }
 

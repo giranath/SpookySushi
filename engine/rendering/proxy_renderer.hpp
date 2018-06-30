@@ -7,9 +7,9 @@
 namespace sushi {
 
 class ProxyRenderer {
-    renderer_interface* renderer;
+    RendererInterface* renderer;
 public:
-    explicit ProxyRenderer(renderer_interface* renderer) noexcept;
+    explicit ProxyRenderer(RendererInterface* renderer) noexcept;
 };
 
 }

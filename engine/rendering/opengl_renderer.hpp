@@ -9,15 +9,15 @@ namespace sushi {
 
 class window;
 
-class opengl_renderer : public renderer_interface {
+class OpenGLRenderer : public RendererInterface {
     window& target_window;
 
     struct impl;
     std::unique_ptr<impl> pimpl;
 
 public:
-    explicit opengl_renderer(window& window);
-    virtual ~opengl_renderer();
+    explicit OpenGLRenderer(window& window);
+    virtual ~OpenGLRenderer() noexcept;
 
     bool ready() const override;
 
@@ -26,6 +26,8 @@ public:
 
     void start_frame_rendering() override;
     void stop_frame_rendering() override;
+
+    StaticMeshBuilder& static_mesh_builder() const override;
 };
 }
 

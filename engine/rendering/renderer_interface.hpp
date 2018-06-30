@@ -8,9 +8,11 @@ namespace sushi {
 // The client pushes draw commands
 // Such as: draw-mesh
 
-class renderer_interface {
+class StaticMeshBuilder;
+
+class RendererInterface {
 public:
-    virtual ~renderer_interface() = default;
+    virtual ~RendererInterface() = default;
 
     /// Check if the renderer is ready
     virtual bool ready() const = 0;
@@ -20,6 +22,8 @@ public:
 
     virtual void start_frame_rendering() = 0;
     virtual void stop_frame_rendering() = 0;
+
+    virtual StaticMeshBuilder& static_mesh_builder() const = 0;
 };
 
 }

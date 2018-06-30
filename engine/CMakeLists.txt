@@ -12,6 +12,7 @@ add_subdirectory(service)
 add_subdirectory(ecs)
 add_subdirectory(debug)
 add_subdirectory(rendering)
+add_subdirectory(input)
 
 add_library(sushi-engine
         application/game_loop.cpp
@@ -20,12 +21,14 @@ add_library(sushi-engine
 target_link_libraries(sushi-engine
         PUBLIC sushi-network
         PUBLIC sushi-opengl
+        PUBLIC sushi-input
         PUBLIC sushi-sdl
         PUBLIC sushi-async
         PUBLIC sushi-service
         PUBLIC sushi-ecs
         PUBLIC sushi-debug
         PUBLIC sushi-rendering
+        PUBLIC sushi-core
         PUBLIC sushi-drivers
         PRIVATE ${CMAKE_THREAD_LIBS_INIT}
         PRIVATE ${SDL2_LIBRARIES}

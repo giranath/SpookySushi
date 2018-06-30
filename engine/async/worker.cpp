@@ -56,6 +56,7 @@ void worker::execute_next_job() noexcept {
 
 void worker::run() noexcept {
 #if SUSHI_SUPPORT_THREAD_AFFINITY
+    /*
     if(worker_id >= 0) {
         cpu_set_t cpuset;
         CPU_ZERO(&cpuset);
@@ -65,6 +66,7 @@ void worker::run() noexcept {
             // TODO: handle error [Log]
         }
     }
+     */
 #endif
 
     while(running()) {

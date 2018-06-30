@@ -11,7 +11,7 @@ vertex_array::vertex_array(GLuint vao) noexcept
 
 vertex_array::vertex_array(vertex_array&& other) noexcept
 : vao{other.vao} {
-
+    other.vao = 0;
 }
 
 vertex_array& vertex_array::operator=(vertex_array&& other) noexcept {
