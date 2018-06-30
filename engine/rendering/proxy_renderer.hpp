@@ -2,13 +2,14 @@
 #define SPOOKYSUSHI_PROXY_RENDERER_HPP
 
 #include "renderer_interface.hpp"
+#include "mesh.hpp"
 
 namespace sushi {
 
-class proxy_renderer {
+class ProxyRenderer {
     renderer_interface* renderer;
 public:
-    explicit proxy_renderer(renderer_interface* renderer) noexcept;
+    explicit ProxyRenderer(renderer_interface* renderer) noexcept;
 };
 
 }

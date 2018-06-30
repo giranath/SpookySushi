@@ -1,6 +1,8 @@
 #ifndef SPOOKYSUSHI_RENDERER_INTERFACE_HPP
 #define SPOOKYSUSHI_RENDERER_INTERFACE_HPP
 
+#include "mesh.hpp"
+
 namespace sushi {
 
 // The client pushes draw commands

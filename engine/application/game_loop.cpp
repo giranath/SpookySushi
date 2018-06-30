@@ -203,7 +203,7 @@ int run_game(base_game& game, const arguments& args) {
     sushi::window main_window = create_window(window_confs);
 
     std::unique_ptr<sushi::renderer_interface> renderer = std::make_unique<sushi::opengl_renderer>(main_window);
-    sushi::proxy_renderer proxy_renderer(renderer.get());
+    sushi::ProxyRenderer proxy_renderer(renderer.get());
 
     if(!renderer->initialize()) {
         return 1;

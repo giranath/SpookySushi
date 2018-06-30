@@ -33,3 +33,5 @@ add_executable(spooky-sushi
         )
 target_link_libraries(spooky-sushi
         sushi-engine)
+target_include_directories(spooky-sushi
+        PUBLIC engine)

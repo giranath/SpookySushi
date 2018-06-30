@@ -9,23 +9,23 @@
 
 namespace sushi {
 
-using float_precision = float;
-static_assert(std::is_floating_point<float_precision>::value, "float_precision must be a floating point type");
+using FloatPrecision = float;
+static_assert(std::is_floating_point<FloatPrecision>::value, "float_precision must be a floating point type");
 
-using scalar = float_precision;
+using Scalar = FloatPrecision;
 
 // Vector types
-using vec2 = glm::tvec2<float_precision>;
-using vec3 = glm::tvec3<float_precision>;
-using vec4 = glm::tvec4<float_precision>;
+using Vec2 = glm::tvec2<FloatPrecision>;
+using Vec3 = glm::tvec3<FloatPrecision>;
+using Vec4 = glm::tvec4<FloatPrecision>;
 
 // Matrice types
-using mat2 = glm::tmat2x2<float_precision>;
-using mat3 = glm::tmat3x3<float_precision>;
-using mat4 = glm::tmat4x4<float_precision>;
+using Mat2 = glm::tmat2x2<FloatPrecision>;
+using Mat3 = glm::tmat3x3<FloatPrecision>;
+using Mat4 = glm::tmat4x4<FloatPrecision>;
 
 // Quaternion types
-using quaternion = glm::tquat<float_precision>;
+using Quaternion = glm::tquat<FloatPrecision>;
 
 }
 

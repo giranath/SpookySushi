@@ -7,28 +7,28 @@
 
 namespace sushi {
 
-class invalid_mesh_error : public std::runtime_error {
+class InvalidMeshError : public std::runtime_error {
 public:
-    invalid_mesh_error() : std::runtime_error{"invalid mesh"} {}
+    InvalidMeshError() : std::runtime_error{"invalid mesh"} {}
 };
 
-class mesh {
-    std::vector<vec3> vertices_;
-    std::vector<vec3> normals_;
-    std::vector<vec2> uvs_;
+class Mesh {
+    std::vector<Vec3> vertices_;
+    std::vector<Vec3> normals_;
+    std::vector<Vec2> uvs_;
 public:
     /**
      * Construct an empty mesh
      */
-    mesh() noexcept = default;
+    Mesh() noexcept = default;
 
     /**
      * Construct a mesh
      */
-    explicit mesh(const std::vector<vec3>& vertices);
-    mesh(const std::vector<vec3>& vertices, const std::vector<vec2>& uvs);
-    mesh(const std::vector<vec3>& vertices, const std::vector<vec3>& normals);
-    mesh(const std::vector<vec3>& vertices, const std::vector<vec2>& uvs, const std::vector<vec3>& normals);
+    explicit Mesh(const std::vector<Vec3>& vertices);
+    Mesh(const std::vector<Vec3>& vertices, const std::vector<Vec2>& uvs);
+    Mesh(const std::vector<Vec3>& vertices, const std::vector<Vec3>& normals);
+    Mesh(const std::vector<Vec3>& vertices, const std::vector<Vec2>& uvs, const std::vector<Vec3>& normals);
 
     /**
      * Check if this mesh uses uv coordinates
@@ -43,19 +43,14 @@ public:
     bool use_normals() const noexcept;
 
     /**
-     * Clear the content of this mesh to make it an empty mesh
-     */
-    void clear() noexcept;
-
-    /**
      * Returns the number of vertices contained in this mesh
      * @return The number of vertices in this mesh
      */
     std::size_t size() const noexcept;
 
-    const std::vector<vec3>& vertices() const noexcept;
-    const std::vector<vec2>& uvs() const noexcept;
-    const std::vector<vec3>& normals() const noexcept;
+    const std::vector<Vec3>& vertices() const noexcept;
+    const std::vector<Vec2>& uvs() const noexcept;
+    const std::vector<Vec3>& normals() const noexcept;
 };
 
 }
