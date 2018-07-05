@@ -97,7 +97,7 @@ struct OpenGLRenderer::impl {
 };
 
 
-OpenGLRenderer::OpenGLRenderer(window& target)
+OpenGLRenderer::OpenGLRenderer(Window& target)
 : target_window(target)
 , pimpl(std::make_unique<impl>()){
 

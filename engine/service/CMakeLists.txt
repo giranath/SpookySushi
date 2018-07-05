@@ -4,8 +4,6 @@ add_library(sushi-service
         log_service.cpp
         log_service.hpp
         static_mesh_builder_service.cpp
-        static_mesh_builder_service.hpp
-        input_processor_service.cpp
-        input_processor_service.hpp)
+        static_mesh_builder_service.hpp)
 target_link_libraries(sushi-service
         PUBLIC sushi-core)

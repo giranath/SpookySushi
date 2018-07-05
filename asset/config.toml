@@ -1,9 +1,9 @@
 # Game specific configurations
-[game]
-  # A unique value to identify this game #REQUIRED
+[Game]
+  # A unique value to identify this Game #REQUIRED
   id = "giranath.spooky-sushi"
 
-  # The name of the game                 #REQUIRED
+  # The name of the Game                 #REQUIRED
   name = "Spooky Sushi"
 
 # Main window specific configurations

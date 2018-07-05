@@ -1,5 +1,5 @@
 #Roadmap
-Here is the game's roadmap.
+Here is the Game's roadmap.
 Development objectives are written in this document.
 
 ##14/06/2018

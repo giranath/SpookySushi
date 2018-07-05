@@ -5,7 +5,7 @@
 
 namespace sushi {
 
-class jobs_service {
+class JobsService {
     static async::engine* location;
 public:
     static void locate(async::engine* engine);

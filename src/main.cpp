@@ -15,7 +15,7 @@ std::vector<std::string> get_arguments(int argc, char* argv[]) {
 }
 
 int main(int argc, char* argv[]) {
-    game g;
+    Game g;
 
     return sushi::run_game(g, get_arguments(argc, argv));
 }
