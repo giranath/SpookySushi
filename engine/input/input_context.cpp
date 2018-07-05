@@ -38,6 +38,16 @@ void InputContext::unregister_handler(InputHandler* handler) {
 }
 
 void InputContext::reset() {
+    std::for_each(std::begin(handlers), std::end(handlers), [](InputHandler* handler) {
+        handler->reset();
+    });
+
+    if(parent) {
+        parent->reset();
+    }
+}
+
+void InputContext::clear() {
     handlers.clear();
 }
 

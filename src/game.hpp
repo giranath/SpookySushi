@@ -11,6 +11,7 @@ class game : public sushi::base_game {
     sushi::InputContext inputs;
     std::unique_ptr<sushi::AxisInputHandler> move_forward_input;
     std::unique_ptr<sushi::AxisInputHandler> move_strate_input;
+    std::unique_ptr<sushi::AxisInputHandler> rotate_camera_input;
 public:
     void on_start() override;
     void on_frame(sushi::frame_duration last_frame) override;

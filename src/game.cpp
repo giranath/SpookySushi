@@ -3,6 +3,9 @@
 #include <service/static_mesh_builder_service.hpp>
 #include <service/input_processor_service.hpp>
 #include <input/input_processor.hpp>
+#include <input/key_axis_input_handler.hpp>
+#include <input/key_state_input_handler.hpp>
+#include <input/mouse_axis_input_handler.hpp>
 #include <opengl/opengl.hpp>
 #include <fstream>
 
@@ -67,9 +70,11 @@ void game::on_start() {
 
     move_forward_input = std::make_unique<sushi::KeyAxisInputHandler>(sushi::Key::S, sushi::Key::W);
     move_strate_input = std::make_unique<sushi::KeyAxisInputHandler>(sushi::Key::D, sushi::Key::A);
+    rotate_camera_input = std::make_unique<sushi::MouseAxisInputHandler>(sushi::MouseAxis::Horizontal);
 
     inputs.register_handler(move_forward_input.get());
     inputs.register_handler(move_strate_input.get());
+    inputs.register_handler(rotate_camera_input.get());
 
     sushi::InputProcessorService::get().use(&inputs);
 }
@@ -77,6 +82,8 @@ void game::on_start() {
 void game::on_frame(sushi::frame_duration last_frame) {
     main_camera.local_position().x += move_strate_input->value() * 5.f * last_frame.count() / 100000000.0;
     main_camera.local_position().z += move_forward_input->value() * 5.f * last_frame.count() / 100000000.0;
+
+    std::cout << "rotate: " << rotate_camera_input->value() << std::endl;
 }
 
 void game::on_late_frame(sushi::frame_duration last_frame) {

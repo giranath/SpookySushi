@@ -20,6 +20,7 @@ public:
     void register_handler(InputHandler* handler);
     void unregister_handler(InputHandler* handler);
     void reset();
+    void clear();
 };
 
 }

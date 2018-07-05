@@ -6,6 +6,8 @@ namespace sushi {
 void InputProcessor::process(const std::vector<const InputEvent*>& events) {
     if(current_context == nullptr) return;
 
+    current_context->reset();
+
     // Processes every events
     for(const InputEvent* event : events) {
         current_context->handle(event);

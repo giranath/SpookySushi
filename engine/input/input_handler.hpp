@@ -10,6 +10,7 @@ class InputEvent;
 class InputHandler {
 public:
     virtual bool handle(const InputEvent* event) = 0;
+    virtual void reset() {}
 };
 
 //
@@ -20,15 +21,6 @@ public:
     virtual bool is_active() const = 0;
 };
 
-class KeyStateInputHandler : public StateInputHandler {
-    Key key;
-    bool state;
-public:
-    KeyStateInputHandler(Key key);
-    bool handle(const InputEvent* event) override;
-    bool is_active() const override;
-};
-
 //
 // Axis input -1 to 1
 //
@@ -37,17 +29,6 @@ public:
     virtual float value() const = 0;
 };
 
-class KeyAxisInputHandler : public AxisInputHandler {
-    Key negative;
-    Key positive;
-    bool positive_pressed;
-    bool negative_pressed;
-public:
-    KeyAxisInputHandler(Key neg, Key pos);
-
-    bool handle(const InputEvent* event) override;
-    float value() const override;
-};
 
 }
 
