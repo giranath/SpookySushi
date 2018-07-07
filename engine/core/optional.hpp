@@ -3,7 +3,7 @@
 
 #include "../platform/host_infos.hpp"
 
-#if SUSHI_SUPPORT_OPTIONAL
+#if SUSHI_SUPPORT_STD_OPTIONAL
 #include <optional>
 #elif SUSHI_SUPPORT_EXPERIMENTAL_OPTIONAL
 #include <experimental/optional>
@@ -13,7 +13,7 @@
 
 namespace sushi {
 
-#if SUSHI_SUPPORT_OPTIONAL
+#if SUSHI_SUPPORT_STD_OPTIONAL
     template<typename T>
     using Optional = std::optional<T>;
 #elif SUSHI_SUPPORT_EXPERIMENTAL_OPTIONAL
