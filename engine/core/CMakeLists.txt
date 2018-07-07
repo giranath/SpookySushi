@@ -5,4 +5,5 @@ add_library(sushi-core
         types.hpp
         temp.cpp)
 
-target_include_directories(sushi-core PUBLIC ${GLM_INCLUDE_DIRS})
+target_link_libraries(sushi-core
+        PUBLIC libGlm)

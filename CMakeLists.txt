@@ -21,7 +21,6 @@ set_property(CACHE SUSHI_RENDERING_BACKEND PROPERTY STRINGS OpenGL)
 
 # Get dependencies
 find_package(gl3w REQUIRED)
-find_package(glm REQUIRED)
 find_package(Threads REQUIRED)
 
 add_subdirectory(engine)

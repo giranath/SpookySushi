@@ -20,7 +20,7 @@ add_library(sushi-opengl
         vertex_array.cpp
         vertex_array.hpp)
 target_include_directories(sushi-opengl
-        PUBLIC ${GL3W_INCLUDE_DIRS}
-        PUBLIC ${GLM_INCLUDE_DIRS})
+        PUBLIC ${GL3W_INCLUDE_DIRS})
 target_link_libraries(sushi-opengl
-        PUBLIC libSDL2)
+        PUBLIC libSDL2
+        PUBLIC libGlm)
