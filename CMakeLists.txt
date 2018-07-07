@@ -20,7 +20,6 @@ set(SUSHI_RENDERING_BACKEND "OpenGL" CACHE STRING "Specify the rendering backend
 set_property(CACHE SUSHI_RENDERING_BACKEND PROPERTY STRINGS OpenGL)
 
 # Get dependencies
-find_package(Toml11 REQUIRED)
 find_package(gl3w REQUIRED)
 find_package(glm REQUIRED)
 find_package(Threads REQUIRED)
