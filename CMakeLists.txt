@@ -19,8 +19,7 @@ include(cmake/dependencies.cmake)
 set(SUSHI_RENDERING_BACKEND "OpenGL" CACHE STRING "Specify the rendering backend to use")
 set_property(CACHE SUSHI_RENDERING_BACKEND PROPERTY STRINGS OpenGL)
 
-# Get dependencies
-find_package(gl3w REQUIRED)
+# Find CMake official packages
 find_package(Threads REQUIRED)
 
 add_subdirectory(engine)

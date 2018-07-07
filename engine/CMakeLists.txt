@@ -1,6 +1,3 @@
-get_target_property(GL3W_INCLUDE_DIRS gl3w INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(GL3W_SOURCES gl3w INTERFACE_SOURCES)
-
 add_subdirectory(driver)
 add_subdirectory(platform)
 add_subdirectory(network)
@@ -31,9 +28,6 @@ target_link_libraries(sushi-engine
         PUBLIC sushi-core
         PUBLIC sushi-drivers
         PUBLIC libToml11
-        PRIVATE ${CMAKE_THREAD_LIBS_INIT}
-        PRIVATE gl3w)
+        PRIVATE ${CMAKE_THREAD_LIBS_INIT})
 target_include_directories(sushi-engine
-        INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
-        PUBLIC ${GL3W_INCLUDE_DIRS}
-        )
+        INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})

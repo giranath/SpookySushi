@@ -47,6 +47,7 @@ set_target_properties(libToml11 PROPERTIES
 # glm
 #=======================================================================================================================
 file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/glm)
+file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/glm/include)
 ExternalProject_Add(glm
     URL https://github.com/g-truc/glm/archive/0.9.9.0.zip
     CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_ROOT}/glm"
@@ -56,3 +57,20 @@ add_dependencies(libGlm glm)
 
 set_target_properties(libGlm PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/glm/include")
+
+#=======================================================================================================================
+# gl3w
+#=======================================================================================================================
+file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/gl3w)
+ExternalProject_Add(gl3w
+        GIT_REPOSITORY https://github.com/skaslev/gl3w.git
+        GIT_TAG 59f56cdecba45811bd269c93c252793f759d9deb # last version [july 7th 2018]
+
+        CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_ROOT}/gl3w"
+        INSTALL_DIR "${DEPENDENCIES_ROOT}/gl3w")
+add_library(libGl3w INTERFACE IMPORTED GLOBAL)
+add_dependencies(libGl3w gl3w)
+
+set_target_properties(libGl3w PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/gl3w/include/gl3w"
+        INTERFACE_SOURCES "${DEPENDENCIES_ROOT}/gl3w/share/gl3w/gl3w.c")
