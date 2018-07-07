@@ -30,14 +30,8 @@ const char* display::name() const noexcept {
     return SDL_GetDisplayName(index);
 }
 
-Optional<display::dpi_infos> display::dpi() const noexcept {
-    float diagonal, horizontal, vertical;
-
-    if(SDL_GetDisplayDPI(index, &diagonal, &horizontal, &vertical) == 0) {
-        return { dpi_infos{diagonal, horizontal, vertical} };
-    }
-
-    return {};
+bool display::try_get_dpi(dpi_infos& infos) const noexcept {
+    return SDL_GetDisplayDPI(index, &infos.diagonal , &infos.horizontal, &infos.vertical) == 0;
 }
 
 display_iterator::display_iterator() noexcept
