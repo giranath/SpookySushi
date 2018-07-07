@@ -31,10 +31,10 @@ target_link_libraries(sushi-engine
         PUBLIC sushi-core
         PUBLIC sushi-drivers
         PRIVATE ${CMAKE_THREAD_LIBS_INIT}
-        PRIVATE ${SDL2_LIBRARIES}
         PRIVATE gl3w)
 target_include_directories(sushi-engine
-        PUBLIC ${SDL2_INCLUDE_DIRS}
+        INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
+        #PUBLIC ${SDL2_INCLUDE_DIRS}
         PUBLIC ${GL3W_INCLUDE_DIRS}
         PUBLIC ${TOML11_INCLUDE_DIRS}
         )

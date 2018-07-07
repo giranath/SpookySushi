@@ -5,5 +5,7 @@ add_library(sushi-sdl
         window.hpp
         display.cpp
         display.hpp)
-target_include_directories(sushi-sdl
-        PUBLIC ${SDL2_INCLUDE_DIRS})
+#target_include_directories(sushi-sdl
+#        PUBLIC ${SDL2_INCLUDE_DIRS})
+#add_dependencies(sushi-sdl SDL2)
+target_link_libraries(sushi-sdl PUBLIC libSDL2)
