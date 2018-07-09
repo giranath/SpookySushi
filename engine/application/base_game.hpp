@@ -9,9 +9,11 @@ namespace sushi {
 using preferred_game_clock = std::chrono::high_resolution_clock;
 using frame_duration = preferred_game_clock::duration;
 
-class base_game {
+class InputEvent;
+
+class BaseGame {
 public:
-    // Called once when the game started
+    // Called once when the Game started
     virtual void on_start() = 0;
 
     /// Called at the start of every frame
@@ -25,7 +27,7 @@ public:
     /// Called every frame to render the current state
     virtual void on_render(sushi::ProxyRenderer renderer) {};
 
-    // Called once when the game is stopped
+    // Called once when the Game is stopped
     virtual void on_stop() = 0;
 };
 

@@ -8,54 +8,54 @@
 
 namespace sushi {
 
-class display_iterator;
+class DisplayIterator;
 
-class display {
-    friend display_iterator;
+class Display {
+    friend DisplayIterator;
     int index;
 
 public:
-    struct dpi_infos {
+    struct DpiInfos {
         float diagonal;
         float horizontal;
         float vertical;
 
-        dpi_infos(float d, float h, float v)
+        DpiInfos(float d, float h, float v)
         : diagonal{d}, horizontal{h}, vertical{v} {
 
         }
     };
 
-    explicit display(int index) noexcept;
+    explicit Display(int index) noexcept;
 
     recti bounds() const noexcept;
     recti usable_bounds() const noexcept;
     const char* name() const noexcept;
 
-    Optional<dpi_infos> dpi() const noexcept;
+    Optional<DpiInfos> dpi() const noexcept;
 };
 
-class display_iterator : public std::iterator<std::forward_iterator_tag,
-                                              display,
-                                              display,
-                                              const display*,
-                                              const display&> {
-    display d;
+class DisplayIterator : public std::iterator<std::forward_iterator_tag,
+                                              Display,
+                                              Display,
+                                              const Display*,
+                                              const Display&> {
+    Display d;
 public:
-    display_iterator() noexcept;
-    display_iterator(int index) noexcept;
+    DisplayIterator() noexcept;
+    DisplayIterator(int index) noexcept;
 
-    display_iterator& operator++();
-    display_iterator operator++(int);
+    DisplayIterator& operator++();
+    DisplayIterator operator++(int);
 
-    bool operator==(const display_iterator &other) const noexcept;
-    bool operator!=(const display_iterator &other) const noexcept;
+    bool operator==(const DisplayIterator &other) const noexcept;
+    bool operator!=(const DisplayIterator &other) const noexcept;
 
     pointer operator->() const noexcept;
     reference operator*() const noexcept;
 
-    friend display_iterator begin(display_iterator it) noexcept;
-    friend display_iterator end(display_iterator &it) noexcept;
+    friend DisplayIterator begin(DisplayIterator it) noexcept;
+    friend DisplayIterator end(DisplayIterator &it) noexcept;
 };
 
 }
