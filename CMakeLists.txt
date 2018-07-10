@@ -14,16 +14,12 @@ endif(MSVC)
 set(SUSHI_CACHE_LINE_SIZE 64 CACHE STRING "Specify the cache line size")
 include(cmake/detect_std_support.cmake)
 include(cmake/detect_kernel_support.cmake)
+include(cmake/dependencies.cmake)
 
 set(SUSHI_RENDERING_BACKEND "OpenGL" CACHE STRING "Specify the rendering backend to use")
 set_property(CACHE SUSHI_RENDERING_BACKEND PROPERTY STRINGS OpenGL)
 
-# Get dependencies
-find_package(SDL2 REQUIRED)
-find_package(sdl2_image REQUIRED)
-find_package(Toml11 REQUIRED)
-find_package(gl3w REQUIRED)
-find_package(glm REQUIRED)
+# Find CMake official packages
 find_package(Threads REQUIRED)
 
 add_subdirectory(engine)
@@ -35,6 +31,5 @@ add_executable(spooky-sushi
         src/main.cpp
         )
 target_link_libraries(spooky-sushi
-        sushi-engine)
-target_include_directories(spooky-sushi
-        PUBLIC engine)
+        PRIVATE sushi-engine
+        PRIVATE libSDL2main)

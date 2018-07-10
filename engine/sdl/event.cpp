@@ -60,14 +60,4 @@ PollEventIterator end(const PollEventIterator&) noexcept {
     return PollEventIterator(false);
 }
 
-Optional<SDL_Event> wait_event() noexcept {
-    SDL_Event ev;
-
-    if(SDL_WaitEvent(&ev)) {
-        return Optional<SDL_Event>(ev);
-    }
-
-    return {};
-}
-
 }

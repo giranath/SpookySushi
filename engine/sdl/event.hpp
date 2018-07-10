@@ -1,8 +1,6 @@
 #ifndef SPOOKYSUSHI_EVENT_HPP
 #define SPOOKYSUSHI_EVENT_HPP
 
-#include "../core/optional.hpp"
-
 #include <SDL.h>
 
 #include <iterator>
@@ -31,8 +29,6 @@ public:
     friend PollEventIterator begin(PollEventIterator) noexcept;
     friend PollEventIterator end(const PollEventIterator&) noexcept;
 };
-
-Optional<SDL_Event> wait_event() noexcept;
 
 }
 
