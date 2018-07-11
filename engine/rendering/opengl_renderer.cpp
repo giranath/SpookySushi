@@ -120,7 +120,7 @@ bool OpenGLRenderer::initialize() {
         return false;
     }
 
-    gl3wInit();
+    gladLoadGL();
 
     return true;
 }

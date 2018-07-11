@@ -70,17 +70,22 @@ set_target_properties(libGlm PROPERTIES
 #=======================================================================================================================
 # gl3w
 #=======================================================================================================================
-file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/gl3w)
-ExternalProject_Add(gl3w
-        GIT_REPOSITORY https://github.com/skaslev/gl3w.git
-        GIT_TAG 59f56cdecba45811bd269c93c252793f759d9deb # last version [july 7th 2018]
 
-        CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_ROOT}/gl3w"
-        INSTALL_DIR "${DEPENDENCIES_ROOT}/gl3w")
-add_library(libGl3w INTERFACE IMPORTED GLOBAL)
-add_dependencies(libGl3w gl3w)
+#=======================================================================================================================
+# glad
+#=======================================================================================================================
+file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/glad)
+ExternalProject_Add(glad
+        URL https://github.com/Dav1dde/glad/archive/v0.1.24.zip
 
-set_target_properties(libGl3w PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/gl3w/include/gl3w"
-        INTERFACE_SOURCES "${DEPENDENCIES_ROOT}/gl3w/share/gl3w/gl3w.c"
+        CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_ROOT}/glad -DGLAD_PROFILE=core"
+        INSTALL_DIR "${DEPENDENCIES_ROOT}/glad"
+        INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy_directory include "${DEPENDENCIES_ROOT}/glad/include"
+                        COMMAND "${CMAKE_COMMAND}" -E copy_directory src "${DEPENDENCIES_ROOT}/glad/src")
+add_library(libGlad INTERFACE IMPORTED GLOBAL)
+add_dependencies(libGlad glad)
+
+set_target_properties(libGlad PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/glad/include"
+        INTERFACE_SOURCES "${DEPENDENCIES_ROOT}/glad/src/glad.c"
         INTERFACE_LINK_LIBRARIES "${CMAKE_DL_LIBS}")

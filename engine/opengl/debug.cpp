@@ -7,6 +7,7 @@
 
 namespace sushi { namespace gl {
 
+#if 0
 std::ostream& print_opengl_severity(std::ostream& os, GLenum severity) {
     switch(severity) {
         case GL_DEBUG_SEVERITY_HIGH_ARB:
@@ -110,10 +111,12 @@ void opengl_message_cb(GLenum source, GLenum type, GLuint id, GLenum severity,
 
     std::cerr << message << std::endl;
 }
+#endif
 
 bool enable_debug_messages() noexcept {
     // TODO: Use the logger
     bool is_ok = true;
+#if 0
     // We check if glDebugMessageCallback exists
     GL3WglProc debug_msg_callback_extension = gl3wGetProcAddress("glDebugMessageCallbackARB");
     if(debug_msg_callback_extension) {
@@ -141,6 +144,7 @@ bool enable_debug_messages() noexcept {
     else {
         is_ok = false;
     }
+#endif
 
     return is_ok;
 }

@@ -1,8 +1,7 @@
 #ifndef MMAP_DEMO_TEXTURE_H
 #define MMAP_DEMO_TEXTURE_H
 
-#include <GL/gl3w.h>
-#include <SDL_opengl.h>
+#include "private_opengl.hpp"
 
 #include "bind.hpp"
 

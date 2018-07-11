@@ -1,8 +1,7 @@
 #ifndef MMAP_DEMO_RENDER_BUFFER_HPP
 #define MMAP_DEMO_RENDER_BUFFER_HPP
 
-#include <GL/gl3w.h>
-#include <SDL_opengl.h>
+#include "private_opengl.hpp"
 
 #include "bind.hpp"
 
