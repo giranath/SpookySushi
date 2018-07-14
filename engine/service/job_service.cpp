@@ -2,6 +2,7 @@
 
 namespace sushi {
 
+/*
 async::engine* jobs_service::location = nullptr;
 
 void jobs_service::locate(async::engine* engine) {
@@ -11,5 +12,6 @@ void jobs_service::locate(async::engine* engine) {
 async::engine& jobs_service::get() noexcept {
     return *location;
 }
+ */
 
 }
