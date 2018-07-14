@@ -42,12 +42,20 @@ InputBusReader::InputBusReader(InputBus& bus) noexcept
 
 }
 
-InputBusReader::iterator InputBusReader::begin() const {
+InputBusReader::const_iterator InputBusReader::begin() const {
     return std::begin(bus);
 }
 
-InputBusReader::iterator InputBusReader::end() const {
+InputBusReader::const_iterator InputBusReader::end() const {
     return std::end(bus);
+}
+
+InputBusReader::const_iterator InputBusReader::cbegin() const {
+    return begin();
+}
+
+InputBusReader::const_iterator InputBusReader::cend() const {
+    return end();
 }
 
 }

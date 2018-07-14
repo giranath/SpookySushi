@@ -6,15 +6,15 @@
 
 namespace sushi { namespace debug {
 
-std::ostream& operator<<(std::ostream& os, profile_event::type type) {
+std::ostream& operator<<(std::ostream& os, ProfileEvent::Type type) {
     switch(type) {
-        case profile_event::type::start:
+        case ProfileEvent::Type::start:
             os << "S";
             break;
-        case profile_event::type::end:
+        case ProfileEvent::Type::end:
             os << "E";
             break;
-        case profile_event::type::instant:
+        case ProfileEvent::Type::instant:
             os << "I";
             break;
     }
@@ -22,27 +22,29 @@ std::ostream& operator<<(std::ostream& os, profile_event::type type) {
     return os;
 }
 
-profile_event::profile_event(uint32_t name, type t)
-: profile_event(name, t, clock::now()){
+ProfileEvent::ProfileEvent(uint32_t name, Type t, uint64_t frame_index)
+: ProfileEvent(name, t, Clock::now(), frame_index){
 
 }
 
-profile_event::profile_event(uint32_t name, type t, clock::time_point tp)
-: profile_event(name, t, tp, std::this_thread::get_id()){
+ProfileEvent::ProfileEvent(uint32_t name, Type t, Clock::time_point tp, uint64_t frame_index)
+: ProfileEvent(name, t, tp, std::this_thread::get_id(), frame_index){
 
 }
 
-profile_event::profile_event(uint32_t name, type t, clock::time_point tp, std::thread::id thread_id)
+ProfileEvent::ProfileEvent(uint32_t name, Type t, Clock::time_point tp, std::thread::id thread_id, uint64_t frame_index)
 : name(name)
 , time_point_(tp)
 , thread_id(thread_id)
 , type_(t)
+, frame_index{frame_index}
 , padding{} {
 
 }
 
-std::ostream& operator<<(std::ostream& os, const profile_event& ev) {
+std::ostream& operator<<(std::ostream& os, const ProfileEvent& ev) {
     return os << std::left << std::setw(15) << std::hex << ev.thread_id << std::dec
+              << std::setw(15) << ev.frame_index
               << std::setw(20) << ev.time_point_.time_since_epoch().count()
               << std::setw(5) << ev.type_
               << std::setw(30) << ev.name << std::right
@@ -50,7 +52,7 @@ std::ostream& operator<<(std::ostream& os, const profile_event& ev) {
 
 }
 
-void profiler::execute_background_task() {
+void Profiler::execute_background_task() {
     std::ofstream profile_out("profile.prof", std::ios::binary);
 
     profile_out << "session infos:\n"
@@ -60,17 +62,18 @@ void profiler::execute_background_task() {
 
     profile_out << "session events:\n"
                 << std::left << std::setw(15) << "thread_id"
+                << std::setw(15) << "frame_index"
                 << std::setw(20) << "time_point"
                 << std::setw(5) << "type"
                 << std::setw(30) << "name" << std::right << std::endl;
 
     while(is_running) {
         // Transfert every events to a local array
-        std::array<profile_event, 4096> to_write;
+        std::array<ProfileEvent, 4096> to_write;
         auto end = events_queue.transfert(std::begin(to_write));
 
         if(std::distance(std::begin(to_write), end) > 0) {
-            std::copy(std::begin(to_write), end, std::ostream_iterator<profile_event>(profile_out, "\n"));
+            std::copy(std::begin(to_write), end, std::ostream_iterator<ProfileEvent>(profile_out, "\n"));
         }
         else {
             std::this_thread::yield();
@@ -78,32 +81,32 @@ void profiler::execute_background_task() {
     }
 }
 
-profiler::profiler() noexcept
+Profiler::Profiler() noexcept
 : background_thread{}
 , events_queue{4096}
 , is_running{false} {
 }
 
-profiler& profiler::get() noexcept {
-    static profiler instance;
+Profiler& Profiler::get() noexcept {
+    static Profiler instance;
 
     return instance;
 }
 
-void profiler::start() noexcept {
+void Profiler::start() noexcept {
     // Start background thread
     is_running = true;
-    background_thread = std::thread(&profiler::execute_background_task, std::ref(*this));
+    background_thread = std::thread(&Profiler::execute_background_task, std::ref(*this));
 }
 
-void profiler::stop() noexcept {
+void Profiler::stop() noexcept {
     is_running = false;
     if(background_thread.joinable()) {
         background_thread.join();
     }
 }
 
-bool profiler::push(const profile_event& event) {
+bool Profiler::push(const ProfileEvent& event) {
     const bool res = events_queue.push(event);
 
     if(!res) throw std::runtime_error{"queue is full"};
@@ -111,25 +114,29 @@ bool profiler::push(const profile_event& event) {
     return res;
 }
 
-bool profiler::push_start(uint32_t name) {
-    return push(profile_event{name, profile_event::type::start});
+bool Profiler::push_start(uint32_t name) {
+    return push(ProfileEvent{name, ProfileEvent::Type::start, current_frame_index});
 }
 
-bool profiler::push_end(uint32_t name) {
-    return push(profile_event{name, profile_event::type::end});
+bool Profiler::push_end(uint32_t name) {
+    return push(ProfileEvent{name, ProfileEvent::Type::end, current_frame_index});
 }
 
-bool profiler::push_instant(uint32_t name) {
-    return push(profile_event{name, profile_event::type::instant});
+bool Profiler::push_instant(uint32_t name) {
+    return push(ProfileEvent{name, ProfileEvent::Type::instant, current_frame_index});
 }
 
-scoped_profile::scoped_profile(uint32_t name) noexcept
+void Profiler::set_frame_index(uint64_t current_frame_index) noexcept {
+    this->current_frame_index = current_frame_index;
+}
+
+ScopedProfile::ScopedProfile(uint32_t name) noexcept
 : name(name) {
-    profiler::get().push_start(name);
+    Profiler::get().push_start(name);
 }
 
-scoped_profile::~scoped_profile() noexcept {
-    profiler::get().push_end(name);
+ScopedProfile::~ScopedProfile() noexcept {
+    Profiler::get().push_end(name);
 }
 
 }}

@@ -1,10 +1,3 @@
-add_library(sushi-service
-        job_service.cpp
-        job_service.hpp
-        log_service.cpp
-        log_service.hpp
-        static_mesh_builder_service.cpp
-        static_mesh_builder_service.hpp
-        ServiceLocator.hpp)
+add_library(sushi-service INTERFACE)
 target_link_libraries(sushi-service
-        PUBLIC sushi-core)
+        INTERFACE sushi-core)

@@ -13,71 +13,74 @@
 
 namespace sushi { namespace debug {
 
-using clock = std::chrono::high_resolution_clock;
+using Clock = std::chrono::high_resolution_clock;
 
 // TODO: Add frame index
-class profile_event {
+class ProfileEvent {
 public:
-    enum class type : uint8_t {
+    enum class Type : uint8_t {
         start,
         end,
         instant
     };
 private:
-    //std::string name;
     uint32_t name;
-    clock::time_point time_point_;
+    Clock::time_point time_point_;
     std::thread::id thread_id;
-    type type_;
+    Type type_;
+    uint64_t frame_index;
 
-    static const std::size_t PAYLOAD_SIZE = sizeof(name) + sizeof(time_point_) + sizeof(thread_id) + sizeof(type_);
+    static const std::size_t PAYLOAD_SIZE = sizeof(name) + sizeof(time_point_) + sizeof(thread_id) + sizeof(type_) + sizeof(frame_index);
     static const std::size_t PADDING_SIZE = CACHE_LINE_SIZE - PAYLOAD_SIZE;
     std::array<uint8_t, PADDING_SIZE> padding;
 public:
-    profile_event() = default;
-    profile_event(uint32_t name, type t);
-    profile_event(uint32_t name, type t, clock::time_point tp);
-    profile_event(uint32_t name, type t, clock::time_point tp, std::thread::id thread_id);
+    ProfileEvent() = default;
+    ProfileEvent(uint32_t name, Type t, uint64_t frame_index);
+    ProfileEvent(uint32_t name, Type t, Clock::time_point tp, uint64_t frame_index);
+    ProfileEvent(uint32_t name, Type t, Clock::time_point tp, std::thread::id thread_id, uint64_t frame_index);
 
-    friend std::ostream& operator<<(std::ostream& os, const profile_event& event);
+    friend std::ostream& operator<<(std::ostream& os, const ProfileEvent& event);
 };
 
-std::ostream& operator<<(std::ostream& os, profile_event::type type);
+std::ostream& operator<<(std::ostream& os, ProfileEvent::Type type);
 
-class profiler {
+class Profiler {
     std::thread background_thread;
-    async::scmp_queue<profile_event> events_queue;
+    async::scmp_queue<ProfileEvent> events_queue;
     std::atomic_bool is_running;
+    std::uint64_t current_frame_index;
 
     void execute_background_task();
 
-    profiler() noexcept;
+    Profiler() noexcept;
 public:
-    profiler(const profiler&) = delete;
-    profiler& operator=(const profiler&) = delete;
+    Profiler(const Profiler&) = delete;
+    Profiler& operator=(const Profiler&) = delete;
 
-    static profiler& get() noexcept;
+    static Profiler& get() noexcept;
 
     void start() noexcept;
     void stop() noexcept;
 
-    bool push(const profile_event& event);
+    bool push(const ProfileEvent& event);
 
     bool push_start(uint32_t name);
     bool push_end(uint32_t name);
     bool push_instant(uint32_t name);
+
+    void set_frame_index(uint64_t current_frame_index) noexcept;
 };
 
-class scoped_profile {
+class ScopedProfile {
     uint32_t name;
 public:
-    scoped_profile(const scoped_profile&) = delete;
-    scoped_profile& operator=(const scoped_profile&) = delete;
-    scoped_profile(scoped_profile&&) = delete;
-    scoped_profile& operator=(scoped_profile&&) = delete;
+    ScopedProfile(const ScopedProfile&) = delete;
+    ScopedProfile& operator=(const ScopedProfile&) = delete;
+    ScopedProfile(ScopedProfile&&) = delete;
+    ScopedProfile& operator=(ScopedProfile&&) = delete;
 
-    scoped_profile(uint32_t name) noexcept;
-    ~scoped_profile() noexcept;
+    ScopedProfile(uint32_t name) noexcept;
+    ~ScopedProfile() noexcept;
 };
 
 }}

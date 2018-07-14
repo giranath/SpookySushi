@@ -30,12 +30,14 @@ public:
 class InputBusReader {
     InputBus& bus;
 public:
-    using iterator = typename InputBus::const_iterator;
+    using const_iterator = typename InputBus::const_iterator;
 
     explicit InputBusReader(InputBus& bus) noexcept;
 
-    iterator begin() const;
-    iterator end() const;
+    const_iterator begin() const;
+    const_iterator end() const;
+    const_iterator cbegin() const;
+    const_iterator cend() const;
 };
 
 }
