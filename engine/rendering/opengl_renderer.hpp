@@ -7,16 +7,16 @@
 
 namespace sushi {
 
-class window;
+class Window;
 
 class OpenGLRenderer : public RendererInterface {
-    window& target_window;
+    Window& target_window;
 
     struct impl;
     std::unique_ptr<impl> pimpl;
 
 public:
-    explicit OpenGLRenderer(window& window);
+    explicit OpenGLRenderer(Window& window);
     virtual ~OpenGLRenderer() noexcept;
 
     bool ready() const override;

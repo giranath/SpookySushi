@@ -2,8 +2,7 @@
 #define MMAP_DEMO_SHADER_HPP
 
 // Theses includes must be first
-#include <GL/gl3w.h>
-#include <SDL_opengl.h>
+#include "private_opengl.hpp"
 
 #include <iostream>
 #include <string>

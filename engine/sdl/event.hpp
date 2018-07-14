@@ -7,18 +7,18 @@
 
 namespace sushi {
 
-class poll_event_iterator : public std::iterator<std::input_iterator_tag, SDL_Event, SDL_Event, SDL_Event*, SDL_Event&>{
+class PollEventIterator : public std::iterator<std::input_iterator_tag, SDL_Event, SDL_Event, SDL_Event*, SDL_Event&>{
     SDL_Event event;
     bool has_next;
 
-    poll_event_iterator(bool has_next) noexcept;
+    explicit PollEventIterator(bool has_next) noexcept;
 public:
-    poll_event_iterator();
+    PollEventIterator();
 
-    poll_event_iterator& operator++() noexcept;
-    poll_event_iterator operator++(int) noexcept;
-    bool operator==(const poll_event_iterator& other) const noexcept;
-    bool operator!=(const poll_event_iterator& other) const noexcept;
+    PollEventIterator& operator++() noexcept;
+    PollEventIterator operator++(int) noexcept;
+    bool operator==(const PollEventIterator& other) const noexcept;
+    bool operator!=(const PollEventIterator& other) const noexcept;
 
     SDL_Event* operator->() noexcept;
     const SDL_Event* operator->() const noexcept;
@@ -26,8 +26,8 @@ public:
     SDL_Event& operator*() noexcept;
     const SDL_Event& operator*() const noexcept;
 
-    friend poll_event_iterator begin(poll_event_iterator) noexcept;
-    friend poll_event_iterator end(const poll_event_iterator&) noexcept;
+    friend PollEventIterator begin(PollEventIterator) noexcept;
+    friend PollEventIterator end(const PollEventIterator&) noexcept;
 };
 
 }

@@ -2,62 +2,62 @@
 
 namespace sushi {
 
-poll_event_iterator::poll_event_iterator(bool has_next) noexcept
+PollEventIterator::PollEventIterator(bool has_next) noexcept
 : event()
 , has_next{has_next} {
 
 }
 
-poll_event_iterator::poll_event_iterator()
+PollEventIterator::PollEventIterator()
 : event()
 , has_next() {
     has_next = SDL_PollEvent(&event) == 1;
 }
 
-poll_event_iterator& poll_event_iterator::operator++() noexcept {
+PollEventIterator& PollEventIterator::operator++() noexcept {
     has_next = SDL_PollEvent(&event) == 1;
 
     return *this;
 }
 
-poll_event_iterator poll_event_iterator::operator++(int) noexcept {
-    poll_event_iterator old = *this;
+PollEventIterator PollEventIterator::operator++(int) noexcept {
+    PollEventIterator old = *this;
 
     ++(*this);
 
     return old;
 }
 
-bool poll_event_iterator::operator==(const poll_event_iterator& other) const noexcept {
+bool PollEventIterator::operator==(const PollEventIterator& other) const noexcept {
     return has_next == other.has_next;
 }
 
-bool poll_event_iterator::operator!=(const poll_event_iterator& other) const noexcept {
+bool PollEventIterator::operator!=(const PollEventIterator& other) const noexcept {
     return has_next != other.has_next;
 }
 
-SDL_Event* poll_event_iterator::operator->() noexcept {
+SDL_Event* PollEventIterator::operator->() noexcept {
     return &event;
 }
 
-const SDL_Event* poll_event_iterator::operator->() const noexcept {
+const SDL_Event* PollEventIterator::operator->() const noexcept {
     return &event;
 }
 
-SDL_Event& poll_event_iterator::operator*() noexcept {
+SDL_Event& PollEventIterator::operator*() noexcept {
     return event;
 }
 
-const SDL_Event& poll_event_iterator::operator*() const noexcept {
+const SDL_Event& PollEventIterator::operator*() const noexcept {
     return event;
 }
 
-poll_event_iterator begin(poll_event_iterator it) noexcept {
+PollEventIterator begin(PollEventIterator it) noexcept {
     return it;
 }
 
-poll_event_iterator end(const poll_event_iterator&) noexcept {
-    return poll_event_iterator(false);
+PollEventIterator end(const PollEventIterator&) noexcept {
+    return PollEventIterator(false);
 }
 
 }

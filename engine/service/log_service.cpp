@@ -2,13 +2,13 @@
 
 namespace sushi {
 
-debug::logger* log_service::location = nullptr;
+debug::logger* LogService::location = nullptr;
 
-void log_service::locate(debug::logger* logger) {
+void LogService::locate(debug::logger* logger) {
     location = logger;
 }
 
-debug::logger& log_service::get() noexcept {
+debug::logger& LogService::get() noexcept {
     return *location;
 }
 

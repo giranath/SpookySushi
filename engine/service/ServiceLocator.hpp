@@ -4,7 +4,7 @@
 namespace sushi {
 
 template<typename ServiceType>
-class service_locator {
+class ServiceLocator {
 public:
     using service_type = ServiceType;
     using reference = ServiceType&;
@@ -23,7 +23,7 @@ public:
 };
 
 template<typename ServiceType>
-ServiceType* service_locator<ServiceType>::service = nullptr;
+ServiceType* ServiceLocator<ServiceType>::service = nullptr;
 
 }
 

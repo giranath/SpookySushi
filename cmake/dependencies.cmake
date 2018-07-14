@@ -33,6 +33,8 @@ file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/toml11)
 ExternalProject_Add(toml11
         URL "https://github.com/ToruNiina/toml11/archive/v1.0.1.zip"
         CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_ROOT}/toml11"
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
         INSTALL_DIR "${DEPENDENCIES_ROOT}/toml11"
         INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy ../toml11/toml.hpp "${DEPENDENCIES_ROOT}/toml11"
                         COMMAND "${CMAKE_COMMAND}" -E copy_directory ../toml11/toml "${DEPENDENCIES_ROOT}/toml11/toml")
@@ -55,22 +57,31 @@ ExternalProject_Add(glm
 add_library(libGlm INTERFACE IMPORTED GLOBAL)
 add_dependencies(libGlm glm)
 
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    set(GLM_COMPILE_DEFINITIONS "GLM_FORCE_CTOR_INIT=1")
+else()
+    set(GLM_COMPILE_DEFINITIONS "")
+endif()
+
 set_target_properties(libGlm PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/glm/include")
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/glm/include"
+        INTERFACE_COMPILE_DEFINITIONS "${GLM_COMPILE_DEFINITIONS}")
 
 #=======================================================================================================================
-# gl3w
+# glad
 #=======================================================================================================================
-file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/gl3w)
-ExternalProject_Add(gl3w
-        GIT_REPOSITORY https://github.com/skaslev/gl3w.git
-        GIT_TAG 59f56cdecba45811bd269c93c252793f759d9deb # last version [july 7th 2018]
+file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/glad)
+ExternalProject_Add(glad
+        URL https://github.com/Dav1dde/glad/archive/v0.1.24.zip
 
-        CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_ROOT}/gl3w"
-        INSTALL_DIR "${DEPENDENCIES_ROOT}/gl3w")
-add_library(libGl3w INTERFACE IMPORTED GLOBAL)
-add_dependencies(libGl3w gl3w)
+        CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_ROOT}/glad -DGLAD_PROFILE=core"
+        INSTALL_DIR "${DEPENDENCIES_ROOT}/glad"
+        INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy_directory include "${DEPENDENCIES_ROOT}/glad/include"
+                        COMMAND "${CMAKE_COMMAND}" -E copy_directory src "${DEPENDENCIES_ROOT}/glad/src")
+add_library(libGlad INTERFACE IMPORTED GLOBAL)
+add_dependencies(libGlad glad)
 
-set_target_properties(libGl3w PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/gl3w/include/gl3w"
-        INTERFACE_SOURCES "${DEPENDENCIES_ROOT}/gl3w/share/gl3w/gl3w.c")
+set_target_properties(libGlad PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/glad/include"
+        INTERFACE_SOURCES "${DEPENDENCIES_ROOT}/glad/src/glad.c"
+        INTERFACE_LINK_LIBRARIES "${CMAKE_DL_LIBS}")

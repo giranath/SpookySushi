@@ -3,12 +3,12 @@
 
 namespace sushi {
 
-display::display(int index) noexcept
+Display::Display(int index) noexcept
 : index{index} {
 
 }
 
-recti display::bounds() const noexcept {
+recti Display::bounds() const noexcept {
     SDL_Rect r;
     if(SDL_GetDisplayBounds(index, &r) == 0) {
         return recti::make_with_dimension(r.x, r.y, r.w, r.h);
@@ -17,7 +17,7 @@ recti display::bounds() const noexcept {
     return recti{};
 }
 
-recti display::usable_bounds() const noexcept {
+recti Display::usable_bounds() const noexcept {
     SDL_Rect r;
     if(SDL_GetDisplayUsableBounds(index, &r) == 0) {
         return recti::make_with_dimension(r.x, r.y, r.w, r.h);
@@ -26,60 +26,60 @@ recti display::usable_bounds() const noexcept {
     return recti{};
 }
 
-const char* display::name() const noexcept {
+const char* Display::name() const noexcept {
     return SDL_GetDisplayName(index);
 }
 
-bool display::try_get_dpi(dpi_infos& infos) const noexcept {
+bool Display::try_get_dpi(DpiInfos& infos) const noexcept {
     return SDL_GetDisplayDPI(index, &infos.diagonal , &infos.horizontal, &infos.vertical) == 0;
 }
 
-display_iterator::display_iterator() noexcept
+DisplayIterator::DisplayIterator() noexcept
 : d{SDL_GetNumVideoDisplays()}{
 
 }
 
-display_iterator::display_iterator(int index) noexcept
+DisplayIterator::DisplayIterator(int index) noexcept
 : d{index} {
 
 }
 
-display_iterator& display_iterator::operator++() {
+DisplayIterator& DisplayIterator::operator++() {
     ++d.index;
 
     return *this;
 }
 
-display_iterator display_iterator::operator++(int) {
-    display_iterator temp = *this;
+DisplayIterator DisplayIterator::operator++(int) {
+    DisplayIterator temp = *this;
 
     ++(*this);
 
     return temp;
 }
 
-bool display_iterator::operator==(const display_iterator &other) const noexcept {
+bool DisplayIterator::operator==(const DisplayIterator &other) const noexcept {
     return d.index == other.d.index;
 }
 
-bool display_iterator::operator!=(const display_iterator &other) const noexcept {
+bool DisplayIterator::operator!=(const DisplayIterator &other) const noexcept {
     return d.index != other.d.index;
 }
 
-display_iterator::pointer display_iterator::operator->() const noexcept {
+DisplayIterator::pointer DisplayIterator::operator->() const noexcept {
     return &d;
 }
 
-display_iterator::reference display_iterator::operator*() const noexcept {
+DisplayIterator::reference DisplayIterator::operator*() const noexcept {
     return d;
 }
 
-display_iterator begin(display_iterator it) noexcept {
-    return display_iterator{0};
+DisplayIterator begin(DisplayIterator it) noexcept {
+    return DisplayIterator{0};
 }
 
-display_iterator end(display_iterator& it) noexcept {
-    return display_iterator{};
+DisplayIterator end(DisplayIterator& it) noexcept {
+    return DisplayIterator{};
 }
 
 }

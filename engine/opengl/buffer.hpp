@@ -2,8 +2,7 @@
 #define MMAP_DEMO_BUFFER_HPP
 
 // Theses includes must be first
-#include <GL/gl3w.h>
-#include <SDL_opengl.h>
+#include "private_opengl.hpp"
 
 #include "bind.hpp"
 

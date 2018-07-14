@@ -18,7 +18,7 @@ namespace sushi {
 using argument = std::string;
 using arguments = std::vector<argument>;
 
-int run_game(base_game& game, const arguments& args);
+int run_game(BaseGame& game, const arguments& args);
 
 void sdl_log_output(void* userdata, int category, SDL_LogPriority priority, const char* message);
 
@@ -64,7 +64,7 @@ public:
     template<typename FN>
     void run(duration target_frame_duration, FN fn) {
         sushi::debug::profiler::get().start();
-        sushi::jobs_service::locate(jobs_.get());
+        sushi::JobsService::locate(jobs_.get());
         jobs_->start();
 
         // TODO: Setup profiler
@@ -82,7 +82,7 @@ public:
 
             if (frame_duration < target_frame_duration) {
                 const duration missing_duration = target_frame_duration - frame_duration;
-                sushi::jobs_service::get().foreground()->wait(missing_duration);
+                sushi::JobsService::get().foreground()->wait(missing_duration);
                 last_frame_duration = clock::now() - start_of_frame;
             } else {
                 last_frame_duration = frame_duration;

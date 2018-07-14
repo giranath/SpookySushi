@@ -7,12 +7,8 @@
 #include "../rendering/opengl_renderer.hpp"
 #include "../rendering/proxy_renderer.hpp"
 #include "../service/static_mesh_builder_service.hpp"
-#include "../service/input_processor_service.hpp"
 #include "../input/input_factory.hpp"
 #include "../input/input_event.hpp"
-#include "../input/input_processor.hpp"
-#include "../input/input_context.hpp"
-#include "../input/input_handler.hpp"
 
 #include <toml.hpp>
 #include <SDL.h>
@@ -120,8 +116,8 @@ void from_toml(const toml::Table& table, window_configs& configs) {
     }
 }
 
-sushi::window create_window(const window_configs& configs) {
-    sushi::window_builder builder(configs.title);
+sushi::Window create_window(const window_configs& configs) {
+    sushi::WindowBuilder builder(configs.title);
     builder.with_centered_position()
             .with_dimensions(configs.width, configs.height)
             .with_opengl();
@@ -137,7 +133,7 @@ sushi::window create_window(const window_configs& configs) {
         builder.as_fullscreen();
     }
 
-    sushi::window window = builder.build();
+    sushi::Window window = builder.build();
 
     if(configs.allow_resize) {
         int min_width = configs.min_width,
@@ -160,7 +156,7 @@ sushi::window create_window(const window_configs& configs) {
 
         // Setup maximum size
         if(max_width > 0 || max_height > 0) {
-            display window_display = window.current_display();
+            Display window_display = window.current_display();
 
             if(max_width == 0) {
                 max_width = window_display.usable_bounds().width();
@@ -246,9 +242,9 @@ const InputEvent* process_os_event(const SDL_Event& ev, InputFactory& input_fact
     }
 }
 
-int run_game(base_game& game, const arguments& args) {
+int run_game(BaseGame& game, const arguments& args) {
     sushi::debug::logger logger;
-    sushi::log_service::locate(&logger);
+    sushi::LogService::locate(&logger);
     logger.start();
 
     launch_args launch = parse_args(args);
@@ -259,18 +255,13 @@ int run_game(base_game& game, const arguments& args) {
     sushi::game_loop loop(configs);
     window_configs window_confs;
     from_toml(toml::get<toml::Table>(configs.at("window")), window_confs);
-    sushi::window main_window = create_window(window_confs);
+    sushi::Window main_window = create_window(window_confs);
 
     std::unique_ptr<sushi::RendererInterface> renderer = std::make_unique<sushi::OpenGLRenderer>(main_window);
     sushi::StaticMeshBuilderService::locate(&renderer->static_mesh_builder());
     sushi::ProxyRenderer proxy_renderer(renderer.get());
 
     sushi::InputFactory input_factory;
-    sushi::InputProcessor input_processor;
-
-    // This is the global interface to the input_processor
-    sushi::InputProcessorFacade input_processor_facade(input_processor);
-    sushi::InputProcessorService::locate(&input_processor_facade);
 
     if(!renderer->initialize()) {
         return 1;
@@ -278,15 +269,15 @@ int run_game(base_game& game, const arguments& args) {
 
     game.on_start();
 
-    std::vector<const InputEvent*> frame_events;
-    frame_events.reserve(256);
+    //std::vector<const InputEvent*> frame_events;
+    //frame_events.reserve(256);
 
-    // Start of game loop
+    // Start of Game loop
     loop.run(std::chrono::microseconds(16700), [&](sushi::game_loop::duration last_frame_duration) {
         //==============================================================================================================
         // INPUT HANDLING
         //==============================================================================================================
-        for(const SDL_Event& ev : sushi::poll_event_iterator{}) {
+        for(const SDL_Event& ev : sushi::PollEventIterator{}) {
             // Handle quit event first
             if(ev.type == SDL_QUIT) {
                 return false;
@@ -294,15 +285,9 @@ int run_game(base_game& game, const arguments& args) {
             else {
                 // Try to convert os event to input event
                 const InputEvent* event = process_os_event(ev, input_factory);
-
-                // If the event is a recognized input event
-                if(event) {
-                    frame_events.push_back(event);
-                }
+                //Game.on_input(event);
             }
         }
-
-        input_processor.process(frame_events);
 
         //==============================================================================================================
         // UPDATE CURRENT FRAME STATE

@@ -1,8 +1,7 @@
 #ifndef MMAP_DEMO_UNIFORM_HPP
 #define MMAP_DEMO_UNIFORM_HPP
 
-#include <GL/gl3w.h>
-#include <SDL_opengl.h>
+#include "private_opengl.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>

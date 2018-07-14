@@ -97,7 +97,7 @@ struct OpenGLRenderer::impl {
 };
 
 
-OpenGLRenderer::OpenGLRenderer(window& target)
+OpenGLRenderer::OpenGLRenderer(Window& target)
 : target_window(target)
 , pimpl(std::make_unique<impl>()){
 
@@ -120,7 +120,7 @@ bool OpenGLRenderer::initialize() {
         return false;
     }
 
-    gl3wInit();
+    gladLoadGL();
 
     return true;
 }
