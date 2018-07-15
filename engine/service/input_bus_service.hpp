@@ -6,8 +6,10 @@
 namespace sushi {
 
 class InputBusReader;
+class InputProcessor;
 
 class InputBusService : public ServiceLocator<sushi::InputBusReader> {};
+class InputProcessorService : public ServiceLocator<sushi::InputProcessor> {};
 
 }
 

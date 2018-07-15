@@ -12,6 +12,7 @@
 #include "../input/input_event.hpp"
 #include "../input/input_bus.hpp"
 #include "../service/service_locator.hpp"
+#include "../input/input_processor.hpp"
 
 #include <toml.hpp>
 #include <SDL.h>
@@ -273,11 +274,15 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
     sushi::StaticMeshBuilderService::locate(&renderer->static_mesh_builder());
     sushi::ProxyRenderer proxy_renderer(renderer.get());
 
+    // Input bus setup
     sushi::InputFactory input_factory;
-
     sushi::InputBus input_bus;
     sushi::InputBusReader input_bus_reader(input_bus);
     sushi::InputBusService::locate(&input_bus_reader);
+
+    // Input processor setup
+    sushi::InputProcessor input_processor;
+    sushi::InputProcessorService::locate(&input_processor);
 
     if(!renderer->initialize()) {
         return 1;
@@ -296,9 +301,15 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
                 return false;
             }
             else {
-                input_bus.push(process_os_event(ev, input_factory));
+                const InputEvent* event = process_os_event(ev, input_factory);
+
+                if(event) {
+                    input_bus.push(event);
+                }
             }
         }
+
+        input_processor.process();
 
         //==============================================================================================================
         // UPDATE CURRENT FRAME STATE
@@ -323,6 +334,11 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
 
         // Do all rendering here
         renderer->stop_frame_rendering();
+
+        //==============================================================================================================
+        // PREPARATION FOR NEXT FRAME
+        //==============================================================================================================
+        input_bus.clear();
 
         return true;
     });
