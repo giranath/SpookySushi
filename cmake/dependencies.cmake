@@ -97,3 +97,30 @@ set_target_properties(libGlad PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/glad/include"
         INTERFACE_SOURCES "${DEPENDENCIES_ROOT}/glad/src/glad.c"
         INTERFACE_LINK_LIBRARIES "${CMAKE_DL_LIBS}")
+
+#=======================================================================================================================
+# Bullet Physic
+#=======================================================================================================================à
+file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/bullet3)
+ExternalProject_Add(Bullet3
+        URL https://github.com/bulletphysics/bullet3/archive/2.87.zip
+
+        CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_ROOT}/bullet3" -DBUILD_CPU_DEMOS=OFF -DBUILD_PYBULLET=OFF -DBUILD_ENET=OFF -DBUILD_CLSOCKET=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_BULLET2_DEMOS=OFF -DBUILD_EXTRAS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_CMAKE_FILES=OFF -DUSE_GRAPHICAL_BENCHMARK=OFF
+        INSTALL_DIR "${DEPENDENCIES_ROOT}/bullet3")
+
+add_library(libBullet3Common IMPORTED STATIC GLOBAL)
+add_library(libBullet3Collision IMPORTED SHARED GLOBAL)
+add_library(libBullet3Dynamics IMPORTED SHARED GLOBAL)
+add_dependencies(libBullet3Common Bullet3)
+add_dependencies(libBullet3Collision Bullet3)
+add_dependencies(libBullet3Dynamics Bullet3)
+
+set_target_properties(libBullet3Common PROPERTIES
+        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Bullet3Common${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include")
+set_target_properties(libBullet3Collision PROPERTIES
+        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Bullet3Collision${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include")
+set_target_properties(libBullet3Dynamics PROPERTIES
+        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Bullet3Dynamics${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include")
