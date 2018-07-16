@@ -31,5 +31,4 @@ add_executable(spooky-sushi
         src/main.cpp
         )
 target_link_libraries(spooky-sushi
-        PRIVATE sushi-engine
-        PRIVATE libSDL2main)
+        PRIVATE sushi-engine)

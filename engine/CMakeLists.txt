@@ -10,6 +10,7 @@ add_subdirectory(ecs)
 add_subdirectory(debug)
 add_subdirectory(rendering)
 add_subdirectory(input)
+add_subdirectory(physic)
 
 add_library(sushi-engine
         application/game_loop.cpp
@@ -27,6 +28,7 @@ target_link_libraries(sushi-engine
         PUBLIC sushi-rendering
         PUBLIC sushi-core
         PUBLIC sushi-drivers
+        PUBLIC sushi-physic
         PUBLIC libToml11
         PRIVATE ${CMAKE_THREAD_LIBS_INIT})
 target_include_directories(sushi-engine
