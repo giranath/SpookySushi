@@ -20,6 +20,10 @@ public:
 
     const Quaternion& local_rotation() const noexcept;
     Quaternion& local_rotation() noexcept;
+
+    Vec3 forward() const noexcept;
+    Vec3 up() const noexcept;
+    Vec3 right() const noexcept;
 };
 
 }

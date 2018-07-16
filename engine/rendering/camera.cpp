@@ -16,9 +16,7 @@ Mat4x4 Camera::projection() const noexcept {
 }
 
 Mat4x4 Camera::view() const noexcept {
-    const glm::vec3 direction = local_rotation_ * Vec3{0.f, 0.f, 1.f};
-
-    return glm::lookAt(local_position_, local_position_ + direction, Vec3{0.f, 1.f, 0.f});
+    return glm::lookAt(local_position_, local_position_ + forward(), Vec3{0.f, 1.f, 0.f});
 }
 
 Mat4x4 Camera::local_transform() const noexcept {
@@ -43,6 +41,18 @@ const Quaternion& Camera::local_rotation() const noexcept {
 
 Quaternion& Camera::local_rotation() noexcept {
     return local_rotation_;
+}
+
+Vec3 Camera::forward() const noexcept {
+    return local_rotation() * Vec3{0.f, 0.f, 1.f};
+}
+
+Vec3 Camera::up() const noexcept {
+    return local_rotation() * Vec3{0.f, 1.f, 0.f};
+}
+
+Vec3 Camera::right() const noexcept {
+    return local_rotation() * Vec3{1.f, 0.f, 0.f};
 }
 
 }

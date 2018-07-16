@@ -1,17 +1,13 @@
 #ifndef SPOOKYSUSHI_LOG_SERVICE_HPP
 #define SPOOKYSUSHI_LOG_SERVICE_HPP
 
+#include "service_locator.hpp"
 #include "../debug/logger.hpp"
 #include "../core/string_utils.hpp"
 
 namespace sushi {
 
-class LogService {
-    static debug::logger* location;
-public:
-    static void locate(debug::logger* engine);
-    static debug::logger& get() noexcept;
-};
+class LogService : public ServiceLocator<debug::Logger> {};
 
 template<typename... Args>
 void log_critical(const char* category, const char* format, Args... args) noexcept {

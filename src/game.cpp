@@ -1,12 +1,24 @@
 #include "game.hpp"
 #include <rendering/static_mesh_builder.hpp>
 #include <service/static_mesh_builder_service.hpp>
+#include <service/service_locator.hpp>
+#include <service/input_bus_service.hpp>
 #include <input/input_event.hpp>
 #include <opengl/opengl.hpp>
+#include <input/input_state.hpp>
+#include <input/input_processor.hpp>
+
 #include <fstream>
+#include <input/axis_input_processor.hpp>
 
 sushi::StaticMeshPtr g_cube_mesh;
 sushi::gl::program g_program;
+
+sushi::MouseStateInputProcessor shoot_processor(sushi::MouseButton::Left);
+sushi::KeyAxisInputProcessor move_forward_processor(sushi::Key::W, sushi::Key::S);
+sushi::KeyAxisInputProcessor move_side_processor(sushi::Key::A, sushi::Key::D);
+sushi::MouseAxisInputProcessor yaw_camera_processor(sushi::MouseAxis::Horizontal);
+sushi::MouseAxisInputProcessor pitch_camera_processor(sushi::MouseAxis::Vertical);
 
 void Game::on_start() {
     sushi::StaticMeshDefinition static_mesh;
@@ -63,10 +75,28 @@ void Game::on_start() {
     g_program.attach(vertex_shader);
     g_program.attach(fragment_shader);
     g_program.link();
+
+    sushi::InputProcessorService::get().register_processor(&shoot_processor);
+    sushi::InputProcessorService::get().register_processor(&move_forward_processor);
+    sushi::InputProcessorService::get().register_processor(&move_side_processor);
+    sushi::InputProcessorService::get().register_processor(&yaw_camera_processor);
+    sushi::InputProcessorService::get().register_processor(&pitch_camera_processor);
 }
 
 void Game::on_frame(sushi::frame_duration last_frame) {
+    main_camera.local_position() += main_camera.forward() * move_forward_processor.value() * 0.1f;
+    main_camera.local_position() += main_camera.right() * move_side_processor.value() * 0.1f;
 
+    float yaw_value = yaw_camera_processor.value();
+    const float YAW_RATIO = (glm::pi<float>() / 8.0f) / 100.0f; // pi/2 per 100 horizontal pixel
+    const float yaw_rad_value = yaw_value * -YAW_RATIO;
+
+    float pitch_value = pitch_camera_processor.value();
+    const float PITCH_RATIO = (glm::pi<float>() / 8.0f) / 100.0f; // pi/2 per 100 horizontal pixel
+    const float pitch_rad_value = pitch_value * PITCH_RATIO;
+
+    main_camera.local_rotation() = glm::normalize(glm::rotate(main_camera.local_rotation(), yaw_rad_value, glm::vec3{0.f, 1.f, 0.f}));
+    main_camera.local_rotation() = glm::normalize(glm::rotate(main_camera.local_rotation(), pitch_rad_value, glm::vec3{1.f, 0.f, 0.f}));
 }
 
 void Game::on_late_frame(sushi::frame_duration last_frame) {

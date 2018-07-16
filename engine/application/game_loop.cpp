@@ -7,13 +7,27 @@
 #include "../rendering/opengl_renderer.hpp"
 #include "../rendering/proxy_renderer.hpp"
 #include "../service/static_mesh_builder_service.hpp"
+#include "../service/input_bus_service.hpp"
 #include "../input/input_factory.hpp"
 #include "../input/input_event.hpp"
+#include "../input/input_bus.hpp"
+#include "../service/service_locator.hpp"
+#include "../input/input_processor.hpp"
 
 #include <toml.hpp>
 #include <SDL.h>
 
 namespace sushi {
+
+GameLoop::GameLoop(const toml::Table &configs)
+: jobs_(nullptr) {
+    setup_sdl(configs);
+    setup_jobs(configs);
+}
+
+GameLoop::~GameLoop() noexcept {
+    SDL_Quit();
+}
 
 void sdl_log_output(void* userdata, int category, SDL_LogPriority priority, const char* message) {
     std::string cat = "org.sdl.";
@@ -69,8 +83,8 @@ void sdl_log_output(void* userdata, int category, SDL_LogPriority priority, cons
     }
 }
 
-struct window_configs {
-    enum class fullscreen_mode {
+struct WindowConfig {
+    enum class FullscreenMode {
         none,
         desktop,
         full
@@ -84,10 +98,10 @@ struct window_configs {
     int max_width;
     int max_height;
     bool allow_resize;
-    fullscreen_mode fullscreen;
+    FullscreenMode fullscreen;
 };
 
-void from_toml(const toml::Table& table, window_configs& configs) {
+void from_toml(const toml::Table& table, WindowConfig& configs) {
     configs.width = toml::get_or(table, "width", 800);
     configs.height = toml::get_or(table, "height", 600);
     configs.title = toml::get_or<std::string>(table, "title", "Game");
@@ -101,23 +115,23 @@ void from_toml(const toml::Table& table, window_configs& configs) {
     std::transform(std::begin(fullscreen), std::end(fullscreen), std::begin(fullscreen), [](char l) { return std::tolower(l); });
 
     if(fullscreen == "none") {
-        configs.fullscreen = window_configs::fullscreen_mode::none;
+        configs.fullscreen = WindowConfig::FullscreenMode::none;
     }
     else if(fullscreen == "desktop") {
-        configs.fullscreen = window_configs::fullscreen_mode::desktop;
+        configs.fullscreen = WindowConfig::FullscreenMode::desktop;
     }
     else if(fullscreen == "full") {
-        configs.fullscreen = window_configs::fullscreen_mode::full;
+        configs.fullscreen = WindowConfig::FullscreenMode::full;
     }
     else {
-        configs.fullscreen = window_configs::fullscreen_mode::none;
+        configs.fullscreen = WindowConfig::FullscreenMode::none;
 
         log_warning("sushi.config.window", "invalid fullscreen mode in config.toml");
     }
 }
 
-sushi::Window create_window(const window_configs& configs) {
-    sushi::WindowBuilder builder(configs.title);
+Window create_window(const WindowConfig& configs) {
+    WindowBuilder builder(configs.title);
     builder.with_centered_position()
             .with_dimensions(configs.width, configs.height)
             .with_opengl();
@@ -126,14 +140,14 @@ sushi::Window create_window(const window_configs& configs) {
         builder.as_resizable();
     }
 
-    if(configs.fullscreen == window_configs::fullscreen_mode::desktop) {
+    if(configs.fullscreen == WindowConfig::FullscreenMode::desktop) {
         builder.as_desktop_fullscreen();
     }
-    else if(configs.fullscreen == window_configs::fullscreen_mode::full) {
+    else if(configs.fullscreen == WindowConfig::FullscreenMode::full) {
         builder.as_fullscreen();
     }
 
-    sushi::Window window = builder.build();
+    Window window = builder.build();
 
     if(configs.allow_resize) {
         int min_width = configs.min_width,
@@ -173,15 +187,14 @@ sushi::Window create_window(const window_configs& configs) {
     return window;
 }
 
-struct launch_args {
+struct LaunchArgs {
     std::string config_path = "asset/config.toml";
 
-    launch_args() = default;
+    LaunchArgs() = default;
 };
 
-// sushi <config_path>
-launch_args parse_args(const arguments& args) {
-    launch_args a;
+LaunchArgs parse_args(const Arguments& args) {
+    LaunchArgs a;
 
     if(args.size() > 1) {
         a.config_path = args.back();
@@ -242,18 +255,18 @@ const InputEvent* process_os_event(const SDL_Event& ev, InputFactory& input_fact
     }
 }
 
-int run_game(BaseGame& game, const arguments& args) {
-    sushi::debug::logger logger;
+int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_duration) {
+    sushi::debug::Logger logger;
     sushi::LogService::locate(&logger);
     logger.start();
 
-    launch_args launch = parse_args(args);
+    LaunchArgs launch = parse_args(args);
 
     std::ifstream config_stream(launch.config_path);
     auto configs = toml::parse(config_stream);
 
-    sushi::game_loop loop(configs);
-    window_configs window_confs;
+    sushi::GameLoop loop(configs);
+    WindowConfig window_confs;
     from_toml(toml::get<toml::Table>(configs.at("window")), window_confs);
     sushi::Window main_window = create_window(window_confs);
 
@@ -261,7 +274,15 @@ int run_game(BaseGame& game, const arguments& args) {
     sushi::StaticMeshBuilderService::locate(&renderer->static_mesh_builder());
     sushi::ProxyRenderer proxy_renderer(renderer.get());
 
+    // Input bus setup
     sushi::InputFactory input_factory;
+    sushi::InputBus input_bus;
+    sushi::InputBusReader input_bus_reader(input_bus);
+    sushi::InputBusService::locate(&input_bus_reader);
+
+    // Input processor setup
+    sushi::InputProcessor input_processor;
+    sushi::InputProcessorService::locate(&input_processor);
 
     if(!renderer->initialize()) {
         return 1;
@@ -269,11 +290,8 @@ int run_game(BaseGame& game, const arguments& args) {
 
     game.on_start();
 
-    //std::vector<const InputEvent*> frame_events;
-    //frame_events.reserve(256);
-
     // Start of Game loop
-    loop.run(std::chrono::microseconds(16700), [&](sushi::game_loop::duration last_frame_duration) {
+    loop.run(target_frame_duration, [&](sushi::FrameDuration last_frame_duration) {
         //==============================================================================================================
         // INPUT HANDLING
         //==============================================================================================================
@@ -283,11 +301,15 @@ int run_game(BaseGame& game, const arguments& args) {
                 return false;
             }
             else {
-                // Try to convert os event to input event
                 const InputEvent* event = process_os_event(ev, input_factory);
-                //Game.on_input(event);
+
+                if(event) {
+                    input_bus.push(event);
+                }
             }
         }
+
+        input_processor.process();
 
         //==============================================================================================================
         // UPDATE CURRENT FRAME STATE
@@ -312,6 +334,11 @@ int run_game(BaseGame& game, const arguments& args) {
 
         // Do all rendering here
         renderer->stop_frame_rendering();
+
+        //==============================================================================================================
+        // PREPARATION FOR NEXT FRAME
+        //==============================================================================================================
+        input_bus.clear();
 
         return true;
     });

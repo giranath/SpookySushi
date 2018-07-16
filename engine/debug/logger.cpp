@@ -5,22 +5,22 @@
 
 namespace sushi { namespace debug {
 
-std::ostream& operator<<(std::ostream& os, log_priority priority) noexcept {
+std::ostream& operator<<(std::ostream& os, LogPriority priority) noexcept {
     switch(priority) {
-        case log_priority::critical:
+        case LogPriority::critical:
             os << "crit";
             break;
-        case log_priority::info:
+        case LogPriority::info:
             os << "info";
             break;
-        case log_priority::warning:
+        case LogPriority::warning:
             os << "warn";
             break;
     }
     return os;
 }
 
-log_entry::log_entry(const std::string& category, log_priority priority, const std::string& message, std::thread::id tid) noexcept
+LogEntry::LogEntry(const std::string& category, LogPriority priority, const std::string& message, std::thread::id tid) noexcept
 : time_point_(std::chrono::system_clock::now())
 , message_(message)
 , category_(category)
@@ -29,27 +29,27 @@ log_entry::log_entry(const std::string& category, log_priority priority, const s
 
 }
 
-const std::string& log_entry::message() const noexcept {
+const std::string& LogEntry::message() const noexcept {
     return message_;
 }
 
-const std::string& log_entry::category() const noexcept {
+const std::string& LogEntry::category() const noexcept {
     return category_;
 }
 
-log_priority log_entry::priority() const noexcept {
+LogPriority LogEntry::priority() const noexcept {
     return priority_;
 }
 
-std::chrono::system_clock::time_point log_entry::time_point() const noexcept {
+std::chrono::system_clock::time_point LogEntry::time_point() const noexcept {
     return time_point_;
 }
 
-std::thread::id log_entry::thread_id() const noexcept {
+std::thread::id LogEntry::thread_id() const noexcept {
     return thread_id_;
 }
 
-std::ostream& operator<<(std::ostream& os, const log_entry& entry) noexcept {
+std::ostream& operator<<(std::ostream& os, const LogEntry& entry) noexcept {
     char time_buffer[128];
     std::fill(time_buffer, time_buffer + 128, 0);
 
@@ -63,7 +63,7 @@ std::ostream& operator<<(std::ostream& os, const log_entry& entry) noexcept {
               << " \"" << entry.message() << "\"";
 }
 
-logger::logger() noexcept
+Logger::Logger() noexcept
 : entries{}
 , entries_mutex{}
 , background_thread{}
@@ -71,16 +71,16 @@ logger::logger() noexcept
     entries.reserve(2048);
 }
 
-logger::~logger() noexcept {
+Logger::~Logger() noexcept {
     stop();
 }
 
-void logger::start() noexcept {
+void Logger::start() noexcept {
     is_running = true;
-    background_thread = std::thread(&logger::background_work, std::ref(*this));
+    background_thread = std::thread(&Logger::background_work, std::ref(*this));
 }
 
-void logger::stop() noexcept {
+void Logger::stop() noexcept {
     is_running.store(false);
 
     if(background_thread.joinable()) {
@@ -88,34 +88,34 @@ void logger::stop() noexcept {
     }
 }
 
-void logger::log(const log_entry& entry) {
+void Logger::log(const LogEntry& entry) {
     std::lock_guard<std::mutex> lock(entries_mutex);
 
     entries.push_back(entry);
 }
 
-void logger::log_warning(const std::string& category, const std::string& message) noexcept {
+void Logger::log_warning(const std::string& category, const std::string& message) noexcept {
     std::lock_guard<std::mutex> lock(entries_mutex);
 
-    entries.emplace_back(category, log_priority::warning, message, std::this_thread::get_id());
+    entries.emplace_back(category, LogPriority::warning, message, std::this_thread::get_id());
 }
 
-void logger::log_critical(const std::string& category, const std::string& message) noexcept {
+void Logger::log_critical(const std::string& category, const std::string& message) noexcept {
     std::lock_guard<std::mutex> lock(entries_mutex);
 
-    entries.emplace_back(category, log_priority::critical, message, std::this_thread::get_id());
+    entries.emplace_back(category, LogPriority::critical, message, std::this_thread::get_id());
 }
 
-void logger::log_info(const std::string& category, const std::string& message) noexcept {
+void Logger::log_info(const std::string& category, const std::string& message) noexcept {
     std::lock_guard<std::mutex> lock(entries_mutex);
 
-    entries.emplace_back(category, log_priority::info, message, std::this_thread::get_id());
+    entries.emplace_back(category, LogPriority::info, message, std::this_thread::get_id());
 }
 
-void logger::background_work() {
+void Logger::background_work() {
     std::ofstream out_log("latest_session.log", std::ios::binary);
 
-    std::vector<log_entry> write_entries;
+    std::vector<LogEntry> write_entries;
     write_entries.reserve(2048);
 
     while(is_running) {
@@ -125,7 +125,7 @@ void logger::background_work() {
         }
 
         // Dump all write entries
-        std::copy(std::begin(write_entries), std::end(write_entries), std::ostream_iterator<log_entry>(out_log));
+        std::copy(std::begin(write_entries), std::end(write_entries), std::ostream_iterator<LogEntry>(out_log));
         write_entries.clear();
         out_log.flush();
 
@@ -133,7 +133,7 @@ void logger::background_work() {
     }
 
     // Dump every entries
-    std::copy(std::begin(entries), std::end(entries), std::ostream_iterator<log_entry>(out_log));
+    std::copy(std::begin(entries), std::end(entries), std::ostream_iterator<LogEntry>(out_log));
 }
 
 }}
