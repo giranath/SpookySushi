@@ -5,4 +5,6 @@ add_library(sushi-sdl
         window.hpp
         display.cpp
         display.hpp)
-target_link_libraries(sushi-sdl PUBLIC libSDL2)
+target_link_libraries(sushi-sdl
+        PUBLIC libSDL2
+        INTERFACE libSDL2main)
