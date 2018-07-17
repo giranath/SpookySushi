@@ -100,7 +100,7 @@ set_target_properties(libGlad PROPERTIES
 
 #=======================================================================================================================
 # Bullet Physic
-#=======================================================================================================================à
+#=======================================================================================================================
 file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/bullet3)
 ExternalProject_Add(Bullet3
         URL https://github.com/bulletphysics/bullet3/archive/2.87.zip
@@ -124,3 +124,26 @@ set_target_properties(libBullet3Collision PROPERTIES
 set_target_properties(libBullet3Dynamics PROPERTIES
         IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Bullet3Dynamics${CMAKE_STATIC_LIBRARY_SUFFIX}"
         INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include")
+
+#=======================================================================================================================
+# Rapidxml
+#=======================================================================================================================
+file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/rapidxml)
+file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/rapidxml)
+ExternalProject_Add(rapidxml
+        URL https://downloads.sourceforge.net/project/rapidxml/rapidxml/rapidxml%201.13/rapidxml-1.13.zip?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Frapidxml%2Ffiles%2Flatest%2Fdownload&ts=1531707023
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        CMAKE_ARGS ""
+        INSTALL_DIR "${DEPENDENCIES_ROOT}/rapidxml"
+        INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy
+            ../rapidxml/rapidxml.hpp
+            ../rapidxml/rapidxml_iterators.hpp
+            ../rapidxml/rapidxml_print.hpp
+            ../rapidxml/rapidxml_utils.hpp
+            ${DEPENDENCIES_ROOT}/rapidxml/)
+add_library(libRapidxml INTERFACE IMPORTED GLOBAL)
+add_dependencies(libRapidxml rapidxml)
+
+set_target_properties(libRapidxml PROPERTIES
+INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/rapidxml/")
