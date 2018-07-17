@@ -1,6 +1,9 @@
 #include "input_processor.hpp"
 #include "../service/input_bus_service.hpp"
 
+#include <algorithm>
+#include <iterator>
+
 namespace sushi {
 
 void InputProcessor::process() const noexcept {

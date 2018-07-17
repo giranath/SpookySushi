@@ -36,19 +36,19 @@ bool PollEventIterator::operator!=(const PollEventIterator& other) const noexcep
     return has_next != other.has_next;
 }
 
-SDL_Event* PollEventIterator::operator->() noexcept {
+PollEventIterator::pointer PollEventIterator::operator->() noexcept {
     return &event;
 }
 
-const SDL_Event* PollEventIterator::operator->() const noexcept {
+PollEventIterator::const_pointer PollEventIterator::operator->() const noexcept {
     return &event;
 }
 
-SDL_Event& PollEventIterator::operator*() noexcept {
+PollEventIterator::reference PollEventIterator::operator*() noexcept {
     return event;
 }
 
-const SDL_Event& PollEventIterator::operator*() const noexcept {
+PollEventIterator::const_reference PollEventIterator::operator*() const noexcept {
     return event;
 }
 
