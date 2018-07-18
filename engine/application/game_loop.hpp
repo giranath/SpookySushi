@@ -1,14 +1,14 @@
 #ifndef SPOOKYSUSHI_GAME_LOOP_HPP
 #define SPOOKYSUSHI_GAME_LOOP_HPP
 
+#include "base_game.hpp"
+#include "game_loop_config.hpp"
 #include "../async/engine.hpp"
 #include "../service/job_service.hpp"
 #include "../debug/profiler.hpp"
 #include "../debug/logger.hpp"
-#include "base_game.hpp"
 #include "../service/log_service.hpp"
 
-#include <toml.hpp>
 #include <SDL.h>
 #include <stdexcept>
 #include <memory>
@@ -26,35 +26,12 @@ void sdl_log_output(void* userdata, int category, SDL_LogPriority priority, cons
 class GameLoop {
     std::unique_ptr<sushi::async::engine> jobs_;
 
-    void setup_sdl(const toml::Table &configs) {
-        // Setup SDL
-        if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-            throw std::runtime_error("cannot initialize SDL");
-        }
-
-        SDL_LogSetOutputFunction(sdl_log_output, nullptr);
-    }
-
-    void setup_jobs(const toml::Table &configs) {
-        // Setup the job manager
-        std::size_t worker_count = std::thread::hardware_concurrency() - 1;
-        std::size_t max_job_count = 2048;
-
-        auto it = configs.find("jobs");
-        if (it != configs.end()) {
-            const toml::Table &jobs_configs = toml::get<toml::Table>(it->second);
-
-            worker_count = toml::get_or(jobs_configs, "worker_count", worker_count);
-            max_job_count = toml::get_or(jobs_configs, "max_job_count", max_job_count);
-        }
-
-        jobs_ = std::make_unique<sushi::async::engine>(worker_count, max_job_count);
-    }
-
+    void setup_sdl();
+    void setup_jobs(const JobConfig& configs);
 public:
     using TimePoint = typename GameClock::time_point;
 
-    explicit GameLoop(const toml::Table &configs);
+    explicit GameLoop(const GameLoopConfig& config);
     ~GameLoop() noexcept;
 
     template<typename FN>

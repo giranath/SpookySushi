@@ -15,7 +15,7 @@ add_subdirectory(physic)
 add_library(sushi-engine
         application/game_loop.cpp
         application/game_loop.hpp
-        application/base_game.hpp)
+        application/base_game.hpp application/window_config.cpp application/window_config.hpp application/game_loop_config.cpp application/game_loop_config.hpp application/job_config.cpp application/job_config.hpp)
 target_link_libraries(sushi-engine
         PUBLIC sushi-network
         PUBLIC sushi-opengl
@@ -29,7 +29,7 @@ target_link_libraries(sushi-engine
         PUBLIC sushi-core
         PUBLIC sushi-drivers
         PUBLIC sushi-physic
-        PUBLIC libToml11
+        PUBLIC libRapidxml
         PRIVATE ${CMAKE_THREAD_LIBS_INIT})
 target_include_directories(sushi-engine
         INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})

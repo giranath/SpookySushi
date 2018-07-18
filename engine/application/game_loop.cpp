@@ -1,4 +1,5 @@
 #include "game_loop.hpp"
+#include "window_config.hpp"
 #include "../sdl/window.hpp"
 #include "../sdl/event.hpp"
 #include "../sdl/display.hpp"
@@ -14,15 +15,27 @@
 #include "../service/service_locator.hpp"
 #include "../input/input_processor.hpp"
 
-#include <toml.hpp>
 #include <SDL.h>
 
 namespace sushi {
 
-GameLoop::GameLoop(const toml::Table &configs)
+void GameLoop::setup_sdl() {
+    // Setup SDL
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+        throw std::runtime_error("cannot initialize SDL");
+    }
+
+    SDL_LogSetOutputFunction(sdl_log_output, nullptr);
+}
+
+void GameLoop::setup_jobs(const JobConfig& configs) {
+    jobs_ = std::make_unique<sushi::async::engine>(configs.worker_count, configs.max_job_count);
+}
+
+GameLoop::GameLoop(const GameLoopConfig& configs)
 : jobs_(nullptr) {
-    setup_sdl(configs);
-    setup_jobs(configs);
+    setup_sdl();
+    setup_jobs(configs.jobs);
 }
 
 GameLoop::~GameLoop() noexcept {
@@ -80,53 +93,6 @@ void sdl_log_output(void* userdata, int category, SDL_LogPriority priority, cons
             break;
         default:
             break;
-    }
-}
-
-struct WindowConfig {
-    enum class FullscreenMode {
-        none,
-        desktop,
-        full
-    };
-
-    std::string title;
-    int width;
-    int height;
-    int min_width;
-    int min_height;
-    int max_width;
-    int max_height;
-    bool allow_resize;
-    FullscreenMode fullscreen;
-};
-
-void from_toml(const toml::Table& table, WindowConfig& configs) {
-    configs.width = toml::get_or(table, "width", 800);
-    configs.height = toml::get_or(table, "height", 600);
-    configs.title = toml::get_or<std::string>(table, "title", "Game");
-    configs.min_width = toml::get_or(table, "min_width", 0); // 640
-    configs.min_height = toml::get_or(table, "min_height", 0); // 480
-    configs.max_width = toml::get_or(table, "max_width", 0);
-    configs.max_height = toml::get_or(table, "max_height", 0);
-    configs.allow_resize = toml::get_or(table, "allow_resize", false);
-
-    std::string fullscreen = toml::get_or<std::string>(table, "fullscreen", "none");
-    std::transform(std::begin(fullscreen), std::end(fullscreen), std::begin(fullscreen), [](char l) { return std::tolower(l); });
-
-    if(fullscreen == "none") {
-        configs.fullscreen = WindowConfig::FullscreenMode::none;
-    }
-    else if(fullscreen == "desktop") {
-        configs.fullscreen = WindowConfig::FullscreenMode::desktop;
-    }
-    else if(fullscreen == "full") {
-        configs.fullscreen = WindowConfig::FullscreenMode::full;
-    }
-    else {
-        configs.fullscreen = WindowConfig::FullscreenMode::none;
-
-        log_warning("sushi.config.window", "invalid fullscreen mode in config.toml");
     }
 }
 
@@ -188,7 +154,7 @@ Window create_window(const WindowConfig& configs) {
 }
 
 struct LaunchArgs {
-    std::string config_path = "asset/config.toml";
+    std::string config_path = "asset/config.xml";
 
     LaunchArgs() = default;
 };
@@ -262,13 +228,15 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
 
     LaunchArgs launch = parse_args(args);
 
+    // Load configuration file
     std::ifstream config_stream(launch.config_path);
-    auto configs = toml::parse(config_stream);
+    XmlDocument config_document(config_stream);
+    sushi::GameLoopConfig engine_configurations;
+    from_xml(*config_document.root(), engine_configurations);
 
-    sushi::GameLoop loop(configs);
-    WindowConfig window_confs;
-    from_toml(toml::get<toml::Table>(configs.at("window")), window_confs);
-    sushi::Window main_window = create_window(window_confs);
+    sushi::GameLoop loop(engine_configurations);
+
+    sushi::Window main_window = create_window(engine_configurations.window);
 
     std::unique_ptr<sushi::RendererInterface> renderer = std::make_unique<sushi::OpenGLRenderer>(main_window);
     sushi::StaticMeshBuilderService::locate(&renderer->static_mesh_builder());
