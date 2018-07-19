@@ -1,29 +1,35 @@
 #ifndef SPOOKYSUSHI_CAMERA_HPP
 #define SPOOKYSUSHI_CAMERA_HPP
 
+#include "transform.hpp"
 #include "../core/types.hpp"
 
 namespace sushi {
 
 class Camera {
-    Vec3 local_position_;
-    Quaternion local_rotation_;
+    Vec3 eye_position;
+    Vec3 direction;
+    Vec3 right_;
+    Vec3 up_;
+    float pitch_, yaw_;
+
+    void update_vectors() noexcept;
+
 public:
     Camera() noexcept;
 
     Mat4x4 projection() const noexcept;
     Mat4x4 view() const noexcept;
-    Mat4x4 local_transform() const noexcept;
 
-    const Vec3& local_position() const noexcept;
-    Vec3& local_position() noexcept;
+    void look_at(const Vec3& target) noexcept;
+    const Vec3& right() const noexcept;
+    const Vec3& up() const noexcept;
+    const Vec3& forward() const noexcept;
 
-    const Quaternion& local_rotation() const noexcept;
-    Quaternion& local_rotation() noexcept;
+    Camera& translate(const Vec3& translation) noexcept;
+    Camera& rotate(float pitch, float yaw) noexcept;
 
-    Vec3 forward() const noexcept;
-    Vec3 up() const noexcept;
-    Vec3 right() const noexcept;
+    Camera& reset() noexcept;
 };
 
 }

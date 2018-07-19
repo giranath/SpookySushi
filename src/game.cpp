@@ -81,22 +81,25 @@ void Game::on_start() {
     sushi::InputProcessorService::get().register_processor(&move_side_processor);
     sushi::InputProcessorService::get().register_processor(&yaw_camera_processor);
     sushi::InputProcessorService::get().register_processor(&pitch_camera_processor);
+
+    //main_camera.eye_position.z = 10.f;
 }
 
 void Game::on_frame(sushi::frame_duration last_frame) {
-    main_camera.local_position() += main_camera.forward() * move_forward_processor.value() * 0.1f;
-    main_camera.local_position() += main_camera.right() * move_side_processor.value() * 0.1f;
+    const sushi::Vec3 forward_movement = main_camera.forward() * move_forward_processor.value() * 0.1f;
+    const sushi::Vec3 right_movement = main_camera.right() * move_side_processor.value() * 0.1f;
 
-    float yaw_value = yaw_camera_processor.value();
+    const float yaw_value = yaw_camera_processor.value();
     const float YAW_RATIO = (glm::pi<float>() / 8.0f) / 100.0f; // pi/2 per 100 horizontal pixel
     const float yaw_rad_value = yaw_value * -YAW_RATIO;
 
-    float pitch_value = pitch_camera_processor.value();
+    const float pitch_value = pitch_camera_processor.value();
     const float PITCH_RATIO = (glm::pi<float>() / 8.0f) / 100.0f; // pi/2 per 100 horizontal pixel
     const float pitch_rad_value = pitch_value * PITCH_RATIO;
 
-    main_camera.local_rotation() = glm::normalize(glm::rotate(main_camera.local_rotation(), yaw_rad_value, glm::vec3{0.f, 1.f, 0.f}));
-    main_camera.local_rotation() = glm::normalize(glm::rotate(main_camera.local_rotation(), pitch_rad_value, glm::vec3{1.f, 0.f, 0.f}));
+    main_camera
+            .translate(forward_movement + right_movement)
+            .rotate(-pitch_rad_value, -yaw_rad_value);
 }
 
 void Game::on_late_frame(sushi::frame_duration last_frame) {

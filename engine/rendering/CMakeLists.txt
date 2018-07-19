@@ -13,7 +13,7 @@ add_library(sushi-rendering
         static_mesh_builder.cpp
         static_mesh_builder.hpp
         camera.cpp
-        camera.hpp)
+        camera.hpp transform.cpp transform.hpp)
 
 target_link_libraries(sushi-rendering
         PRIVATE sushi-sdl

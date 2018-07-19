@@ -1,58 +1,75 @@
 #include "camera.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 namespace sushi {
 
+void Camera::update_vectors() noexcept {
+    right_ = glm::normalize(glm::cross(Vec3{0.f, 1.f, 0.f}, direction));
+    up_ = glm::cross(direction, right_);
+}
+
 Camera::Camera() noexcept
-: local_position_{}
-, local_rotation_{} {
+: eye_position{}
+, direction{0.f, 0.f, -1.f}
+, up_{0.f, 1.f, 0.f}
+, right_{1.f, 0.f, 0.f} {
 
 }
 
 Mat4x4 Camera::projection() const noexcept {
-    // TODO: Not hardcode it
     return glm::perspective(70.f, 800.f / 600.f, 0.1f, 1000.f);
 }
 
 Mat4x4 Camera::view() const noexcept {
-    return glm::lookAt(local_position_, local_position_ + forward(), Vec3{0.f, 1.f, 0.f});
+    return glm::lookAt(eye_position, eye_position + direction, Vec3{0.f, 1.f, 0.f});
 }
 
-Mat4x4 Camera::local_transform() const noexcept {
-    const Mat4x4 translation = glm::translate(glm::mat4{1.f}, local_position_);
-    const Mat4x4 rotation = glm::mat4_cast(local_rotation_);
-    const Mat4x4 scale = glm::scale(glm::mat4{1.f}, glm::vec3{1.f, 1.f, 1.f});
-
-    return translation * rotation * scale;
+void Camera::look_at(const Vec3& target) noexcept {
+    direction = glm::normalize(eye_position - target);
+    update_vectors();
 }
 
-const Vec3& Camera::local_position() const noexcept {
-    return local_position_;
+const Vec3& Camera::right() const noexcept {
+    return right_;
 }
 
-Vec3& Camera::local_position() noexcept {
-    return local_position_;
+const Vec3& Camera::up() const noexcept {
+    return up_;
 }
 
-const Quaternion& Camera::local_rotation() const noexcept {
-    return local_rotation_;
+const Vec3& Camera::forward() const noexcept {
+    return direction;
 }
 
-Quaternion& Camera::local_rotation() noexcept {
-    return local_rotation_;
+Camera& Camera::translate(const Vec3& translation) noexcept {
+    eye_position += translation;
+
+    return *this;
 }
 
-Vec3 Camera::forward() const noexcept {
-    return local_rotation() * Vec3{0.f, 0.f, 1.f};
+Camera& Camera::rotate(float pitch, float yaw) noexcept {
+    pitch_ += pitch;
+    yaw_ += yaw;
+
+    direction.x = std::cos(pitch_) * std::cos(yaw_);
+    direction.y = std::sin(pitch_);
+    direction.z = std::cos(pitch_) * std::sin(yaw_);
+
+    direction = glm::normalize(direction);
+    update_vectors();
+
+    return *this;
 }
 
-Vec3 Camera::up() const noexcept {
-    return local_rotation() * Vec3{0.f, 1.f, 0.f};
-}
+Camera& Camera::reset() noexcept {
+    eye_position = Vec3{};
+    direction = Vec3{0.f, 0.f, -1.f};
+    up_ = Vec3{0.f, 1.f, 0.f};
+    right_ = Vec3{1.f, 0.f, 0.f};
 
-Vec3 Camera::right() const noexcept {
-    return local_rotation() * Vec3{1.f, 0.f, 0.f};
+    return *this;
 }
 
 }
