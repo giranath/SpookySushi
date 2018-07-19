@@ -1,8 +1,8 @@
 #ifndef SPOOKYSUSHI_GAME_HPP
 #define SPOOKYSUSHI_GAME_HPP
 
-#include <application/base_game.hpp>
-#include <rendering/camera.hpp>
+#include <application/public/base_game.hpp>
+#include "../engine/rendering/public/camera.hpp"
 
 class Game : public sushi::BaseGame {
     sushi::Camera main_camera;

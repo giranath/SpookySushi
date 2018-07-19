@@ -1,15 +1,15 @@
 #include "game.hpp"
-#include <rendering/static_mesh_builder.hpp>
-#include <service/static_mesh_builder_service.hpp>
-#include <service/service_locator.hpp>
-#include <service/input_bus_service.hpp>
-#include <input/input_event.hpp>
-#include <opengl/opengl.hpp>
-#include <input/input_state.hpp>
-#include <input/input_processor.hpp>
+#include <rendering/public/static_mesh_builder.hpp>
+#include <service/public/static_mesh_builder_service.hpp>
+#include <service/public/service_locator.hpp>
+#include <service/public/input_bus_service.hpp>
+#include <input/public/input_event.hpp>
+#include <opengl/public/opengl.hpp>
+#include <input/public/input_state.hpp>
+#include <input/public/input_processor.hpp>
 
 #include <fstream>
-#include <input/axis_input_processor.hpp>
+#include <input/public/axis_input_processor.hpp>
 
 sushi::StaticMeshPtr g_cube_mesh;
 sushi::gl::program g_program;

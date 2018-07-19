@@ -1,5 +1,5 @@
 #include "game.hpp"
-#include <application/game_loop.hpp>
+#include <application/public/game_loop.hpp>
 #include <algorithm>
 #include <iterator>
 

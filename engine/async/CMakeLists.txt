@@ -1,12 +1,15 @@
 add_library(sushi-async
-        job.cpp
-        job.hpp
-        worker.cpp
-        worker.hpp
-        engine.cpp
-        engine.hpp
-        job_pool.cpp
-        job_pool.hpp
-        scmp_queue.hpp
-        event.hpp
+        private/job.cpp
+        public/job.hpp
+        private/worker.cpp
+        public/worker.hpp
+        private/engine.cpp
+        public/engine.hpp
+        private/job_pool.cpp
+        public/job_pool.hpp
+        public/scmp_queue.hpp
+        public/event.hpp
         )
+target_include_directories(sushi-async
+        PUBLIC public
+        PRIVATE private)

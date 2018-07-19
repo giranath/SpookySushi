@@ -1,3 +1,8 @@
 add_library(sushi-ecs
-
-        entity.cpp entity.hpp entity_registry.cpp entity_registry.hpp)
+        private/entity.cpp
+        public/entity.hpp
+        private/entity_registry.cpp
+        public/entity_registry.hpp)
+target_include_directories(sushi-ecs
+        PUBLIC public
+        PRIVATE private)
