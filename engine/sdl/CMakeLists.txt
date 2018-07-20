@@ -1,6 +1,6 @@
 add_library(sushi-sdl
-        private/event.cpp
-        public/event.hpp
+        private/sdl_event.cpp
+        public/sdl_event.hpp
         private/window.cpp
         public/window.hpp
         private/display.cpp

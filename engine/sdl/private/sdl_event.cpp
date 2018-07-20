@@ -1,6 +1,14 @@
-#include "event.hpp"
+#include "sdl_event.hpp"
 
 namespace sushi {
+
+void set_relative_mouse_mode(bool is_relative) {
+    int result = SDL_SetRelativeMouseMode(is_relative ? SDL_TRUE : SDL_FALSE);
+
+    if(result == -1) {
+        throw MouseRelativeModeNotSupported{};
+    }
+}
 
 PollEventIterator::PollEventIterator(bool has_next) noexcept
 : event()

@@ -7,6 +7,16 @@
 
 namespace sushi {
 
+class MouseRelativeModeNotSupported : public std::runtime_error {
+public:
+    MouseRelativeModeNotSupported() noexcept
+    : std::runtime_error("mouse relative mode not supported") {
+
+    }
+};
+
+void set_relative_mouse_mode(bool is_relative);
+
 class PollEventIterator {
     SDL_Event event;
     bool has_next;

@@ -1,7 +1,7 @@
 #include "game_loop.hpp"
 #include "window_config.hpp"
 #include "../../sdl/public/window.hpp"
-#include "../../sdl/public/event.hpp"
+#include "sdl_event.hpp"
 #include "../../sdl/public/display.hpp"
 #include "../../opengl/public/opengl.hpp"
 #include "../../rendering/public/renderer_interface.hpp"

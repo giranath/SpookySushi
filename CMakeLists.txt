@@ -29,6 +29,6 @@ add_executable(spooky-sushi
         src/game.cpp
         src/game.hpp
         src/main.cpp
-        )
+        src/game_controller.cpp src/game_controller.hpp)
 target_link_libraries(spooky-sushi
         PRIVATE sushi-engine)
