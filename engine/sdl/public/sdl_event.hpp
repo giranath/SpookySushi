@@ -4,6 +4,7 @@
 #include <SDL.h>
 
 #include <iterator>
+#include <stdexcept>
 
 namespace sushi {
 

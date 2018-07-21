@@ -76,28 +76,28 @@ void Game::on_start() {
     prepare_shader();
     mesh = sushi::StaticMeshBuilderService::get().build(make_cube(1.0f));
 
-
-
     controller.register_inputs();
 
     sushi::set_relative_mouse_mode(true);
 }
 
 void Game::on_frame(sushi::frame_duration last_frame) {
-    const sushi::Vec3 forward_movement = main_camera.forward() * controller.get_move_forward_value() * 0.1f;
-    const sushi::Vec3 right_movement = main_camera.right() * controller.get_move_strate_value() * 0.1f;
+    const sushi::Vec3 forward_movement = main_camera.local_transform.forward() * controller.get_move_forward_value() * 0.1f;
+    const sushi::Vec3 right_movement = main_camera.local_transform.right() * controller.get_move_strate_value() * 0.1f;
 
     const float yaw_value = controller.get_camera_yaw_value();
     const float YAW_RATIO = (glm::pi<float>() / 8.0f) / 100.0f; // pi/2 per 100 horizontal pixel
-    const float yaw_rad_value = yaw_value * -YAW_RATIO;
+    const float yaw_rad_value = yaw_value * YAW_RATIO;
+    const sushi::Quaternion yaw_quat = glm::angleAxis(yaw_rad_value, sushi::Vec3{0.f, 1.f, 0.f});
 
     const float pitch_value = controller.get_camera_pitch_value();
     const float PITCH_RATIO = (glm::pi<float>() / 8.0f) / 100.0f; // pi/2 per 100 horizontal pixel
     const float pitch_rad_value = pitch_value * PITCH_RATIO;
+    const sushi::Quaternion pitch_quat = glm::angleAxis(pitch_rad_value, sushi::Vec3{1.f, 0.f, 0.f});
 
-    main_camera
+    main_camera.local_transform
             .translate(forward_movement + right_movement)
-            .rotate(-pitch_rad_value, -yaw_rad_value);
+            .set_rotation(yaw_quat * main_camera.local_transform.rotation() * pitch_quat);
 }
 
 void Game::on_late_frame(sushi::frame_duration last_frame) {

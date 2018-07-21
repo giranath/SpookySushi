@@ -5,7 +5,7 @@ namespace sushi {
 
 Transform::Transform() noexcept
 : translation_{}
-, rotation_{}
+, rotation_{Vec3{0.f, 0.f, 0.f}}
 , scale_{1.f, 1.f, 1.f}
 , cached_transform{}
 , is_dirty{true} {
@@ -24,19 +24,19 @@ Vec3 Transform::right() const noexcept {
     return rotation_ * Vec3{1.f, 0.f, 0.f};
 }
 
-void Transform::set_translation(const Vec3 &new_translation) noexcept {
+void Transform::set_translation(const Vec3& new_translation) noexcept {
     translation_ = new_translation;
 
     is_dirty = true;
 }
 
-void Transform::set_rotation(const Quaternion &new_rotation) noexcept {
+void Transform::set_rotation(const Quaternion& new_rotation) noexcept {
     rotation_ = new_rotation;
 
     is_dirty = true;
 }
 
-void Transform::set_scale(const Vec3 &new_scale) noexcept {
+void Transform::set_scale(const Vec3& new_scale) noexcept {
     scale_ = new_scale;
 
     is_dirty = true;
@@ -62,17 +62,14 @@ Transform& Transform::translate(const Vec3& translation) noexcept {
 }
 
 Transform& Transform::rotate(float angle, const Vec3& axis) noexcept {
-    rotation_ *= glm::angleAxis(angle, axis);
+    rotation_ = glm::rotate(rotation_, angle, axis);
 
     is_dirty = true;
     return *this;
 }
 
 Transform& Transform::rotate(float pitch, float yaw, float roll) noexcept {
-    rotation_ *= Quaternion{Vec3(pitch, yaw, roll)};
-
-    is_dirty = true;
-    return *this;
+    return rotate(Quaternion{Vec3{pitch, yaw, roll}});
 }
 
 Transform& Transform::rotate(const Quaternion& quaternion) noexcept {
@@ -98,7 +95,7 @@ Transform& Transform::scale(float uniform_scale) noexcept {
 
 Transform& Transform::reset() noexcept {
     translation_ = Vec3{};
-    rotation_ = Quaternion{};
+    rotation_ = Quaternion{Vec3{0.f, 0.f, 0.f}};
     scale_ = Vec3{1.f, 1.f, 1.f};
     is_dirty = true;
 
