@@ -85,7 +85,7 @@ void Game::on_frame(sushi::frame_duration last_frame) {
     const sushi::Vec3 forward_movement = main_camera.local_transform.forward() * controller.get_move_forward_value() * 0.1f;
     const sushi::Vec3 right_movement = main_camera.local_transform.right() * controller.get_move_strate_value() * 0.1f;
 
-    const float yaw_value = controller.get_camera_yaw_value();
+    const float yaw_value = -controller.get_camera_yaw_value();
     const float YAW_RATIO = (glm::pi<float>() / 8.0f) / 100.0f; // pi/2 per 100 horizontal pixel
     const float yaw_rad_value = yaw_value * YAW_RATIO;
     const sushi::Quaternion yaw_quat = glm::angleAxis(yaw_rad_value, sushi::Vec3{0.f, 1.f, 0.f});

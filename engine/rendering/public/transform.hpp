@@ -36,6 +36,8 @@ public:
     Transform& scale(const Vec3& scale) noexcept;
     Transform& scale(float uniform_scale) noexcept;
 
+    Transform& look_at(const Vec3& target) noexcept;
+
     Transform& reset() noexcept;
 
     const Mat4x4& matrix() const noexcept;

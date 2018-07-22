@@ -24,6 +24,8 @@ target_link_libraries(sushi-rendering
 target_include_directories(sushi-rendering
         PUBLIC public
         PRIVATE private)
+target_compile_definitions(sushi-rendering
+        PRIVATE GLM_ENABLE_EXPERIMENTAL)
 
 if(SUSHI_RENDERING_BACKEND STREQUAL "OpenGL")
     target_sources(sushi-rendering PRIVATE

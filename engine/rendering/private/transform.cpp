@@ -1,5 +1,6 @@
 #include "transform.hpp"
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/norm.hpp>
 
 namespace sushi {
 
@@ -88,6 +89,40 @@ Transform& Transform::scale(const Vec3& scale) noexcept {
 
 Transform& Transform::scale(float uniform_scale) noexcept {
     scale_ *= Vec3(uniform_scale, uniform_scale, uniform_scale);
+
+    is_dirty = true;
+    return *this;
+}
+
+Transform& Transform::look_at(const Vec3& target) noexcept {
+    const Vec3 target_direction = glm::normalize(target - translation_);
+    const Vec3 initial_direction = forward();
+
+    const float cos_theta = glm::dot(initial_direction, target_direction);
+
+    //Vec3 rotation_axis;
+    //float angle;
+    Vec3 rotation_axis;
+    Quaternion rotation_quat;
+    if(cos_theta < -1 + 0.001f) {
+        rotation_axis = glm::cross(Vec3(0.f, 0.f, 1.f), initial_direction);
+        if(glm::length2(rotation_axis) < 0.01f) {
+            rotation_axis = glm::cross(Vec3{1.f, 0.f, 0.f}, initial_direction);
+        }
+
+        rotation_axis = glm::normalize(rotation_axis);
+        rotation_quat = glm::angleAxis(glm::pi<float>(), rotation_axis);
+    }
+    else {
+        rotation_axis = glm::cross(initial_direction, target_direction);
+
+        const float s = glm::sqrt((1.f + cos_theta) * 2.f);
+        const float inv_s = 1 / s;
+
+        rotation_quat = Quaternion(s * 0.5f, rotation_axis.x * inv_s, rotation_axis.y * inv_s, rotation_axis.z * inv_s);
+    }
+
+    rotation_ *= rotation_quat;
 
     is_dirty = true;
     return *this;

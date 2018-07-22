@@ -30,10 +30,9 @@ public:
 // Keyboard related events
 
 enum class Key : uint8_t {
-    W,
-    A,
-    S,
-    D,
+    A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
+    Space, Enter, Escape, Backspace, LeftShift, RightShift, LeftControl, RightControl, LeftAlt, RightAlt, Tab,
+    Left, Right, Up, Down,
     Unsupported
 };
 

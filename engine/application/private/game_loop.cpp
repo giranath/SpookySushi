@@ -1,9 +1,9 @@
 #include "game_loop.hpp"
 #include "window_config.hpp"
-#include "../../sdl/public/window.hpp"
+#include "window.hpp"
+#include "display.hpp"
+#include "opengl.hpp"
 #include "sdl_event.hpp"
-#include "../../sdl/public/display.hpp"
-#include "../../opengl/public/opengl.hpp"
 #include "../../rendering/public/renderer_interface.hpp"
 #include "../../rendering/public/opengl_renderer.hpp"
 #include "../../rendering/public/proxy_renderer.hpp"
@@ -169,20 +169,42 @@ LaunchArgs parse_args(const Arguments& args) {
     return a;
 }
 
+#define CASE_KEYBOARD_ALPHA_KEY(sdl_suffix, sushi_key) case SDLK_##sdl_suffix: return Key::sushi_key
+
 constexpr Key sdl_to_sushi_key(int sdl_key) noexcept {
     switch(sdl_key) {
-        case SDLK_a:
-            return Key::A;
-        case SDLK_w:
-            return Key::W;
-        case SDLK_d:
-            return Key::D;
-        case SDLK_s:
-            return Key::S;
+        CASE_KEYBOARD_ALPHA_KEY(a, A);
+        CASE_KEYBOARD_ALPHA_KEY(b, B);
+        CASE_KEYBOARD_ALPHA_KEY(c, C);
+        CASE_KEYBOARD_ALPHA_KEY(d, D);
+        CASE_KEYBOARD_ALPHA_KEY(e, E);
+        CASE_KEYBOARD_ALPHA_KEY(f, F);
+        CASE_KEYBOARD_ALPHA_KEY(g, G);
+        CASE_KEYBOARD_ALPHA_KEY(h, H);
+        CASE_KEYBOARD_ALPHA_KEY(i, I);
+        CASE_KEYBOARD_ALPHA_KEY(j, J);
+        CASE_KEYBOARD_ALPHA_KEY(k, K);
+        CASE_KEYBOARD_ALPHA_KEY(l, L);
+        CASE_KEYBOARD_ALPHA_KEY(m, M);
+        CASE_KEYBOARD_ALPHA_KEY(n, N);
+        CASE_KEYBOARD_ALPHA_KEY(o, O);
+        CASE_KEYBOARD_ALPHA_KEY(p, P);
+        CASE_KEYBOARD_ALPHA_KEY(q, Q);
+        CASE_KEYBOARD_ALPHA_KEY(r, R);
+        CASE_KEYBOARD_ALPHA_KEY(s, S);
+        CASE_KEYBOARD_ALPHA_KEY(t, T);
+        CASE_KEYBOARD_ALPHA_KEY(u, U);
+        CASE_KEYBOARD_ALPHA_KEY(v, V);
+        CASE_KEYBOARD_ALPHA_KEY(w, W);
+        CASE_KEYBOARD_ALPHA_KEY(x, X);
+        CASE_KEYBOARD_ALPHA_KEY(y, Y);
+        CASE_KEYBOARD_ALPHA_KEY(z, Z);
         default:
             return Key::Unsupported;
     }
 }
+
+#undef CASE_KEYBOARD_ALPHA_KEY
 
 constexpr MouseButton sdl_to_sushi_mouse_button(int sdl_button) noexcept {
     switch(sdl_button) {
