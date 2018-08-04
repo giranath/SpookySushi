@@ -11,6 +11,7 @@ namespace vertex {
 using Position = Vec3;
 using Normal = Vec3;
 using UV = Vec2;
+using Indice = uint16_t;
 }
 
 /**
@@ -20,7 +21,9 @@ class StaticMeshDefinition {
     std::vector<vertex::Position> positions_;
     std::vector<vertex::Normal> normals_;
     std::vector<vertex::UV> uvs_;
+    std::vector<vertex::Indice> indices_;
 public:
+
     /**
      * Clear the definition to represent a mesh with no vertices
      */
@@ -55,6 +58,20 @@ public:
     void add(const vertex::Position& position, const vertex::UV& uv, const vertex::Normal& normal);
 
     /**
+     * Add an indice
+     * @param indice The indice to add
+     */
+    void add(vertex::Indice indice);
+
+    /**
+     * Add the indices for a triangle
+     * @param a First index
+     * @param b Second index
+     * @param c Third index
+     */
+    void add_triangle_indices(vertex::Indice a, vertex::Indice b, vertex::Indice c);
+
+    /**
      * Checks if the definition is correct
      * @return true if the definition is valid, false otherwise
      */
@@ -72,7 +89,14 @@ public:
      */
     bool uses_uvs() const noexcept;
 
+    /**
+     * Check if the defined mesh is indexed
+     * @return true if the mesh is indexed
+     */
+    bool uses_indices() const noexcept;
+
     const std::vector<vertex::Position>& positions() const noexcept;
+    const std::vector<vertex::Indice>& indices() const noexcept;
 };
 
 class StaticMeshTooLargeError : public std::runtime_error {

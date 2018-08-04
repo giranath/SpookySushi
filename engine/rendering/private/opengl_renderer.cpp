@@ -12,33 +12,28 @@ namespace sushi {
 static const char* LOG_CATEGORY = "sushi.renderer.opengl";
 
 class OpenGLStaticMesh : public StaticMesh {
-    std::size_t triangles_count;
+protected:
+    std::size_t element_count_ = {};
     gl::vertex_array vao;
-    gl::buffer vbo;
+    gl::buffer vertices_buffer;
 public:
-    OpenGLStaticMesh() noexcept
-    : triangles_count{0}
-    , vao{}
-    , vbo{} {
+    OpenGLStaticMesh() noexcept = default;
 
-    }
-
-    OpenGLStaticMesh(std::size_t size, gl::vertex_array&& vao, gl::buffer&& vbo)
-    : triangles_count{size}
+    OpenGLStaticMesh(std::size_t element_count, gl::vertex_array&& vao, gl::buffer&& vertices_buffer)
+    : element_count_{element_count}
     , vao{std::move(vao)}
-    , vbo{std::move(vbo)} {
-        if(size >= std::numeric_limits<GLsizei>::max() / 3) {
-            throw StaticMeshTooLargeError{};
-        }
+    , vertices_buffer{std::move(vertices_buffer)} {
+
     }
 
     OpenGLStaticMesh(const OpenGLStaticMesh&) = delete;
     OpenGLStaticMesh& operator=(const OpenGLStaticMesh&) = delete;
+
     OpenGLStaticMesh(OpenGLStaticMesh&& other) noexcept
-    : triangles_count{other.triangles_count}
+    : element_count_{other.element_count_}
     , vao{std::move(other.vao)}
-    , vbo{std::move(other.vbo)} {
-        other.triangles_count = 0;
+    , vertices_buffer{std::move(other.vertices_buffer)} {
+        other.element_count_ = 0;
     }
 
     OpenGLStaticMesh& operator=(OpenGLStaticMesh&& other) noexcept {
@@ -47,19 +42,81 @@ public:
         return *this;
     }
 
-    void render() override {
-        const std::size_t vertex_count = triangles_count * 3;
-
-        gl::bind(vao);
-        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertex_count));
-    }
-
     void swap(OpenGLStaticMesh& other) noexcept {
         using std::swap;
 
         vao.swap(other.vao);
-        vbo.swap(other.vbo);
-        swap(triangles_count, other.triangles_count);
+        vertices_buffer.swap(other.vertices_buffer);
+        swap(element_count_, other.element_count_);
+    }
+};
+
+class TrianglesOpenGLStaticMesh : public OpenGLStaticMesh {
+public:
+    TrianglesOpenGLStaticMesh() noexcept = default;
+
+    TrianglesOpenGLStaticMesh(std::size_t triangle_count, gl::vertex_array&& vao, gl::buffer&& vertices_buffer)
+    : OpenGLStaticMesh(triangle_count, std::move(vao), std::move(vertices_buffer)) {
+        if(triangle_count >= std::numeric_limits<GLsizei>::max() / 3) {
+            throw StaticMeshTooLargeError{};
+        }
+    }
+
+    TrianglesOpenGLStaticMesh(TrianglesOpenGLStaticMesh&& other) noexcept
+    : OpenGLStaticMesh(std::move(other)) {
+
+    }
+
+    TrianglesOpenGLStaticMesh& operator=(TrianglesOpenGLStaticMesh&& other) noexcept {
+        swap(other);
+
+        return *this;
+    }
+
+    void render() override {
+        const std::size_t vertex_count = element_count_ * 3;
+
+        gl::bind(vao);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertex_count));
+    }
+};
+
+class IndexedOpenGLStaticMesh : public OpenGLStaticMesh {
+    gl::buffer element_buffer;
+public:
+    IndexedOpenGLStaticMesh() noexcept = default;
+    IndexedOpenGLStaticMesh(std::size_t element_count, gl::vertex_array&& vao, gl::buffer&& vertices_buffer, gl::buffer&& indices_buffer)
+    : OpenGLStaticMesh(element_count, std::move(vao), std::move(vertices_buffer))
+    , element_buffer(std::move(indices_buffer)) {
+        if(element_count >= std::numeric_limits<GLsizei>::max()) {
+            throw StaticMeshTooLargeError{};
+        }
+    }
+
+    IndexedOpenGLStaticMesh(IndexedOpenGLStaticMesh&& other) noexcept
+    : OpenGLStaticMesh(std::move(other))
+    , element_buffer(std::move(other.element_buffer)) {
+
+    }
+
+    IndexedOpenGLStaticMesh& operator=(IndexedOpenGLStaticMesh&& other) noexcept {
+        swap(other);
+
+        return *this;
+    }
+
+    void swap(IndexedOpenGLStaticMesh& other) noexcept {
+        using std::swap;
+
+        using std::swap;
+        OpenGLStaticMesh::swap(other);
+        swap(element_buffer, other.element_buffer);
+    }
+
+    void render() override {
+        gl::bind(vao);
+        gl::bind(gl::buffer_bind<GL_ELEMENT_ARRAY_BUFFER>(element_buffer));
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(element_count_), GL_UNSIGNED_SHORT, nullptr);
     }
 };
 
@@ -74,6 +131,12 @@ public:
                      definition.positions().size() * sizeof(vertex::Position),
                      &definition.positions().front().x, GL_STATIC_DRAW);
 
+        gl::buffer elements = gl::buffer::make();
+        gl::bind(gl::buffer_bind<GL_ELEMENT_ARRAY_BUFFER>(elements));
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                     definition.indices().size() * sizeof(vertex::Indice),
+                     &definition.indices().front(), GL_STATIC_DRAW);
+
         gl::vertex_array vao = gl::vertex_array::make();
         gl::bind(vao);
         glEnableVertexAttribArray(0);
@@ -81,7 +144,12 @@ public:
 
         gl::bind(gl::vertex_array{});
 
-        return std::make_unique<OpenGLStaticMesh>(definition.positions().size() / 3, std::move(vao), std::move(vbo));
+        if(definition.uses_indices()) {
+            return std::make_unique<IndexedOpenGLStaticMesh>(definition.indices().size(), std::move(vao), std::move(vbo), std::move(elements));
+        }
+        else {
+            return std::make_unique<TrianglesOpenGLStaticMesh>(definition.positions().size() / 3, std::move(vao), std::move(vbo));
+        }
     }
 };
 

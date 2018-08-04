@@ -16,42 +16,28 @@
 sushi::StaticMeshDefinition make_cube(const float size) {
     sushi::StaticMeshDefinition static_mesh;
 
-    static_mesh.add({-size,-size,-size});
-    static_mesh.add({-size,-size, size});
-    static_mesh.add({-size, size, size});
-    static_mesh.add({ size, size,-size});
-    static_mesh.add({-size,-size,-size});
-    static_mesh.add({-size, size,-size});
-    static_mesh.add({ size,-size, size});
-    static_mesh.add({-size,-size,-size});
-    static_mesh.add({ size,-size,-size});
-    static_mesh.add({ size, size,-size});
-    static_mesh.add({ size,-size,-size});
-    static_mesh.add({-size,-size,-size});
-    static_mesh.add({-size,-size,-size});
-    static_mesh.add({-size, size, size});
-    static_mesh.add({-size, size,-size});
-    static_mesh.add({ size,-size, size});
-    static_mesh.add({-size,-size, size});
-    static_mesh.add({-size,-size,-size});
-    static_mesh.add({-size, size, size});
-    static_mesh.add({-size,-size, size});
-    static_mesh.add({ size,-size, size});
-    static_mesh.add({ size, size, size});
-    static_mesh.add({ size,-size,-size});
-    static_mesh.add({ size, size,-size});
-    static_mesh.add({ size,-size,-size});
-    static_mesh.add({ size, size, size});
-    static_mesh.add({ size,-size, size});
-    static_mesh.add({ size, size, size});
-    static_mesh.add({ size, size,-size});
-    static_mesh.add({-size, size,-size});
-    static_mesh.add({ size, size, size});
-    static_mesh.add({-size, size,-size});
-    static_mesh.add({-size, size, size});
-    static_mesh.add({ size, size, size});
-    static_mesh.add({-size, size, size});
-    static_mesh.add({ size,-size, size});
+    static_mesh.add({-size, -size, -size});
+    static_mesh.add({ size, -size, -size});
+    static_mesh.add({ size,  size, -size});
+    static_mesh.add({-size,  size, -size});
+    static_mesh.add({-size, -size,  size});
+    static_mesh.add({ size, -size,  size});
+    static_mesh.add({ size,  size,  size});
+    static_mesh.add({-size,  size,  size});
+
+    // Add all the indices
+    static_mesh.add_triangle_indices(0, 2, 1);
+    static_mesh.add_triangle_indices(0, 3, 2);
+    static_mesh.add_triangle_indices(4, 6, 5);
+    static_mesh.add_triangle_indices(4, 7, 6);
+    static_mesh.add_triangle_indices(0, 7, 4);
+    static_mesh.add_triangle_indices(0, 3, 7);
+    static_mesh.add_triangle_indices(1, 6, 5);
+    static_mesh.add_triangle_indices(1, 2, 6);
+    static_mesh.add_triangle_indices(3, 7, 6);
+    static_mesh.add_triangle_indices(3, 6, 2);
+    static_mesh.add_triangle_indices(0, 4, 5);
+    static_mesh.add_triangle_indices(0, 5, 1);
 
     return static_mesh;
 }
@@ -75,8 +61,6 @@ void Game::prepare_shader() {
 void Game::on_start() {
     prepare_shader();
     mesh = sushi::StaticMeshBuilderService::get().build(make_cube(1.0f));
-
-
 
     controller.register_inputs();
 

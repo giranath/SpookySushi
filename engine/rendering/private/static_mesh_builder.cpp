@@ -42,6 +42,16 @@ void StaticMeshDefinition::add(const vertex::Position& position, const vertex::U
     uvs_.push_back(uv);
 }
 
+void StaticMeshDefinition::add(vertex::Indice indice) {
+    indices_.push_back(indice);
+}
+
+void StaticMeshDefinition::add_triangle_indices(vertex::Indice a, vertex::Indice b, vertex::Indice c) {
+    add(a);
+    add(b);
+    add(c);
+}
+
 bool StaticMeshDefinition::good() const noexcept {
     const bool has_normals = uses_normals();
     const bool has_uvs = uses_uvs();
@@ -68,8 +78,16 @@ bool StaticMeshDefinition::uses_uvs() const noexcept {
     return !uvs_.empty();
 }
 
+bool StaticMeshDefinition::uses_indices() const noexcept {
+    return !indices_.empty();
+}
+
 const std::vector<vertex::Position>& StaticMeshDefinition::positions() const noexcept {
     return positions_;
+}
+
+const std::vector<vertex::Indice>& StaticMeshDefinition::indices() const noexcept {
+    return indices_;
 }
 
 }
