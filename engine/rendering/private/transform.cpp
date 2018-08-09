@@ -1,11 +1,12 @@
 #include "transform.hpp"
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/norm.hpp>
 
 namespace sushi {
 
 Transform::Transform() noexcept
 : translation_{}
-, rotation_{}
+, rotation_{Vec3{0.f, 0.f, 0.f}}
 , scale_{1.f, 1.f, 1.f}
 , cached_transform{}
 , is_dirty{true} {
@@ -24,19 +25,19 @@ Vec3 Transform::right() const noexcept {
     return rotation_ * Vec3{1.f, 0.f, 0.f};
 }
 
-void Transform::set_translation(const Vec3 &new_translation) noexcept {
+void Transform::set_translation(const Vec3& new_translation) noexcept {
     translation_ = new_translation;
 
     is_dirty = true;
 }
 
-void Transform::set_rotation(const Quaternion &new_rotation) noexcept {
+void Transform::set_rotation(const Quaternion& new_rotation) noexcept {
     rotation_ = new_rotation;
 
     is_dirty = true;
 }
 
-void Transform::set_scale(const Vec3 &new_scale) noexcept {
+void Transform::set_scale(const Vec3& new_scale) noexcept {
     scale_ = new_scale;
 
     is_dirty = true;
@@ -62,17 +63,14 @@ Transform& Transform::translate(const Vec3& translation) noexcept {
 }
 
 Transform& Transform::rotate(float angle, const Vec3& axis) noexcept {
-    rotation_ *= glm::angleAxis(angle, axis);
+    rotation_ = glm::rotate(rotation_, angle, axis);
 
     is_dirty = true;
     return *this;
 }
 
 Transform& Transform::rotate(float pitch, float yaw, float roll) noexcept {
-    rotation_ *= Quaternion{Vec3(pitch, yaw, roll)};
-
-    is_dirty = true;
-    return *this;
+    return rotate(Quaternion{Vec3{pitch, yaw, roll}});
 }
 
 Transform& Transform::rotate(const Quaternion& quaternion) noexcept {
@@ -96,9 +94,43 @@ Transform& Transform::scale(float uniform_scale) noexcept {
     return *this;
 }
 
+Transform& Transform::look_at(const Vec3& target) noexcept {
+    const Vec3 target_direction = glm::normalize(target - translation_);
+    const Vec3 initial_direction = forward();
+
+    const float cos_theta = glm::dot(initial_direction, target_direction);
+
+    //Vec3 rotation_axis;
+    //float angle;
+    Vec3 rotation_axis;
+    Quaternion rotation_quat;
+    if(cos_theta < -1 + 0.001f) {
+        rotation_axis = glm::cross(Vec3(0.f, 0.f, 1.f), initial_direction);
+        if(glm::length2(rotation_axis) < 0.01f) {
+            rotation_axis = glm::cross(Vec3{1.f, 0.f, 0.f}, initial_direction);
+        }
+
+        rotation_axis = glm::normalize(rotation_axis);
+        rotation_quat = glm::angleAxis(glm::pi<float>(), rotation_axis);
+    }
+    else {
+        rotation_axis = glm::cross(initial_direction, target_direction);
+
+        const float s = glm::sqrt((1.f + cos_theta) * 2.f);
+        const float inv_s = 1 / s;
+
+        rotation_quat = Quaternion(s * 0.5f, rotation_axis.x * inv_s, rotation_axis.y * inv_s, rotation_axis.z * inv_s);
+    }
+
+    rotation_ *= rotation_quat;
+
+    is_dirty = true;
+    return *this;
+}
+
 Transform& Transform::reset() noexcept {
     translation_ = Vec3{};
-    rotation_ = Quaternion{};
+    rotation_ = Quaternion{Vec3{0.f, 0.f, 0.f}};
     scale_ = Vec3{1.f, 1.f, 1.f};
     is_dirty = true;
 

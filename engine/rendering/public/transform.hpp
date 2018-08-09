@@ -19,9 +19,9 @@ public:
     Vec3 forward() const noexcept;
     Vec3 right() const noexcept;
 
-    void set_translation(const Vec3 &new_translation) noexcept;
-    void set_rotation(const Quaternion &new_rotation) noexcept;
-    void set_scale(const Vec3 &new_scale) noexcept;
+    void set_translation(const Vec3& new_translation) noexcept;
+    void set_rotation(const Quaternion& new_rotation) noexcept;
+    void set_scale(const Vec3& new_scale) noexcept;
 
     const Vec3& translation() const noexcept;
     const Quaternion& rotation() const noexcept;
@@ -35,6 +35,8 @@ public:
 
     Transform& scale(const Vec3& scale) noexcept;
     Transform& scale(float uniform_scale) noexcept;
+
+    Transform& look_at(const Vec3& target) noexcept;
 
     Transform& reset() noexcept;
 
