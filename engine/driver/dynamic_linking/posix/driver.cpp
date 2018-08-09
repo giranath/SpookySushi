@@ -1,4 +1,4 @@
-#include "driver.hpp"
+#include "../dynamic_linking.hpp"
 
 #include <dlfcn.h>
 
@@ -14,6 +14,10 @@ int close(ObjectHandle object) {
 
 SymbolPtr get_symbol(ObjectHandle object, const char* name) {
     return dlsym(object, name);
+}
+
+const char* get_last_error_msg() {
+    return dlerror();
 }
 
 }}}

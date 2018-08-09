@@ -4,9 +4,6 @@
 #include "runtime_plugin.hpp"
 #include <type_traits>
 
-// TODO: Write driver
-#include <dlfcn.h>
-
 namespace sushi {
 
 using plugin_start_fn = std::add_pointer<int()>::type;

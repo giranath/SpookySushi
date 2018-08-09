@@ -1,4 +1,5 @@
 #include "shared_library_runtime_plugin.hpp"
+#include "../../driver/dynamic_linking/dynamic_linking.hpp"
 #include <log_service.hpp>
 
 #define LOG_CATEGORY "com.sushi.plugin"
@@ -63,8 +64,8 @@ void SharedLibraryRuntimePlugin::stop() {
     stop_fn();
 
     // Close the library
-    if (dlclose(library_object) != 0) {
-        log_warning(LOG_CATEGORY, "failed to close shared library '%s': '%s", library_path, dlerror());
+    if (driver::dl::close(library_object) != 0) {
+        log_warning(LOG_CATEGORY, "failed to close shared library '%s': '%s", library_path, driver::dl::get_last_error_msg());
     }
 
     RuntimePlugin::stop();
@@ -75,23 +76,23 @@ ApiHandle SharedLibraryRuntimePlugin::get_api(int version) {
 }
 
 bool SharedLibraryRuntimePlugin::load_functions() {
-    library_object = dlopen(library_path, RTLD_NOW | RTLD_LOCAL);
+    library_object = driver::dl::open(library_path);
 
     if (library_object != nullptr) {
-        start_fn = reinterpret_cast<plugin_start_fn>(dlsym(library_object, "plugin_start"));
+        start_fn = reinterpret_cast<plugin_start_fn>(driver::dl::get_symbol(library_object, "plugin_start"));
         if (start_fn == nullptr) {
             log_critical(LOG_CATEGORY, "plugin '%s' is missing mandatory function 'plugin_start'", library_path);
         }
 
-        stop_fn = reinterpret_cast<plugin_stop_fn>(dlsym(library_object, "plugin_stop"));
+        stop_fn = reinterpret_cast<plugin_stop_fn>(driver::dl::get_symbol(library_object, "plugin_stop"));
         if (stop_fn == nullptr) {
             log_critical(LOG_CATEGORY, "plugin '%s' is missing mandatory function 'plugin_stop'", library_path);
         }
 
-        serialize_fn = reinterpret_cast<plugin_serialize_fn>(dlsym(library_object, "plugin_serialize"));
-        unserialize_fn = reinterpret_cast<plugin_unserialize_fn>(dlsym(library_object, "plugin_unserialize"));
+        serialize_fn = reinterpret_cast<plugin_serialize_fn>(driver::dl::get_symbol(library_object, "plugin_serialize"));
+        unserialize_fn = reinterpret_cast<plugin_unserialize_fn>(driver::dl::get_symbol(library_object, "plugin_unserialize"));
 
-        get_api_fn = reinterpret_cast<plugin_get_api_fn>(dlsym(library_object, "plugin_get_api"));
+        get_api_fn = reinterpret_cast<plugin_get_api_fn>(driver::dl::get_symbol(library_object, "plugin_get_api"));
         if (get_api_fn == nullptr) {
             log_critical(LOG_CATEGORY, "plugin '%s' is missing mandatory function 'plugin_get_api'", library_path);
         }
@@ -106,7 +107,7 @@ bool SharedLibraryRuntimePlugin::load_functions() {
         return start_fn && stop_fn && get_api_fn;
     }
     else {
-        log_critical(LOG_CATEGORY, "failed to load shared library '%s': %s", library_path, dlerror());
+        log_critical(LOG_CATEGORY, "failed to load shared library '%s': %s", library_path, driver::dl::get_last_error_msg());
     }
 
     return false;

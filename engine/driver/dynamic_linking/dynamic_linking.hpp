@@ -11,6 +11,8 @@ int close(ObjectHandle object);
 
 SymbolPtr get_symbol(ObjectHandle object, const char* name);
 
+const char* get_last_error_msg();
+
 }}}
 
 #endif

@@ -4,13 +4,13 @@ set(DRIVER_DYNAMIC_LINKING_TARGET_LIBRARIES PARENT_SCOPE)
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     add_library(sushi-driver-dynamic-linking OBJECT
             windows/driver.cpp
-            windows/driver.hpp
+            dynamic_linking.hpp
             )
     set(SUSHI_DRIVER_DYNAMIC_LINKING_NAME "windows" PARENT_SCOPE)
 else()
     add_library(sushi-driver-dynamic-linking OBJECT
             posix/driver.cpp
-            posix/driver.hpp
+            dynamic_linking.hpp
             )
     set(SUSHI_DRIVER_DYNAMIC_LINKING_NAME "posix" PARENT_SCOPE)
 endif()
