@@ -1,6 +1,6 @@
-#Low level Input System
+# Low level Input System
 
-##Requirements
+## Requirements
 1. Handles 3 basic input methods
     1. Action input
     2. State input [true, false]
@@ -8,13 +8,13 @@
 2. Input mapping can be modified at runtime
 3. Abstract platform
 
-##Layers
+## Layers
 The system will be divided in 3 layers
 1. System layer: raw os events are converted to sushi events
 2. Dispatching layer: map sushi events to high level handler
 3. High level handlers layer: reacts to event
 
-###System layer
+### System layer
 Polls SDL to recuperate each events. Then, the event is converted to
 a sushi InputEvent of the good type
 
