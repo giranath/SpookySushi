@@ -81,9 +81,41 @@ public:
     }
 };
 
+template<typename IndexType>
+struct is_buffer_index {
+    using value_type = IndexType;
+    enum { value = false };
+};
+
+template<>
+struct is_buffer_index<uint8_t> {
+    using value_type = uint8_t;
+    enum { value = true };
+};
+
+template<>
+struct is_buffer_index<uint16_t> {
+    using value_type = uint16_t;
+    enum { value = true };
+};
+
+template<>
+struct is_buffer_index<uint32_t> {
+    using value_type = uint32_t;
+    enum { value = true };
+};
+
+template<>
+struct is_buffer_index<uint64_t> {
+    using value_type = uint64_t;
+    enum { value = true };
+};
+
+template<typename IndexType = uint16_t>
 class IndexedOpenGLStaticMesh : public OpenGLStaticMesh {
     gl::buffer element_buffer;
 public:
+    static_assert(is_buffer_index<IndexType>::value, "invalid index type");
     IndexedOpenGLStaticMesh() noexcept = default;
     IndexedOpenGLStaticMesh(std::size_t element_count, gl::vertex_array&& vao, gl::buffer&& vertices_buffer, gl::buffer&& indices_buffer)
     : OpenGLStaticMesh(element_count, std::move(vao), std::move(vertices_buffer))
