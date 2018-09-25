@@ -21,7 +21,16 @@ std::ostream& operator<<(std::ostream& os, LogPriority priority) noexcept {
 }
 
 LogEntry::LogEntry(const std::string& category, LogPriority priority, const std::string& message, std::thread::id tid) noexcept
-: time_point_(std::chrono::system_clock::now())
+: time_point_(clock::now())
+, message_(message)
+, category_(category)
+, priority_{priority}
+, thread_id_{tid} {
+
+}
+
+LogEntry::LogEntry(const std::string& category, LogPriority priority, const std::string& message, std::thread::id tid, clock::time_point tp) noexcept
+: time_point_(tp)
 , message_(message)
 , category_(category)
 , priority_{priority}
@@ -53,13 +62,14 @@ std::ostream& operator<<(std::ostream& os, const LogEntry& entry) noexcept {
     char time_buffer[128];
     std::fill(time_buffer, time_buffer + 128, 0);
 
-    const std::time_t t = std::chrono::system_clock::to_time_t(entry.time_point());
+    const std::time_t t = LogEntry::clock::to_time_t(entry.time_point());
     strftime(time_buffer, 128, "[%H:%M:%S %z]", std::localtime(&t));
 
     return os << entry.priority() << " "
               << entry.category() << " "
               << entry.thread_id() << " "
               << time_buffer
+              << "(" << entry.time_point().time_since_epoch().count() << ") "
               << " \"" << entry.message() << "\"";
 }
 
@@ -95,25 +105,36 @@ void Logger::log(const LogEntry& entry) {
 }
 
 void Logger::log_warning(const std::string& category, const std::string& message) noexcept {
-    std::lock_guard<std::mutex> lock(entries_mutex);
+    const LogEntry::clock::time_point tp = LogEntry::clock::now();
 
-    entries.emplace_back(category, LogPriority::warning, message, std::this_thread::get_id());
+    {
+        std::lock_guard<std::mutex> lock(entries_mutex);
+        entries.emplace_back(category, LogPriority::warning, message, std::this_thread::get_id(), tp);
+    }
 }
 
 void Logger::log_critical(const std::string& category, const std::string& message) noexcept {
-    std::lock_guard<std::mutex> lock(entries_mutex);
+    const LogEntry::clock::time_point tp = LogEntry::clock::now();
 
-    entries.emplace_back(category, LogPriority::critical, message, std::this_thread::get_id());
+    {
+        std::lock_guard<std::mutex> lock(entries_mutex);
+        entries.emplace_back(category, LogPriority::critical, message, std::this_thread::get_id(), tp);
+    }
 }
 
 void Logger::log_info(const std::string& category, const std::string& message) noexcept {
-    std::lock_guard<std::mutex> lock(entries_mutex);
+    const LogEntry::clock::time_point tp = LogEntry::clock::now();
 
-    entries.emplace_back(category, LogPriority::info, message, std::this_thread::get_id());
+    {
+        std::lock_guard<std::mutex> lock(entries_mutex);
+        entries.emplace_back(category, LogPriority::info, message, std::this_thread::get_id(), tp);
+    }
 }
 
 void Logger::background_work() {
     std::ofstream out_log("latest_session.log", std::ios::binary);
+
+    out_log << "# priority category tid [time](epoch) \"message\"" << std::endl;
 
     std::vector<LogEntry> write_entries;
     write_entries.reserve(2048);

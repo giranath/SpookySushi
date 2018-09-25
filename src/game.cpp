@@ -11,6 +11,7 @@
 #include <axis_input_processor.hpp>
 #include <sdl_event.hpp>
 #include <package.hpp>
+#include <log_service.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <fstream>
@@ -87,6 +88,10 @@ void Game::on_start() {
         monkey_model_stream >> asset;
 
         mesh = sushi::StaticMeshBuilderService::get().build(sushi::StaticMeshDefinition{asset});
+    }
+    else {
+        sushi::log_critical("sushi.game", "cannot get model from package");
+        throw 5;
     }
 
     controller.register_inputs();

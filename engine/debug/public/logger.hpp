@@ -20,18 +20,22 @@ enum class LogPriority {
 std::ostream& operator<<(std::ostream& os, LogPriority priority) noexcept;
 
 class LogEntry {
-    std::chrono::system_clock::time_point time_point_;
+public:
+    using clock = std::chrono::system_clock;
+private:
+    clock::time_point time_point_;
     std::string message_;
     std::string category_;
     LogPriority priority_;
     std::thread::id thread_id_;
 public:
     LogEntry(const std::string& category, LogPriority priority, const std::string& message, std::thread::id tid) noexcept;
+    LogEntry(const std::string& category, LogPriority priority, const std::string& message, std::thread::id tid, clock::time_point tp) noexcept;
 
     const std::string& message() const noexcept;
     const std::string& category() const noexcept;
     LogPriority priority() const noexcept;
-    std::chrono::system_clock::time_point time_point() const noexcept;
+    clock::time_point time_point() const noexcept;
     std::thread::id thread_id() const noexcept;
 };
 
