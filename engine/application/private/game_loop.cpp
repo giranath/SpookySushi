@@ -251,6 +251,7 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
     LaunchArgs launch = parse_args(args);
 
     // Load configuration file
+    log_info("sushi.bootstrap", "loading configurations...");
     std::ifstream config_stream(launch.config_path);
     XmlDocument config_document(config_stream);
     sushi::GameLoopConfig engine_configurations;
@@ -258,6 +259,7 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
 
     sushi::GameLoop loop(engine_configurations);
 
+    log_info("sushi.bootstrap", "creating window");
     sushi::Window main_window = create_window(engine_configurations.window);
 
     std::unique_ptr<sushi::RendererInterface> renderer = std::make_unique<sushi::OpenGLRenderer>(main_window);
@@ -265,6 +267,7 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
     sushi::ProxyRenderer proxy_renderer(renderer.get());
 
     // Input bus setup
+    log_info("sushi.bootstrap", "preparing inputs...");
     sushi::InputFactory input_factory;
     sushi::InputBus input_bus;
     sushi::InputBusReader input_bus_reader(input_bus);
@@ -274,12 +277,15 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
     sushi::InputProcessor input_processor;
     sushi::InputProcessorService::locate(&input_processor);
 
+    log_info("sushi.bootstrap", "initializing renderer...");
     if(!renderer->initialize()) {
         return 1;
     }
 
+    log_info("sushi.bootstrap", "starting game loop...");
     game.on_start();
 
+    log_info("sushi.bootstrap", "game loop started");
     // Start of Game loop
     loop.run(target_frame_duration, [&](sushi::FrameDuration last_frame_duration) {
         //==============================================================================================================
@@ -333,8 +339,10 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
         return true;
     });
 
+    log_info("sushi.bootstrap", "stopping game loop");
     game.on_stop();
 
+    log_info("sushi.bootstrap", "uninitializing renderer");
     renderer->uninitialize();
 
     logger.stop();

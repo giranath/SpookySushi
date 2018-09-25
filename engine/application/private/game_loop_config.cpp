@@ -1,4 +1,5 @@
 #include "game_loop_config.hpp"
+#include <log_service.hpp>
 
 namespace sushi {
 
@@ -9,9 +10,15 @@ void from_xml(const XmlNode& xml_node, GameLoopConfig& config) noexcept {
     if(window_xml_node) {
        from_xml(*window_xml_node, config.window);
     }
+    else {
+        log_warning("sushi.bootstrap.config", "no \"window\" node found in game's configurations");
+    }
 
     if(jobs_xml_node) {
         from_xml(*jobs_xml_node, config.jobs);
+    }
+    else {
+        log_warning("sushi.bootstrap.config", "no \"jobs\" node found in game's configurations");
     }
 }
 

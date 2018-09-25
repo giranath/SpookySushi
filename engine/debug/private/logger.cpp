@@ -125,7 +125,7 @@ void Logger::background_work() {
         }
 
         // Dump all write entries
-        std::copy(std::begin(write_entries), std::end(write_entries), std::ostream_iterator<LogEntry>(out_log));
+        std::copy(std::begin(write_entries), std::end(write_entries), std::ostream_iterator<LogEntry>(out_log, "\n"));
         write_entries.clear();
         out_log.flush();
 

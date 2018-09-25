@@ -49,12 +49,12 @@ void from_xml(const XmlNode& xml_node, WindowConfig& config) noexcept {
 
     XmlNode* size_node = xml_node.first_node("size");
     if(size_node) {
-        parse_xml_attribute<int>(size_node->first_attribute("initial_width"),  config.width,       800);
-        parse_xml_attribute<int>(size_node->first_attribute("initial_height"), config.height,      600);
-        parse_xml_attribute<int>(size_node->first_attribute("min_width"),      config.min_width,   0);
-        parse_xml_attribute<int>(size_node->first_attribute("min_height"),      config.min_height, 0);
-        parse_xml_attribute<int>(size_node->first_attribute("max_width"),       config.max_width,  WindowConfig::NoMaximumLimit);
-        parse_xml_attribute<int>(size_node->first_attribute("max_height"),      config.max_height, WindowConfig::NoMaximumLimit);
+        parse_xml_attribute<int>(size_node->first_attribute("initial_width"),   config.width,       800);
+        parse_xml_attribute<int>(size_node->first_attribute("initial_height"),  config.height,      600);
+        parse_xml_attribute<int>(size_node->first_attribute("min_width"),       config.min_width,   0);
+        parse_xml_attribute<int>(size_node->first_attribute("min_height"),      config.min_height,  0);
+        parse_xml_attribute<int>(size_node->first_attribute("max_width"),       config.max_width,   WindowConfig::NoMaximumLimit);
+        parse_xml_attribute<int>(size_node->first_attribute("max_height"),      config.max_height,  WindowConfig::NoMaximumLimit);
 
         XmlAttribute* fullscreen_mode_attribute = size_node->first_attribute("fullscreen_mode");
         if(fullscreen_mode_attribute) {
