@@ -11,6 +11,7 @@
 #include <axis_input_processor.hpp>
 #include <sdl_event.hpp>
 #include <package.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <fstream>
 #include <string>
@@ -50,10 +51,16 @@ void Game::prepare_shader() {
     std::ifstream fragment_shader_source("asset/shader/default_fragment.glsl");
 
     sushi::gl::vertex_shader vertex_shader;
-    vertex_shader.compile(vertex_shader_source);
+    auto res = vertex_shader.compile(vertex_shader_source);
+    if(!res) {
+        std::cerr << res.message() << std::endl;
+    }
 
     sushi::gl::fragment_shader fragment_shader;
-    fragment_shader.compile(fragment_shader_source);
+    res = fragment_shader.compile(fragment_shader_source);
+    if(!res) {
+        std::cerr << res.message() << std::endl;
+    }
 
     default_shader = sushi::gl::program::make();
     default_shader.attach(vertex_shader);
@@ -64,7 +71,8 @@ void Game::prepare_shader() {
 void Game::on_start() {
     prepare_shader();
 
-    main_camera.local_transform.translate(sushi::Vec3{0.f, 0.f, -10.f});
+    main_camera.local_transform.translate(sushi::Vec3{0.f, 0.f, 2.f});
+    main_camera.local_transform.look_at(sushi::Vec3{0.f, 0.f, 0.f});
 
     // Extract monkey mesh from package
     sushi::Package package;
@@ -112,8 +120,14 @@ void Game::on_late_frame(sushi::frame_duration last_frame) {
 void Game::on_render(sushi::ProxyRenderer renderer) {
     sushi::gl::bind(default_shader);
 
-    auto projection_view_model_uniform = default_shader.find_uniform<sushi::Mat4x4>("ProjectionViewModel");
-    projection_view_model_uniform.set(main_camera.projection() * main_camera.view());
+    auto projection_matrix_uniform = default_shader.find_uniform<sushi::Mat4x4>("projection_matrix");
+    auto view_matrix_uniform = default_shader.find_uniform<sushi::Mat4x4>("view_matrix");
+    auto model_matrix_uniform = default_shader.find_uniform<sushi::Mat4x4>("model_matrix");
+
+    projection_matrix_uniform.set(main_camera.projection());
+    view_matrix_uniform.set(main_camera.view());
+    model_matrix_uniform.set(glm::scale(sushi::Mat4x4{1.f}, glm::vec3{0.01f, 0.01f, 0.01f}));
+
     mesh->render();
 }
 

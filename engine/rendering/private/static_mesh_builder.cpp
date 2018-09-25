@@ -107,4 +107,8 @@ const std::vector<vertex::Indice>& StaticMeshDefinition::indices() const noexcep
     return indices_;
 }
 
+const std::vector<vertex::Normal>& StaticMeshDefinition::normals() const noexcept {
+    return normals_;
+}
+
 }

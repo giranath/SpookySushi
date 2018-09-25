@@ -102,6 +102,7 @@ public:
 
     const std::vector<vertex::Position>& positions() const noexcept;
     const std::vector<vertex::Indice>& indices() const noexcept;
+    const std::vector<vertex::Normal>& normals() const noexcept;
 };
 
 class StaticMeshTooLargeError : public std::runtime_error {

@@ -16,13 +16,15 @@ protected:
     std::size_t element_count_ = {};
     gl::vertex_array vao;
     gl::buffer vertices_buffer;
+    gl::buffer normals_buffer;
 public:
     OpenGLStaticMesh() noexcept = default;
 
-    OpenGLStaticMesh(std::size_t element_count, gl::vertex_array&& vao, gl::buffer&& vertices_buffer)
+    OpenGLStaticMesh(std::size_t element_count, gl::vertex_array&& vao, gl::buffer&& vertices_buffer, gl::buffer&& normals_buffer)
     : element_count_{element_count}
     , vao{std::move(vao)}
-    , vertices_buffer{std::move(vertices_buffer)} {
+    , vertices_buffer{std::move(vertices_buffer)}
+    , normals_buffer{std::move(normals_buffer)}{
 
     }
 
@@ -32,7 +34,8 @@ public:
     OpenGLStaticMesh(OpenGLStaticMesh&& other) noexcept
     : element_count_{other.element_count_}
     , vao{std::move(other.vao)}
-    , vertices_buffer{std::move(other.vertices_buffer)} {
+    , vertices_buffer{std::move(other.vertices_buffer)}
+    , normals_buffer{std::move(other.normals_buffer)} {
         other.element_count_ = 0;
     }
 
@@ -47,6 +50,7 @@ public:
 
         vao.swap(other.vao);
         vertices_buffer.swap(other.vertices_buffer);
+        normals_buffer.swap(other.normals_buffer);
         swap(element_count_, other.element_count_);
     }
 };
@@ -55,8 +59,8 @@ class TrianglesOpenGLStaticMesh : public OpenGLStaticMesh {
 public:
     TrianglesOpenGLStaticMesh() noexcept = default;
 
-    TrianglesOpenGLStaticMesh(std::size_t triangle_count, gl::vertex_array&& vao, gl::buffer&& vertices_buffer)
-    : OpenGLStaticMesh(triangle_count, std::move(vao), std::move(vertices_buffer)) {
+    TrianglesOpenGLStaticMesh(std::size_t triangle_count, gl::vertex_array&& vao, gl::buffer&& vertices_buffer, gl::buffer&& normals_buffer)
+    : OpenGLStaticMesh(triangle_count, std::move(vao), std::move(vertices_buffer), std::move(normals_buffer)) {
         if(triangle_count >= std::numeric_limits<GLsizei>::max() / 3) {
             throw StaticMeshTooLargeError{};
         }
@@ -117,8 +121,8 @@ class IndexedOpenGLStaticMesh : public OpenGLStaticMesh {
 public:
     static_assert(is_buffer_index<IndexType>::value, "invalid index type");
     IndexedOpenGLStaticMesh() noexcept = default;
-    IndexedOpenGLStaticMesh(std::size_t element_count, gl::vertex_array&& vao, gl::buffer&& vertices_buffer, gl::buffer&& indices_buffer)
-    : OpenGLStaticMesh(element_count, std::move(vao), std::move(vertices_buffer))
+    IndexedOpenGLStaticMesh(std::size_t element_count, gl::vertex_array&& vao, gl::buffer&& vertices_buffer, gl::buffer&& normals_buffer, gl::buffer&& indices_buffer)
+    : OpenGLStaticMesh(element_count, std::move(vao), std::move(vertices_buffer), std::move(normals_buffer))
     , element_buffer(std::move(indices_buffer)) {
         if(element_count >= std::numeric_limits<GLsizei>::max()) {
             throw StaticMeshTooLargeError{};
@@ -161,7 +165,13 @@ public:
         gl::bind(gl::buffer_bind<GL_ARRAY_BUFFER>(vbo));
         glBufferData(GL_ARRAY_BUFFER,
                      definition.positions().size() * sizeof(vertex::Position),
-                     &definition.positions().front().x, GL_STATIC_DRAW);
+                     definition.positions().data(), GL_STATIC_DRAW);
+
+        gl::buffer normals = gl::buffer::make();
+        gl::bind(gl::buffer_bind<GL_ARRAY_BUFFER>(normals));
+        glBufferData(GL_ARRAY_BUFFER,
+                     definition.normals().size() * sizeof(vertex::Normal),
+                     definition.normals().data(), GL_STATIC_DRAW);
 
         gl::buffer elements = gl::buffer::make();
         gl::bind(gl::buffer_bind<GL_ELEMENT_ARRAY_BUFFER>(elements));
@@ -171,16 +181,23 @@ public:
 
         gl::vertex_array vao = gl::vertex_array::make();
         gl::bind(vao);
+
         glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+
+        gl::bind(gl::buffer_bind<GL_ARRAY_BUFFER>(vbo));
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+        gl::bind(gl::buffer_bind<GL_ARRAY_BUFFER>(normals));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, nullptr);
 
         gl::bind(gl::vertex_array{});
 
         if(definition.uses_indices()) {
-            return std::make_unique<IndexedOpenGLStaticMesh<>>(definition.indices().size(), std::move(vao), std::move(vbo), std::move(elements));
+            return std::make_unique<IndexedOpenGLStaticMesh<>>(definition.indices().size(), std::move(vao), std::move(vbo), std::move(normals), std::move(elements));
         }
         else {
-            return std::make_unique<TrianglesOpenGLStaticMesh>(definition.positions().size() / 3, std::move(vao), std::move(vbo));
+            return std::make_unique<TrianglesOpenGLStaticMesh>(definition.positions().size() / 3, std::move(vao), std::move(vbo), std::move(normals));
         }
     }
 };
@@ -221,6 +238,12 @@ bool OpenGLRenderer::initialize() {
     }
 
     gladLoadGL();
+    glClearColor(1.f, 1.f, 1.f, 1.f);
+
+    glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
     return true;
 }
