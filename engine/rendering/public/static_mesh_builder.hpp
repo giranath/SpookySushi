@@ -2,6 +2,7 @@
 #define SPOOKYSUSHI_STATIC_MESH_BUILDER_HPP
 
 #include "types.hpp"
+#include "../../asset/public/mesh_asset.hpp"
 #include <vector>
 #include <memory>
 
@@ -12,6 +13,7 @@ using Position = Vec3;
 using Normal = Vec3;
 using UV = Vec2;
 using Indice = uint16_t;
+using LargeIndice = uint32_t;
 }
 
 /**
@@ -23,6 +25,9 @@ class StaticMeshDefinition {
     std::vector<vertex::UV> uvs_;
     std::vector<vertex::Indice> indices_;
 public:
+
+    StaticMeshDefinition() = default;
+    StaticMeshDefinition(const MeshAsset& asset);
 
     /**
      * Clear the definition to represent a mesh with no vertices

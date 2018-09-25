@@ -10,8 +10,11 @@
 #include <input_processor.hpp>
 #include <axis_input_processor.hpp>
 #include <sdl_event.hpp>
+#include <package.hpp>
 
 #include <fstream>
+#include <string>
+#include <sstream>
 
 sushi::StaticMeshDefinition make_cube(const float size) {
     sushi::StaticMeshDefinition static_mesh;
@@ -60,7 +63,23 @@ void Game::prepare_shader() {
 
 void Game::on_start() {
     prepare_shader();
-    mesh = sushi::StaticMeshBuilderService::get().build(make_cube(1.0f));
+
+    main_camera.local_transform.translate(sushi::Vec3{0.f, 0.f, -10.f});
+
+    // Extract monkey mesh from package
+    sushi::Package package;
+    std::ifstream package_stream{"asset/generated/default.spkg", std::ios::binary};
+    package_stream >> package;
+
+    auto monkey_model_view = package.entry_data(0, sushi::ValidateEntry{});
+    if(monkey_model_view) {
+        // TODO: Automate asset extraction from package
+        std::istringstream monkey_model_stream(std::string{*monkey_model_view});
+        sushi::MeshAsset asset;
+        monkey_model_stream >> asset;
+
+        mesh = sushi::StaticMeshBuilderService::get().build(sushi::StaticMeshDefinition{asset});
+    }
 
     controller.register_inputs();
 

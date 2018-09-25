@@ -1,8 +1,25 @@
 #include "static_mesh_builder.hpp"
 
 #include <cassert>
+#include <algorithm>
+#include <iterator>
 
 namespace sushi {
+
+StaticMeshDefinition::StaticMeshDefinition(const MeshAsset& asset)
+: positions_{asset.vertices()}
+, normals_{asset.normals()}
+, uvs_{asset.texture_coords()}
+, indices_{}{
+    if(std::any_of(std::begin(asset.indices()), std::end(asset.indices()), [](const uint32_t index) { return index > std::numeric_limits<uint16_t>::max(); })) {
+        throw std::out_of_range{"indices are out of range"};
+    }
+
+    indices_.reserve(asset.indices().size());
+    std::transform(std::begin(asset.indices()), std::end(asset.indices()), std::back_inserter(indices_), [](const uint32_t index) {
+       return static_cast<uint16_t>(index);
+    });
+}
 
 void StaticMeshDefinition::clear() {
     positions_.clear();

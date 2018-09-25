@@ -12,6 +12,8 @@ endif(MSVC)
 
 # Project configurations
 set(SUSHI_CACHE_LINE_SIZE 64 CACHE STRING "Specify the cache line size")
+option(BUILD_TOOLS "Build all tools when enabled" OFF)
+
 include(cmake/detect_std_support.cmake)
 include(cmake/detect_kernel_support.cmake)
 include(cmake/dependencies.cmake)
@@ -23,6 +25,9 @@ set_property(CACHE SUSHI_RENDERING_BACKEND PROPERTY STRINGS OpenGL)
 find_package(Threads REQUIRED)
 
 add_subdirectory(engine)
+if(BUILD_TOOLS)
+    add_subdirectory(tool)
+endif()
 
 # Game executable
 add_executable(spooky-sushi

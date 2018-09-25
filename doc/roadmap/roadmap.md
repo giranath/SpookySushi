@@ -10,3 +10,7 @@ In this section, focus is on the playable character & Game Engine
   - ~~Use keyboard to move~~
 - Basic movement gym
 - Basic rendering
+
+##25/09/2018
+3D models can now be imported in the game.
+A packaging format has been developed for this and a tool has been written to packages files

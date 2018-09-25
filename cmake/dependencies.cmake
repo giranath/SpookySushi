@@ -110,7 +110,6 @@ set_target_properties(libBullet3Dynamics PROPERTIES
 # Rapidxml
 #=======================================================================================================================
 file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/rapidxml)
-file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/rapidxml)
 ExternalProject_Add(rapidxml
         URL https://downloads.sourceforge.net/project/rapidxml/rapidxml/rapidxml%201.13/rapidxml-1.13.zip?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Frapidxml%2Ffiles%2Flatest%2Fdownload&ts=1531707023
         CONFIGURE_COMMAND ""
@@ -128,3 +127,31 @@ add_dependencies(libRapidxml rapidxml)
 
 set_target_properties(libRapidxml PROPERTIES
 INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/rapidxml/")
+
+#=======================================================================================================================
+# Assimp
+#=======================================================================================================================
+file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/assimp)
+ExternalProject_Add(assimp
+        URL https://github.com/assimp/assimp/archive/v4.1.0.zip
+
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_ROOT}/assimp -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DASSIMP_BUILD_TESTS=OFF -DINJECT_DEBUG_POSTFIX=OFF)
+add_library(libAssimp IMPORTED SHARED GLOBAL)
+add_dependencies(libAssimp assimp)
+set_target_properties(libAssimp PROPERTIES
+        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/assimp/lib/${CMAKE_SHARED_LIBRARY_PREFIX}assimp${CMAKE_SHARED_LIBRARY_SUFFIX}"
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/assimp/include")
+
+#=======================================================================================================================
+# Zlib
+#=======================================================================================================================
+file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/zlib)
+ExternalProject_Add(zlib
+        URL https://zlib.net/zlib1211.zip
+
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_ROOT}/zlib)
+add_library(libZlib IMPORTED STATIC GLOBAL)
+add_dependencies(libZlib zlib)
+set_target_properties(libZlib PROPERTIES
+        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/zlib/lib/${CMAKE_STATIC_LIBRARY_PREFIX}z${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/zlib/include")

@@ -12,6 +12,7 @@ add_subdirectory(rendering)
 add_subdirectory(input)
 add_subdirectory(physic)
 add_subdirectory(plugin)
+add_subdirectory(asset)
 
 add_library(sushi-engine
         application/private/game_loop.cpp
@@ -37,6 +38,7 @@ target_link_libraries(sushi-engine
         PUBLIC sushi-drivers
         PUBLIC sushi-physic
         PUBLIC sushi-plugin
+        PUBLIC sushi-asset
         PUBLIC libRapidxml
         PRIVATE ${CMAKE_THREAD_LIBS_INIT})
 target_include_directories(sushi-engine
