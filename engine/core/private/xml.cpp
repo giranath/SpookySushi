@@ -19,8 +19,8 @@ XmlDocument::XmlDocument(std::istream& stream)
         text_buffer = new char[xml_sources.size() + 1];
         std::fill(text_buffer, text_buffer + xml_sources.size() + 1, 0);
 
-        std::copy(std::begin(xml_sources), std::end(xml_sources), text_buffer);
-        document.parse<rapidxml::parse_declaration_node | rapidxml::parse_no_data_nodes>(text_buffer);
+        std::copy(std::begin(xml_sources), std::end(xml_sources), text_buffer + 0);
+        document.parse<0>(text_buffer);
     }
     catch(...) {
         delete[] text_buffer;
