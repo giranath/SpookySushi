@@ -7,8 +7,9 @@
 #include "../../rendering/public/renderer_interface.hpp"
 #include "../../rendering/public/opengl_renderer.hpp"
 #include "../../rendering/public/proxy_renderer.hpp"
-#include "../../service/public/static_mesh_builder_service.hpp"
-#include "../../service/public/input_bus_service.hpp"
+#include <static_mesh_builder_service.hpp>
+#include <debug_draw_service.hpp>
+#include <input_bus_service.hpp>
 #include "../../input/public/input_factory.hpp"
 #include "../../input/public/input_event.hpp"
 #include "../../input/public/input_bus.hpp"
@@ -264,6 +265,7 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
 
     std::unique_ptr<sushi::RendererInterface> renderer = std::make_unique<sushi::OpenGLRenderer>(main_window);
     sushi::StaticMeshBuilderService::locate(&renderer->static_mesh_builder());
+    sushi::DebugRendererService::locate(&renderer->debug_renderer());
     sushi::ProxyRenderer proxy_renderer(renderer.get());
 
     // Input bus setup
