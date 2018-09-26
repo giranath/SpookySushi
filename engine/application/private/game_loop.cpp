@@ -289,6 +289,16 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
     // Start of Game loop
     loop.run(target_frame_duration, [&](sushi::FrameDuration last_frame_duration) {
         //==============================================================================================================
+        // RENDER CURRENT FRAME
+        //==============================================================================================================
+        renderer->start_frame_rendering();
+
+        game.on_render(proxy_renderer);
+
+        // Do all rendering here
+        renderer->stop_frame_rendering();
+
+        //==============================================================================================================
         // INPUT HANDLING
         //==============================================================================================================
         for(const SDL_Event& ev : sushi::PollEventIterator{}) {
@@ -320,16 +330,6 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
         game.on_late_frame(last_frame_duration);
 
         // TODO: Post frame update
-
-        //==============================================================================================================
-        // RENDER CURRENT FRAME
-        //==============================================================================================================
-        renderer->start_frame_rendering();
-
-        game.on_render(proxy_renderer);
-
-        // Do all rendering here
-        renderer->stop_frame_rendering();
 
         //==============================================================================================================
         // PREPARATION FOR NEXT FRAME

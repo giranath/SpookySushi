@@ -90,21 +90,36 @@ ExternalProject_Add(Bullet3
         INSTALL_DIR "${DEPENDENCIES_ROOT}/bullet3")
 
 add_library(libBullet3Common IMPORTED STATIC GLOBAL)
-add_library(libBullet3Collision IMPORTED SHARED GLOBAL)
-add_library(libBullet3Dynamics IMPORTED SHARED GLOBAL)
+add_library(libBullet3Collision IMPORTED STATIC GLOBAL)
+add_library(libBullet3Dynamics IMPORTED STATIC GLOBAL)
+add_library(libBulletCollision IMPORTED STATIC GLOBAL)
+add_library(libBulletDynamics IMPORTED STATIC GLOBAL)
+add_library(libBulletLinearMath IMPORTED STATIC GLOBAL)
 add_dependencies(libBullet3Common Bullet3)
 add_dependencies(libBullet3Collision Bullet3)
 add_dependencies(libBullet3Dynamics Bullet3)
+add_dependencies(libBulletCollision Bullet3)
+add_dependencies(libBulletDynamics Bullet3)
+add_dependencies(libBulletLinearMath Bullet3)
 
 set_target_properties(libBullet3Common PROPERTIES
         IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Bullet3Common${CMAKE_STATIC_LIBRARY_SUFFIX}"
-        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include")
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
 set_target_properties(libBullet3Collision PROPERTIES
         IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Bullet3Collision${CMAKE_STATIC_LIBRARY_SUFFIX}"
-        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include")
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
 set_target_properties(libBullet3Dynamics PROPERTIES
         IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Bullet3Dynamics${CMAKE_STATIC_LIBRARY_SUFFIX}"
-        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include")
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
+set_target_properties(libBulletCollision PROPERTIES
+        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}BulletCollision${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
+set_target_properties(libBulletDynamics PROPERTIES
+        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}BulletDynamics${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
+set_target_properties(libBulletLinearMath PROPERTIES
+        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}LinearMath${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
 
 #=======================================================================================================================
 # Rapidxml

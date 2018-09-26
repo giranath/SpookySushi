@@ -77,10 +77,10 @@ void Game::on_start() {
 
     // Extract monkey mesh from package
     sushi::Package package;
-    std::ifstream package_stream{"asset/generated/default.spkg", std::ios::binary};
+    std::ifstream package_stream{"asset/generated/termina.spkg", std::ios::binary};
     package_stream >> package;
 
-    auto monkey_model_view = package.entry_data(0, sushi::ValidateEntry{});
+    auto monkey_model_view = package.entry_data(2, sushi::ValidateEntry{});
     if(monkey_model_view) {
         // TODO: Automate asset extraction from package
         std::istringstream monkey_model_stream(std::string{*monkey_model_view});
@@ -97,9 +97,20 @@ void Game::on_start() {
     controller.register_inputs();
 
     sushi::set_relative_mouse_mode(true);
+
+    sushi::log_info("sushi.game", "creating physic world...");
+    physic = sushi::make_physic_world();
+    physic_update_elapsed_time = 0;
 }
 
 void Game::on_frame(sushi::frame_duration last_frame) {
+    // Execute physic simulation
+    physic_update_elapsed_time += std::chrono::duration_cast<std::chrono::milliseconds>(last_frame).count();
+    while(physic_update_elapsed_time > 16) {
+        physic->step_simulation(1.f / 60.f);
+        physic_update_elapsed_time -= 16;
+    }
+
     const sushi::Vec3 forward_movement = main_camera.local_transform.forward() * controller.get_move_forward_value() * 0.1f;
     const sushi::Vec3 right_movement = main_camera.local_transform.right() * controller.get_move_strate_value() * 0.1f;
 
@@ -131,7 +142,7 @@ void Game::on_render(sushi::ProxyRenderer renderer) {
 
     projection_matrix_uniform.set(main_camera.projection());
     view_matrix_uniform.set(main_camera.view());
-    model_matrix_uniform.set(glm::scale(sushi::Mat4x4{1.f}, glm::vec3{0.01f, 0.01f, 0.01f}));
+    model_matrix_uniform.set(glm::scale(sushi::Mat4x4{1.f}, glm::vec3{0.001f, 0.001f, 0.001f}));
 
     mesh->render();
 }

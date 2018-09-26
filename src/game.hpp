@@ -7,12 +7,15 @@
 #include <base_game.hpp>
 #include <camera.hpp>
 #include <static_mesh_builder.hpp>
+#include <physic_world.hpp>
 
 class Game : public sushi::BaseGame {
     sushi::Camera main_camera;
     GameController controller;
     sushi::gl::program default_shader;
     sushi::StaticMeshPtr mesh;
+    std::unique_ptr<sushi::PhysicWorld> physic;
+    uint32_t physic_update_elapsed_time;
 
     void prepare_shader();
 
