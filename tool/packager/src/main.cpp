@@ -120,8 +120,6 @@ void setup_packagers(std::vector<std::unique_ptr<BasePackager>>& packagers, std:
     mapping["irrmesh"] = packager.get();
 
     packagers.push_back(std::move(packager));
-
-    // TODO: Allow user packagers
 }
 
 fs::path home_directory() {

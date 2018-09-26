@@ -8,7 +8,7 @@ add_library(sushi-core
         public/murmurhash.hpp
         private/murmurhash.cpp
         public/compress.hpp
-        private/compress.cpp)
+        private/compress.cpp public/color.hpp)
 
 target_link_libraries(sushi-core
         PUBLIC libGlm

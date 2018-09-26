@@ -14,3 +14,7 @@ In this section, focus is on the playable character & Game Engine
 ##25/09/2018
 3D models can now be imported in the game.
 A packaging format has been developed for this and a tool has been written to packages files
+
+Started to think about Windows port
+- The code should compile
+- The preferred renderer should be Direct3D (OpenGL should be allowed)

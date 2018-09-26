@@ -10,8 +10,7 @@ namespace sushi {
 
 class StaticMeshBuilder;
 
-class RendererInterface {
-public:
+struct RendererInterface {
     virtual ~RendererInterface() = default;
 
     /// Check if the renderer is ready
@@ -24,6 +23,12 @@ public:
     virtual void stop_frame_rendering() = 0;
 
     virtual StaticMeshBuilder& static_mesh_builder() const = 0;
+};
+
+struct DebugRendererInterface {
+    virtual ~DebugRendererInterface() = default;
+
+
 };
 
 }

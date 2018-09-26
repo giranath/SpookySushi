@@ -20,6 +20,7 @@ add_library(sushi-opengl
         public/vertex_array.hpp
         public/private_opengl.hpp)
 target_link_libraries(sushi-opengl
+        PUBLIC sushi-core
         PUBLIC libSDL2
         PUBLIC libGlm
         PUBLIC libGlad)

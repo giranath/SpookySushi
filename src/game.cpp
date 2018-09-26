@@ -139,10 +139,12 @@ void Game::on_render(sushi::ProxyRenderer renderer) {
     auto projection_matrix_uniform = default_shader.find_uniform<sushi::Mat4x4>("projection_matrix");
     auto view_matrix_uniform = default_shader.find_uniform<sushi::Mat4x4>("view_matrix");
     auto model_matrix_uniform = default_shader.find_uniform<sushi::Mat4x4>("model_matrix");
+    auto model_color = default_shader.find_uniform<sushi::RGBColor>("model_color");
 
     projection_matrix_uniform.set(main_camera.projection());
     view_matrix_uniform.set(main_camera.view());
     model_matrix_uniform.set(glm::scale(sushi::Mat4x4{1.f}, glm::vec3{0.001f, 0.001f, 0.001f}));
+    model_color.set(sushi::Colors::Yellow);
 
     mesh->render();
 }
