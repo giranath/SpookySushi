@@ -2,6 +2,7 @@
 #define SPOOKYSUSHI_MURMURHASH_HPP
 
 #include <cstdint>
+#include <cstddef>
 
 namespace sushi {
 

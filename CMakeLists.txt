@@ -13,6 +13,7 @@ endif(MSVC)
 # Project configurations
 set(SUSHI_CACHE_LINE_SIZE 64 CACHE STRING "Specify the cache line size")
 option(BUILD_TOOLS "Build all tools when enabled" OFF)
+option(ENABLE_NETWORKING "Enable networking functionalities" ON)
 
 include(cmake/detect_std_support.cmake)
 include(cmake/detect_kernel_support.cmake)

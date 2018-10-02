@@ -1,9 +1,10 @@
 #include "window_config.hpp"
-#include "../../service/public/log_service.hpp"
+#include <log_service.hpp>
 
 #include <algorithm>
 #include <iterator>
 #include <locale>
+#include <cctype>
 
 namespace sushi {
 

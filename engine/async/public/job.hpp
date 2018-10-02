@@ -18,7 +18,7 @@ private:
     std::atomic_size_t unfinished_count;
 
     // Add some padding to disable False-Sharing
-    static const std::size_t PAYLOAD_SIZE = sizeof(fn) + sizeof(parent) + sizeof(unfinished_count);
+    static const std::size_t PAYLOAD_SIZE = sizeof(job_fn) + sizeof(job*) + sizeof(std::atomic_size_t);
     static const std::size_t PADDING_SIZE = sushi::CACHE_LINE_SIZE - PAYLOAD_SIZE;
     uint8_t padding[PADDING_SIZE];
 

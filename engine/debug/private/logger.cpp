@@ -2,6 +2,7 @@
 
 #include <iterator>
 #include <algorithm>
+#include <ctime>
 
 namespace sushi { namespace debug {
 
