@@ -338,6 +338,9 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
         //==============================================================================================================
         input_bus.clear();
 
+        // Update debug renderer
+        renderer->debug_renderer().update(std::chrono::duration_cast<std::chrono::milliseconds>(last_frame_duration).count());
+
         return true;
     });
 

@@ -10,6 +10,8 @@ class ProxyRenderer {
     RendererInterface* renderer;
 public:
     explicit ProxyRenderer(RendererInterface* renderer) noexcept;
+
+    void set_active_camera(Camera* camera);
 };
 
 }

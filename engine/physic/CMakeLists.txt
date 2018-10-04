@@ -4,6 +4,7 @@ add_library(sushi-physic
 
 target_link_libraries(sushi-physic
         PUBLIC sushi-core
+        PUBLIC sushi-service
         PRIVATE libBullet3Common
         PRIVATE libBullet3Dynamics
         PRIVATE libBullet3Collision

@@ -7,4 +7,8 @@ ProxyRenderer::ProxyRenderer(RendererInterface* renderer) noexcept
 
 }
 
+void ProxyRenderer::set_active_camera(Camera* camera) {
+    renderer->set_active_camera(camera);
+}
+
 }

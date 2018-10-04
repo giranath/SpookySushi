@@ -166,6 +166,10 @@ class uniform {
 public:
     uniform() = default;
 
+    explicit operator bool() const noexcept {
+        return good();
+    }
+
     bool good() const noexcept {
         return raw != 0;
     }

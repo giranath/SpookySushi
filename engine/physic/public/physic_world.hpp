@@ -14,6 +14,8 @@ public:
     virtual void set_gravity(const Vec3& gravity) = 0;
 
     virtual void step_simulation(float dt) = 0;
+
+    virtual void draw_debug_informations() = 0;
 };
 
 std::unique_ptr<PhysicWorld> make_physic_world();

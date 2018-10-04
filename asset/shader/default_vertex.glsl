@@ -3,7 +3,6 @@
 layout(location = 0) in vec3 local_vert_position;
 layout(location = 1) in vec3 local_normal;
 
-uniform mat4 ProjectionViewModel;
 uniform mat4 projection_matrix;
 uniform mat4 view_matrix;
 uniform mat4 model_matrix;

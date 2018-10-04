@@ -1,6 +1,7 @@
 #ifndef SPOOKYSUSHI_COLOR_HPP
 #define SPOOKYSUSHI_COLOR_HPP
 
+#include <types.hpp>
 #include <cstdint>
 
 namespace sushi {
@@ -196,6 +197,24 @@ struct RGBAColor {
         return RGBAColor(r - other.r, g - other.g, b - other.b, a - other.a);
     }
 };
+
+struct NormalizedColor {};
+
+constexpr Vec3 to_vec3(const RGBColor& color) noexcept {
+    return Vec3{color.r, color.g, color.b};
+}
+
+constexpr Vec3 to_vec3(const RGBAColor& color) noexcept {
+    return Vec3{color.r, color.g, color.b};
+}
+
+constexpr Vec3 to_vec3(const RGBColor& color, NormalizedColor) noexcept {
+    return Vec3{color.r / 255.f, color.g / 255.f, color.b / 255.f};
+}
+
+constexpr Vec3 to_vec3(const RGBAColor& color, NormalizedColor) noexcept {
+    return Vec3{color.r / 255.f, color.g / 255.f, color.b / 255.f};
+}
 
 }
 

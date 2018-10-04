@@ -18,6 +18,15 @@ struct OpenGLRenderer::impl {
     SDL_GLContext gl_context;
     OpenGLStaticMeshBuilder static_mesh_builder;
     OpenGLDebugRenderer debug_renderer;
+    Camera* active_camera;
+
+    impl(RendererInterface* parent)
+    : gl_context{}
+    , static_mesh_builder{}
+    , debug_renderer{parent}
+    , active_camera{} {
+
+    }
 
     ~impl() {
         if(gl_context != 0) {
@@ -29,7 +38,7 @@ struct OpenGLRenderer::impl {
 
 OpenGLRenderer::OpenGLRenderer(Window& target)
 : target_window(target)
-, pimpl(std::make_unique<impl>()){
+, pimpl(std::make_unique<impl>(this)){
 
 }
 
@@ -51,6 +60,9 @@ bool OpenGLRenderer::initialize() {
     }
 
     gladLoadGL();
+
+    pimpl->debug_renderer.init();
+
     glClearColor(1.f, 1.f, 1.f, 1.f);
 
     glEnable(GL_DEPTH_TEST);
@@ -71,6 +83,7 @@ void OpenGLRenderer::start_frame_rendering() {
 void OpenGLRenderer::stop_frame_rendering() {
     // Do the actual rendering
 
+    pimpl->debug_renderer.draw();
     SDL_GL_SwapWindow(static_cast<SDL_Window*>(target_window));
 }
 
@@ -82,6 +95,18 @@ StaticMeshBuilder& OpenGLRenderer::static_mesh_builder() const {
 DebugRendererInterface& OpenGLRenderer::debug_renderer() const {
     assert(pimpl);
     return pimpl->debug_renderer;
+}
+
+Camera* OpenGLRenderer::active_camera() {
+    return pimpl->active_camera;
+}
+
+const Camera* OpenGLRenderer::active_camera() const {
+    return pimpl->active_camera;
+}
+
+void OpenGLRenderer::set_active_camera(Camera* camera) {
+    pimpl->active_camera = camera;
 }
 
 void OpenGLRenderer::uninitialize() {

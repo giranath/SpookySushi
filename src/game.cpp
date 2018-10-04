@@ -4,6 +4,7 @@
 #include <static_mesh_builder_service.hpp>
 #include <service_locator.hpp>
 #include <input_bus_service.hpp>
+#include <debug_draw_service.hpp>
 #include <input_event.hpp>
 #include <opengl.hpp>
 #include <input_state.hpp>
@@ -101,6 +102,11 @@ void Game::on_start() {
     sushi::log_info("sushi.game", "creating physic world...");
     physic = sushi::make_physic_world();
     physic_update_elapsed_time = 0;
+
+    const sushi::Vec3 normal = glm::normalize(sushi::Vec3{1.f, 0.f, 1.f});
+    //sushi::DebugRendererService::get().add_circle(sushi::Vec3{0.f, 0.f, 0.f}, normal, 2.f, sushi::Colors::Blue, 10'000);
+    //sushi::DebugRendererService::get().add_line(sushi::Vec3{0.f, 0.f, 0.f}, normal, sushi::Colors::Red, 18'000);
+    sushi::DebugRendererService::get().add_cross(sushi::Vec3{0.f, 0.f, 0.f}, 5'000);
 }
 
 void Game::on_frame(sushi::frame_duration last_frame) {
@@ -134,6 +140,8 @@ void Game::on_late_frame(sushi::frame_duration last_frame) {
 }
 
 void Game::on_render(sushi::ProxyRenderer renderer) {
+    renderer.set_active_camera(&main_camera);
+
     sushi::gl::bind(default_shader);
 
     auto projection_matrix_uniform = default_shader.find_uniform<sushi::Mat4x4>("projection_matrix");
@@ -146,7 +154,7 @@ void Game::on_render(sushi::ProxyRenderer renderer) {
     model_matrix_uniform.set(glm::scale(sushi::Mat4x4{1.f}, glm::vec3{0.001f, 0.001f, 0.001f}));
     model_color.set(sushi::Colors::Yellow);
 
-    mesh->render();
+    //mesh->render();
 }
 
 void Game::on_stop() {
