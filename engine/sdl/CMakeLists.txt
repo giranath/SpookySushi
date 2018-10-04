@@ -12,3 +12,10 @@ target_link_libraries(sushi-sdl
 target_include_directories(sushi-sdl
         PUBLIC public
         PRIVATE private)
+
+get_target_property(SDL2_DLL_LOCATION libSDL2 IMPORTED_LOCATION_DEBUG)
+MESSAGE("${CMAKE_COMMAND}" -E copy_if_different "${SDL2_DLL_LOCATION}" "${CMAKE_BINARY_DIR}")
+add_custom_command(TARGET sushi-sdl POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${SDL2_DLL_LOCATION}" "${CMAKE_BINARY_DIR}"
+        COMMENT "Copy SDL dll"
+)
