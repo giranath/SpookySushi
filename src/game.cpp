@@ -4,6 +4,7 @@
 #include <static_mesh_builder_service.hpp>
 #include <service_locator.hpp>
 #include <input_bus_service.hpp>
+#include <log_service.hpp>
 #include <input_event.hpp>
 #include <opengl.hpp>
 #include <input_state.hpp>
@@ -88,6 +89,9 @@ void Game::on_start() {
 
         mesh = sushi::StaticMeshBuilderService::get().build(sushi::StaticMeshDefinition{asset});
     }
+    else {
+        sushi::log_warning("sushi.game.start", "failed to load default.spkg");
+    }
 
     controller.register_inputs();
 
@@ -128,7 +132,9 @@ void Game::on_render(sushi::ProxyRenderer renderer) {
     view_matrix_uniform.set(main_camera.view());
     model_matrix_uniform.set(glm::scale(sushi::Mat4x4{1.f}, glm::vec3{0.01f, 0.01f, 0.01f}));
 
-    mesh->render();
+    if(mesh) {
+        mesh->render();
+    }
 }
 
 void Game::on_stop() {
