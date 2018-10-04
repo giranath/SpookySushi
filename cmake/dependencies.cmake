@@ -170,3 +170,17 @@ add_dependencies(libZlib zlib)
 set_target_properties(libZlib PROPERTIES
         IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/zlib/lib/${CMAKE_STATIC_LIBRARY_PREFIX}z${CMAKE_STATIC_LIBRARY_SUFFIX}"
         INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/zlib/include")
+
+#=======================================================================================================================
+# FreeType
+#=======================================================================================================================
+file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/freetype)
+ExternalProject_Add(freetype
+        URL https://download.savannah.gnu.org/releases/freetype/freetype-2.9.tar.gz
+
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_ROOT}/freetype)
+add_library(libFreetype IMPORTED STATIC GLOBAL)
+add_dependencies(libFreetype freetype)
+set_target_properties(libFreetype PROPERTIES
+        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/freetype/lib/${CMAKE_STATIC_LIBRARY_PREFIX}freetype${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/freetype/include/freetype2")

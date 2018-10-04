@@ -15,9 +15,14 @@ add_library(sushi-rendering
         private/camera.cpp
         public/camera.hpp
         private/transform.cpp
-        public/transform.hpp private/opengl_static_mesh.cpp private/opengl_static_mesh.hpp private/open_gl_debug_renderer.cpp private/open_gl_debug_renderer.hpp)
+        public/transform.hpp
+        private/opengl_static_mesh.cpp
+        private/opengl_static_mesh.hpp
+        private/open_gl_debug_renderer.cpp
+        private/open_gl_debug_renderer.hpp)
 
 target_link_libraries(sushi-rendering
+        PRIVATE libFreetype
         PRIVATE sushi-sdl
         PUBLIC sushi-core
         PRIVATE sushi-service)
