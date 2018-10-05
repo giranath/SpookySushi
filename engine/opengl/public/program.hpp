@@ -42,7 +42,7 @@ struct is_pointer_like<std::shared_ptr<ptr>> {
 class program {
     GLuint prog;
 public:
-    class link_status {
+    class [[nodiscard]] link_status {
         bool is_linked;
         std::string msg;
     public:

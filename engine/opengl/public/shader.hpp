@@ -35,7 +35,7 @@ class shader {
 protected:
     shader(GLenum type) noexcept;
 public:
-    class compilation_status {
+    class [[nodiscard]] compilation_status {
         std::string msg;
         bool has_failed;
     public:

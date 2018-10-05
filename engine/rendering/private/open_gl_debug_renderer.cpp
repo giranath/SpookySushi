@@ -18,7 +18,7 @@ static const std::size_t SPHERE_RESOLUTION = 5;
 static const std::size_t CIRCLE_RESOLUTION = 16;
 
 void DebugLineShape::construct(std::vector<Vec3>& vertices, std::vector<Vec3>& colors) const {
-    if(cooldown == 0) return;
+    //if(cooldown == 0) return;
 
     vertices.push_back(start);
     vertices.push_back(end);
@@ -28,7 +28,7 @@ void DebugLineShape::construct(std::vector<Vec3>& vertices, std::vector<Vec3>& c
 }
 
 void DebugSphereShape::construct(std::vector<Vec3>& vertices, std::vector<Vec3>& colors) const {
-    if(cooldown == 0) return;
+    //if(cooldown == 0) return;
 
     const float HALF_CIRCLE_THETA = glm::pi<float>();
 
@@ -55,7 +55,7 @@ static Quaternion rotation_between_unit_vectors(Vec3 u, Vec3 v) {
 }
 
 void DebugCircleShape::construct(std::vector<Vec3>& vertices, std::vector<Vec3>& colors) const {
-    if(cooldown == 0) return;
+    //if(cooldown == 0) return;
 
     const float FULL_CIRCLE_THETA = glm::pi<float>() * 2.f;
 
@@ -88,7 +88,7 @@ void DebugAABBShape::construct(std::vector<Vec3>& vertices, std::vector<Vec3>& c
     const Vec3 min = center - extend;
     const Vec3 max = center + extend;
 
-    if(cooldown == 0) return;
+    //if(cooldown == 0) return;
 
     // Top face
     vertices.emplace_back(min.x, max.y, min.z);
@@ -286,14 +286,17 @@ void OpenGLDebugRenderer::init() {
 }
 
 void OpenGLDebugRenderer::add_line(const Vec3& start_point, const Vec3& end_point, RGBColor line_color, uint32_t duration_ms, bool enable_depth) {
+    assert(lines.size() < MAX_DEBUG_LINE_COUNT);
     lines.emplace_back(start_point, end_point, line_color, duration_ms, enable_depth);
 }
 
 void OpenGLDebugRenderer::add_sphere(const Vec3& center, float radius, RGBColor line_color, uint32_t duration_ms, bool enable_depth) {
+    assert(lines.size() < MAX_DEBUG_SPHERES_COUNT);
     spheres.emplace_back(center, radius, line_color, duration_ms, enable_depth);
 }
 
 void OpenGLDebugRenderer::add_circle(const Vec3& center, const Vec3& normal, float radius, RGBColor color, uint32_t duration_ms, bool enabled_depth) {
+    assert(lines.size() < MAX_DEBUG_CIRCLES_COUNT);
     circles.emplace_back(center, radius, glm::normalize(normal), color, duration_ms, enabled_depth);
 }
 
@@ -304,6 +307,7 @@ void OpenGLDebugRenderer::add_cross(const Vec3& position, RGBColor color_x, RGBC
 }
 
 void OpenGLDebugRenderer::add_aabb(const Vec3& center, const Vec3& extend, RGBColor color, uint32_t duration_ms, bool enable_depth) {
+    assert(lines.size() < MAX_DEBUG_AABBS_COUNT);
     aabbs.emplace_back(center, extend, color, duration_ms, enable_depth);
 }
 
@@ -418,6 +422,8 @@ void OpenGLDebugRenderer::draw() {
 
     glEnable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    // TODO: Remove all shape with cooldown at 0
 }
 
 }

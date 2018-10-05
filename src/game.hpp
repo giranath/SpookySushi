@@ -14,7 +14,8 @@ class Game : public sushi::BaseGame {
     GameController controller;
     sushi::gl::program default_shader;
     sushi::StaticMeshPtr mesh;
-    std::unique_ptr<sushi::PhysicWorld> physic;
+    //std::unique_ptr<sushi::PhysicWorld> physic;
+    sushi::PhysicWorld physic;
     uint32_t physic_update_elapsed_time;
 
     void prepare_shader();

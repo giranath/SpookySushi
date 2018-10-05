@@ -55,19 +55,22 @@ void Game::prepare_shader() {
     sushi::gl::vertex_shader vertex_shader;
     auto res = vertex_shader.compile(vertex_shader_source);
     if(!res) {
-        std::cerr << res.message() << std::endl;
+        sushi::log_warning("sushi.game.start", "failed to compile vertex shader: %s", res.message().c_str());
     }
 
     sushi::gl::fragment_shader fragment_shader;
     res = fragment_shader.compile(fragment_shader_source);
     if(!res) {
-        std::cerr << res.message() << std::endl;
+        sushi::log_warning("sushi.game.start", "failed to compile fragment shader: %s", res.message().c_str());
     }
 
     default_shader = sushi::gl::program::make();
     default_shader.attach(vertex_shader);
     default_shader.attach(fragment_shader);
-    default_shader.link();
+    auto link_res = default_shader.link();
+    if(!link_res) {
+        sushi::log_warning("sushi.game.start", "failed to link program: %s", link_res.message().c_str());
+    }
 }
 
 void Game::on_start() {
@@ -97,23 +100,28 @@ void Game::on_start() {
 
     controller.register_inputs();
 
-    sushi::set_relative_mouse_mode(true);
+    //sushi::set_relative_mouse_mode(true);
 
     sushi::log_info("sushi.game", "creating physic world...");
-    physic = sushi::make_physic_world();
+    //physic = sushi::make_physic_world();
     physic_update_elapsed_time = 0;
 
     const sushi::Vec3 normal = glm::normalize(sushi::Vec3{1.f, 0.f, 1.f});
     //sushi::DebugRendererService::get().add_circle(sushi::Vec3{0.f, 0.f, 0.f}, normal, 2.f, sushi::Colors::Blue, 10'000);
     //sushi::DebugRendererService::get().add_line(sushi::Vec3{0.f, 0.f, 0.f}, normal, sushi::Colors::Red, 18'000);
-    sushi::DebugRendererService::get().add_cross(sushi::Vec3{0.f, 0.f, 0.f}, 5'000);
+    sushi::DebugRendererService::get().add_cross(sushi::Vec3{0.f, 0.f, 0.f}, 5'000, false);
+
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{0.f, 10.f, 0.f}), sushi::PhysicBoxShape(1.f, 1.f, 1.f), 10.f);
+
+
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{0.f, 0.f, 0.f}), sushi::PhysicBoxShape(100.f, 1.f, 100.f));
 }
 
 void Game::on_frame(sushi::frame_duration last_frame) {
     // Execute physic simulation
     physic_update_elapsed_time += std::chrono::duration_cast<std::chrono::milliseconds>(last_frame).count();
     while(physic_update_elapsed_time > 16) {
-        physic->step_simulation(1.f / 60.f);
+        physic.step_simulation(1.f / 60.f);
         physic_update_elapsed_time -= 16;
     }
 
@@ -154,9 +162,9 @@ void Game::on_render(sushi::ProxyRenderer renderer) {
     model_matrix_uniform.set(glm::scale(sushi::Mat4x4{1.f}, glm::vec3{0.001f, 0.001f, 0.001f}));
     model_color.set(sushi::Colors::Yellow);
 
-    //mesh->render();
+    mesh->render();
 
-    physic->draw_debug_informations();
+    sushi::draw_physic_debug(physic);
 }
 
 void Game::on_stop() {
