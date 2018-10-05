@@ -1,129 +1,34 @@
 #ifndef SPOOKYSUSHI_OPEN_GL_DEBUG_RENDERER_HPP
 #define SPOOKYSUSHI_OPEN_GL_DEBUG_RENDERER_HPP
 
+#include "opengl_debug_shape_renderer.hpp"
+
 #include <renderer_interface.hpp>
 #include <vector>
 #include <buffer.hpp>
 #include <program.hpp>
 #include <vertex_array.hpp>
+#include <algorithm>
+#include <iterator>
 
 namespace sushi {
 
-struct DebugShape {
-    RGBColor color;
-    uint32_t cooldown;
-    bool enable_depth;
-
-    constexpr DebugShape(RGBColor color, uint32_t cooldown = 0, bool enable_depth = true) noexcept
-    : color{color}
-    , cooldown{cooldown}
-    , enable_depth{enable_depth} {
-
-    }
-
-    virtual void construct(std::vector<Vec3>& vertices, std::vector<Vec3>& colors) const = 0;
-
-    virtual uint32_t sort_key() const noexcept {
-        const uint32_t DEPLETED_COOLDOWN_MASK = (1u << 31);
-        const uint32_t DEPTH_ENABLED_MASK = (1u << 30);
-
-        uint32_t sort_mask = 0;
-
-        if(cooldown == 0) {
-            sort_mask |= DEPLETED_COOLDOWN_MASK;
-        }
-
-        if(enable_depth) {
-            sort_mask |= DEPTH_ENABLED_MASK;
-        }
-
-        return sort_mask;
-    }
-};
-
-struct DebugCenteredShape : public DebugShape {
-    Vec3 center;
-
-    constexpr DebugCenteredShape(Vec3 center, RGBColor color, uint32_t cooldown = 0, bool enable_depth = true) noexcept
-    : DebugShape(color, cooldown, enable_depth)
-    , center{center} {
-
-    }
-};
-
-struct DebugCircleShape : public DebugCenteredShape {
-    Vec3 normal;
-    float radius;
-
-    constexpr DebugCircleShape(Vec3 center, float radius, Vec3 normal, RGBColor color, uint32_t cooldown = 0, bool enable_depth = true) noexcept
-    : DebugCenteredShape(center, color, cooldown, enable_depth)
-    , normal{normal}
-    , radius{radius} {
-
-    }
-
-    void construct(std::vector<Vec3>& vertices, std::vector<Vec3>& colors) const override;
-};
-
-struct DebugSphereShape : public DebugCenteredShape {
-    float radius;
-
-    constexpr DebugSphereShape(Vec3 center, float radius, RGBColor color, uint32_t cooldown = 0, bool enable_depth = true) noexcept
-    : DebugCenteredShape(center, color, cooldown, enable_depth)
-    , radius{radius} {
-
-    }
-
-    void construct(std::vector<Vec3>& vertices, std::vector<Vec3>& colors) const override;
-};
-
-struct DebugAABBShape : public DebugCenteredShape {
-    Vec3 extend;
-
-    constexpr DebugAABBShape(Vec3 center, Vec3 extend, RGBColor color, uint32_t cooldown = 0, bool enable_depth = true) noexcept
-    : DebugCenteredShape(center, color, cooldown, enable_depth)
-    , extend{extend} {
-
-    }
-
-    void construct(std::vector<Vec3>& vertices, std::vector<Vec3>& colors) const override;
-};
-
-struct DebugLineShape : public DebugShape {
-    Vec3 start;
-    Vec3 end;
-
-    constexpr DebugLineShape(Vec3 start, Vec3 end, RGBColor color, uint32_t cooldown = 0, bool enable_depth = true) noexcept
-    : DebugShape(color, cooldown, enable_depth)
-    , start{start}
-    , end{end} {
-
-    }
-
-    void construct(std::vector<Vec3>& vertices, std::vector<Vec3>& colors) const override;
-};
-
 class OpenGLDebugRenderer : public DebugRendererInterface {
-    std::vector<DebugLineShape> lines;
-    std::vector<DebugAABBShape> aabbs;
-    std::vector<DebugCircleShape> circles;
-    std::vector<DebugSphereShape> spheres;
+    OpenGLDebugShapeRenderer<DebugAABBShape> aabb_renderer;
+    OpenGLDebugShapeRenderer<DebugLineShape> line_renderer;
+    OpenGLDebugShapeRenderer<DebugCircleShape> circle_renderer;
+    OpenGLDebugShapeRenderer<DebugSphereShape> sphere_renderer;
 
-    gl::buffer lines_vertices;
-    gl::buffer lines_colors;
-    gl::buffer aabbs_vertices;
-    gl::buffer aabbs_colors;
-    gl::buffer circles_vertices;
-    gl::buffer circles_colors;
-    gl::buffer spheres_vertices;
     gl::program debug_program;
 
-    gl::vertex_array lines_vao;
-    gl::vertex_array aabb_vao;
-    gl::vertex_array circles_vao;
     RendererInterface* renderer_;
 
     gl::uniform<Mat4x4> projection_view_model_matrix_uniform;
+
+    void collect_garbages();
+
+    void compile_shaders();
+
 public:
     OpenGLDebugRenderer(RendererInterface* parent);
 

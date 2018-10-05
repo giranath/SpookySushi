@@ -12,7 +12,7 @@ Vec3 to_vec3(const btVector3& bt_vector3) noexcept {
 }
 
 RGBColor to_rgb(const btVector3& bt_color) noexcept {
-    return RGBColor(bt_color.x(), bt_color.y(), bt_color.z());
+    return RGBColor(bt_color.x() * 255.f, bt_color.y() * 255.f, bt_color.z() * 255.f);
 }
 
 

@@ -107,13 +107,13 @@ void Game::on_start() {
     physic_update_elapsed_time = 0;
 
     const sushi::Vec3 normal = glm::normalize(sushi::Vec3{1.f, 0.f, 1.f});
-    //sushi::DebugRendererService::get().add_circle(sushi::Vec3{0.f, 0.f, 0.f}, normal, 2.f, sushi::Colors::Blue, 10'000);
+    sushi::DebugRendererService::get().add_circle(sushi::Vec3{0.f, 0.f, 0.f}, normal, 2.f, sushi::Colors::Blue, 10'000);
     //sushi::DebugRendererService::get().add_line(sushi::Vec3{0.f, 0.f, 0.f}, normal, sushi::Colors::Red, 18'000);
     sushi::DebugRendererService::get().add_cross(sushi::Vec3{0.f, 0.f, 0.f}, 5'000, false);
 
+    sushi::DebugRendererService::get().add_aabb(sushi::Vec3{0.f, -1.f, 0.f}, sushi::Vec3{1.f, 0.5f, 1.f}, sushi::Colors::Magenta, 10'000);
+
     physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{0.f, 10.f, 0.f}), sushi::PhysicBoxShape(1.f, 1.f, 1.f), 10.f);
-
-
     physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{0.f, 0.f, 0.f}), sushi::PhysicBoxShape(100.f, 1.f, 100.f));
 }
 
