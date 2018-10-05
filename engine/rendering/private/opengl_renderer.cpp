@@ -3,7 +3,7 @@
 #include "opengl.hpp"
 #include "log_service.hpp"
 #include "string_utils.hpp"
-#include "../../sdl/public/window.hpp"
+#include <window.hpp>
 
 #include <SDL.h>
 
@@ -237,7 +237,16 @@ bool OpenGLRenderer::initialize() {
         return false;
     }
 
-    gladLoadGL();
+    if (!gladLoadGL()) {
+        log_critical("sushi.renderer.opengl", "failed to load OpenGL functions");
+        return false;
+    }
+
+    if (SDL_GL_MakeCurrent(static_cast<SDL_Window*>(target_window), pimpl->gl_context) != 0) {
+        log_critical("sushi.renderer.opengl", "failed to make OpenGL context current : %s", SDL_GetError());
+        return false;
+    }
+
     glClearColor(1.f, 1.f, 1.f, 1.f);
 
     glEnable(GL_DEPTH_TEST);

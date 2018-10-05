@@ -68,8 +68,6 @@ public:
         jobs_->stop();
         sushi::debug::Profiler::get().stop();
     }
-
-
 };
 
 }
