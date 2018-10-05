@@ -155,6 +155,8 @@ void Game::on_render(sushi::ProxyRenderer renderer) {
     model_color.set(sushi::Colors::Yellow);
 
     //mesh->render();
+
+    physic->draw_debug_informations();
 }
 
 void Game::on_stop() {
