@@ -5,6 +5,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <color.hpp>
 
 namespace sushi { namespace gl {
 
@@ -113,6 +114,29 @@ struct uniform_traits<glm::mat4> {
     }
 };
 
+// Colors
+template<>
+struct uniform_traits<RGBColor> {
+    using value_type = RGBColor;
+    using category = vector_tag;
+
+    static const bool is_uniform = true;
+    static void set(GLuint uniform, value_type color) {
+        glUniform3f(uniform, color.r / 255.f, color.g / 255.f, color.b / 255.f);
+    }
+};
+
+template<>
+struct uniform_traits<RGBAColor> {
+    using value_type = RGBAColor;
+    using category = vector_tag;
+
+    static const bool is_uniform = true;
+    static void set(GLuint uniform, value_type color) {
+        glUniform4f(uniform, color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f);
+    }
+};
+
 class program;
 
 template<typename T>
@@ -141,6 +165,10 @@ class uniform {
 
 public:
     uniform() = default;
+
+    explicit operator bool() const noexcept {
+        return good();
+    }
 
     bool good() const noexcept {
         return raw != 0;

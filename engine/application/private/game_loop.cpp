@@ -7,8 +7,9 @@
 #include "../../rendering/public/renderer_interface.hpp"
 #include "../../rendering/public/opengl_renderer.hpp"
 #include "../../rendering/public/proxy_renderer.hpp"
-#include "../../service/public/static_mesh_builder_service.hpp"
-#include "../../service/public/input_bus_service.hpp"
+#include <static_mesh_builder_service.hpp>
+#include <debug_draw_service.hpp>
+#include <input_bus_service.hpp>
 #include "../../input/public/input_factory.hpp"
 #include "../../input/public/input_event.hpp"
 #include "../../input/public/input_bus.hpp"
@@ -264,6 +265,7 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
 
     std::unique_ptr<sushi::RendererInterface> renderer = std::make_unique<sushi::OpenGLRenderer>(main_window);
     sushi::StaticMeshBuilderService::locate(&renderer->static_mesh_builder());
+    sushi::DebugRendererService::locate(&renderer->debug_renderer());
     sushi::ProxyRenderer proxy_renderer(renderer.get());
 
     // Input bus setup
@@ -288,6 +290,16 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
     log_info("sushi.bootstrap", "game loop started");
     // Start of Game loop
     loop.run(target_frame_duration, [&](sushi::FrameDuration last_frame_duration) {
+        //==============================================================================================================
+        // RENDER CURRENT FRAME
+        //==============================================================================================================
+        renderer->start_frame_rendering();
+
+        game.on_render(proxy_renderer);
+
+        // Do all rendering here
+        renderer->stop_frame_rendering();
+
         //==============================================================================================================
         // INPUT HANDLING
         //==============================================================================================================
@@ -322,19 +334,12 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
         // TODO: Post frame update
 
         //==============================================================================================================
-        // RENDER CURRENT FRAME
-        //==============================================================================================================
-        renderer->start_frame_rendering();
-
-        game.on_render(proxy_renderer);
-
-        // Do all rendering here
-        renderer->stop_frame_rendering();
-
-        //==============================================================================================================
         // PREPARATION FOR NEXT FRAME
         //==============================================================================================================
         input_bus.clear();
+
+        // Update debug renderer
+        renderer->debug_renderer().update(std::chrono::duration_cast<std::chrono::milliseconds>(last_frame_duration).count());
 
         return true;
     });

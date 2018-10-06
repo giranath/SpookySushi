@@ -28,6 +28,11 @@ public:
     void stop_frame_rendering() override;
 
     StaticMeshBuilder& static_mesh_builder() const override;
+    DebugRendererInterface& debug_renderer() const override;
+
+    Camera* active_camera() override;
+    const Camera* active_camera() const override;
+    void set_active_camera(Camera* camera) override;
 };
 }
 

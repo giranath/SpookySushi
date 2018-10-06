@@ -15,7 +15,11 @@ add_library(sushi-rendering
         private/camera.cpp
         public/camera.hpp
         private/transform.cpp
-        public/transform.hpp)
+        public/transform.hpp
+        private/opengl_static_mesh.cpp
+        private/opengl_static_mesh.hpp
+        private/open_gl_debug_renderer.cpp
+        private/open_gl_debug_renderer.hpp private/opengl_debug_shape_renderer.hpp public/debug_shapes.hpp public/debug_shape_traits.hpp private/debug_shapes.cpp)
 
 target_link_libraries(sushi-rendering
         PRIVATE sushi-sdl

@@ -3,6 +3,7 @@
 out vec3 color;
 in vec3 normal;
 in vec3 frag_position;
+in vec3 frag_color;
 
 void main() {
     vec3 ambiant_color = vec3(1, 1, 1);
@@ -17,8 +18,6 @@ void main() {
     float diff = max(dot(norm, light_direction), 0.0);
     vec3 diffuse = diff * light_color;
 
-    vec3 object_color = vec3(1, 0, 0);
-
-    color = (ambiant + diffuse) * object_color;
+    color = (ambiant + diffuse) * frag_color;
 }
 
