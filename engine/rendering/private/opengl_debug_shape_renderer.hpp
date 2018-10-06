@@ -14,6 +14,17 @@
 
 namespace sushi {
 
+constexpr GLenum to_opengl_primitive(debug_shape_primitive primitive) {
+    switch(primitive) {
+        case debug_shape_primitive::Lines:
+            return GL_LINES;
+        case debug_shape_primitive::Triangles:
+            return GL_TRIANGLES;
+        default:
+            return 0;
+    }
+}
+
 template<typename ShapeType>
 class OpenGLDebugShapeRenderer {
     std::vector<ShapeType> shapes;
@@ -88,7 +99,7 @@ public:
         gl::bind(vao);
 
         assert(vertice_count < std::numeric_limits<GLsizei>::max());
-        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(vertice_count));
+        glDrawArrays(to_opengl_primitive(debug_shape_traits<ShapeType>::primitive), 0, static_cast<GLsizei>(vertice_count));
     }
 
     template<typename... Args>

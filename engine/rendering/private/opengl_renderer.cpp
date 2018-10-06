@@ -63,8 +63,6 @@ bool OpenGLRenderer::initialize() {
 
     pimpl->debug_renderer.init();
 
-    glClearColor(1.f, 1.f, 1.f, 1.f);
-
     glEnable(GL_DEPTH_TEST);
 
     glEnable(GL_CULL_FACE);

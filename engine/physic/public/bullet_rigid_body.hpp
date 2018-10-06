@@ -14,7 +14,7 @@ class BulletRigidBody {
 
     btRigidBody* body;
 
-    BulletRigidBody(btRigidBody* body) noexcept;
+    explicit BulletRigidBody(btRigidBody* body) noexcept;
 public:
     BulletRigidBody() noexcept;
 

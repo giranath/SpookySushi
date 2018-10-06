@@ -51,13 +51,13 @@ struct DebugCenteredShape : public DebugShape {
     Vec3 center;
 
     constexpr DebugCenteredShape(Vec3 center, RGBColor color, uint32_t cooldown = 0, bool enable_depth = true) noexcept
-            : DebugShape(color, cooldown, enable_depth)
-            , center{center} {
+    : DebugShape(color, cooldown, enable_depth)
+    , center{center} {
 
     }
 };
 
-static const std::size_t SPHERE_RESOLUTION = 5;
+static const std::size_t SPHERE_RESOLUTION = 8;
 static const std::size_t CIRCLE_RESOLUTION = 16;
 
 struct DebugCircleShape : public DebugCenteredShape {
@@ -65,61 +65,78 @@ struct DebugCircleShape : public DebugCenteredShape {
     float radius;
 
     constexpr DebugCircleShape(Vec3 center, float radius, Vec3 normal, RGBColor color, uint32_t cooldown = 0, bool enable_depth = true) noexcept
-            : DebugCenteredShape(center, color, cooldown, enable_depth)
-            , normal{normal}
-            , radius{radius} {
+    : DebugCenteredShape(center, color, cooldown, enable_depth)
+    , normal{normal}
+    , radius{radius} {
 
     }
 
     void construct(std::vector<Vec3>& vertices, std::vector<Vec3>& colors) const override;
 };
 
-IMPL_DEBUG_SHAPE_TRAITS(DebugCircleShape, (CIRCLE_RESOLUTION * 2));
+IMPL_DEBUG_SHAPE_TRAITS(DebugCircleShape, (CIRCLE_RESOLUTION * 2), debug_shape_primitive::Lines);
 
 struct DebugSphereShape : public DebugCenteredShape {
     float radius;
 
     constexpr DebugSphereShape(Vec3 center, float radius, RGBColor color, uint32_t cooldown = 0, bool enable_depth = true) noexcept
-            : DebugCenteredShape(center, color, cooldown, enable_depth)
-            , radius{radius} {
+    : DebugCenteredShape(center, color, cooldown, enable_depth)
+    , radius{radius} {
 
     }
 
     void construct(std::vector<Vec3>& vertices, std::vector<Vec3>& colors) const override;
 };
 
-IMPL_DEBUG_SHAPE_TRAITS(DebugSphereShape, (SPHERE_RESOLUTION * SPHERE_RESOLUTION * 2));
+IMPL_DEBUG_SHAPE_TRAITS(DebugSphereShape, (SPHERE_RESOLUTION * SPHERE_RESOLUTION * 6), debug_shape_primitive::Triangles);
 
 struct DebugAABBShape : public DebugCenteredShape {
     Vec3 extend;
 
     constexpr DebugAABBShape(Vec3 center, Vec3 extend, RGBColor color, uint32_t cooldown = 0, bool enable_depth = true) noexcept
-            : DebugCenteredShape(center, color, cooldown, enable_depth)
-            , extend{extend} {
+    : DebugCenteredShape(center, color, cooldown, enable_depth)
+    , extend{extend} {
 
     }
 
     void construct(std::vector<Vec3>& vertices, std::vector<Vec3>& colors) const override;
 };
 
-IMPL_DEBUG_SHAPE_TRAITS(DebugAABBShape, 48);
+IMPL_DEBUG_SHAPE_TRAITS(DebugAABBShape, 48, debug_shape_primitive::Lines);
 
 struct DebugLineShape : public DebugShape {
     Vec3 start;
     Vec3 end;
 
     constexpr DebugLineShape(Vec3 start, Vec3 end, RGBColor color, uint32_t cooldown = 0, bool enable_depth = true) noexcept
-            : DebugShape(color, cooldown, enable_depth)
-            , start{start}
-            , end{end} {
+    : DebugShape(color, cooldown, enable_depth)
+    , start{start}
+    , end{end} {
 
     }
 
     void construct(std::vector<Vec3>& vertices, std::vector<Vec3>& colors) const override;
 };
 
-IMPL_DEBUG_SHAPE_TRAITS(DebugLineShape, 2);
+IMPL_DEBUG_SHAPE_TRAITS(DebugLineShape, 2, debug_shape_primitive::Lines);
 
+struct DebugTriangleShape : public DebugShape {
+    Vec3 a;
+    Vec3 b;
+    Vec3 c;
+
+    constexpr DebugTriangleShape(Vec3 a, Vec3 b, Vec3 c, RGBColor color, uint32_t cooldowm = 0, bool enable_depth = true) noexcept
+    : DebugShape(color, cooldowm, enable_depth)
+    , a{a}
+    , b{b}
+    , c{c} {
+
+    }
+
+    void construct(std::vector<Vec3>& vertices, std::vector<Vec3>& colors) const override;
+};
+
+IMPL_DEBUG_SHAPE_TRAITS(DebugTriangleShape, 3, debug_shape_primitive::Triangles);
 
 }
 

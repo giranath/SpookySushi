@@ -10,12 +10,42 @@ void DebugLineShape::construct(std::vector<Vec3>& vertices, std::vector<Vec3>& c
     colors.push_back(to_vec3(color, NormalizedColor{}));
 }
 
+static Vec3 uv_to_pos(float u, float v) {
+    return Vec3{std::cos(u) * std::sin(v), std::cos(v), std::sin(u) * std::sin(v)};
+}
+
 void DebugSphereShape::construct(std::vector<Vec3>& vertices, std::vector<Vec3>& colors) const {
     const float HALF_CIRCLE_THETA = glm::pi<float>();
+    const float FULL_CIRCLE_THETA = 2.f * HALF_CIRCLE_THETA;
 
-    for(int ring_index = 0; ring_index < SPHERE_RESOLUTION; ++ring_index) {
-        for(int latitude_index = 0; latitude_index < SPHERE_RESOLUTION; ++latitude_index) {
+    const float U_STEP = FULL_CIRCLE_THETA / SPHERE_RESOLUTION;
+    const float V_STEP = HALF_CIRCLE_THETA / SPHERE_RESOLUTION;
 
+    for(std::size_t i = 0; i < SPHERE_RESOLUTION; ++i) {
+        for(std::size_t j = 0; j < SPHERE_RESOLUTION; ++j) {
+            const float u = i * U_STEP;
+            const float v = j * V_STEP;
+
+            const float next_u = (i + 1 == SPHERE_RESOLUTION) ? FULL_CIRCLE_THETA : (i + 1) * U_STEP;
+            const float next_v = (j + 1 == SPHERE_RESOLUTION) ? HALF_CIRCLE_THETA : (j + 1) * V_STEP;
+
+            const Vec3 p0 = center + uv_to_pos(u, v) * radius;
+            const Vec3 p1 = center + uv_to_pos(u, next_v) * radius;
+            const Vec3 p2 = center + uv_to_pos(next_u, v) * radius;
+            const Vec3 p3 = center + uv_to_pos(next_u, next_v) * radius;
+
+            vertices.push_back(p0);
+            vertices.push_back(p2);
+            vertices.push_back(p1);
+
+            // Triangle 2
+            vertices.push_back(p3);
+            vertices.push_back(p1);
+            vertices.push_back(p2);
+
+            for(int c = 0; c < 6; ++c) {
+                colors.push_back(to_vec3(color, NormalizedColor{}));
+            }
         }
     }
 }
@@ -149,7 +179,16 @@ void DebugAABBShape::construct(std::vector<Vec3>& vertices, std::vector<Vec3>& c
     for(int i = 0 ; i < NB_VERTICES_PER_FACE * NB_FACES_PER_CUBE; ++i) {
         colors.push_back(to_vec3(color, NormalizedColor{}));
     }
+}
 
+void DebugTriangleShape::construct(std::vector<Vec3>& vertices, std::vector<Vec3>& colors) const {
+    vertices.push_back(a);
+    vertices.push_back(b);
+    vertices.push_back(c);
+
+    for(int i = 0; i < 3; ++i) {
+        colors.push_back(to_vec3(color, NormalizedColor{}));
+    }
 }
 
 }

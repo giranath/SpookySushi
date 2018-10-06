@@ -25,8 +25,8 @@ void BulletDebugDrawer::drawLine(const btVector3& from, const btVector3& to, con
     DebugRendererService::get().add_line(to_vec3(from), to_vec3(to), to_rgb(color));
 }
 
-void BulletDebugDrawer::drawSphere (const btVector3& p, btScalar radius, const btVector3& color) {
-    DebugRendererService::get().add_sphere(to_vec3(p), radius, to_rgb(color));
+void BulletDebugDrawer::drawSphere(btScalar radius, const btTransform& transform, const btVector3& color) {
+    DebugRendererService::get().add_sphere(to_vec3(transform.getOrigin()), radius, to_rgb(color));
 }
 
 void BulletDebugDrawer::drawAabb(const btVector3& from, const btVector3& to,const btVector3& color) {
@@ -44,7 +44,10 @@ void BulletDebugDrawer::drawAabb(const btVector3& from, const btVector3& to,cons
 }
 
 void BulletDebugDrawer::drawContactPoint(const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color) {
+    const Vec3 start = to_vec3(PointOnB);
+    const Vec3 dest = start + to_vec3(normalOnB) * distance;
 
+    DebugRendererService::get().add_line(start, dest, to_rgb(color), static_cast<uint32_t>(lifeTime));
 }
 
 void BulletDebugDrawer::reportErrorWarning(const char* warningString) {

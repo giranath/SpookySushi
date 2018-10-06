@@ -18,6 +18,7 @@ class OpenGLDebugRenderer : public DebugRendererInterface {
     OpenGLDebugShapeRenderer<DebugLineShape> line_renderer;
     OpenGLDebugShapeRenderer<DebugCircleShape> circle_renderer;
     OpenGLDebugShapeRenderer<DebugSphereShape> sphere_renderer;
+    OpenGLDebugShapeRenderer<DebugTriangleShape> triangle_renderer;
 
     gl::program debug_program;
 

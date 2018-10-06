@@ -81,10 +81,10 @@ void Game::on_start() {
 
     // Extract monkey mesh from package
     sushi::Package package;
-    std::ifstream package_stream{"asset/generated/termina.spkg", std::ios::binary};
+    std::ifstream package_stream{"asset/generated/default.spkg", std::ios::binary};
     package_stream >> package;
 
-    auto monkey_model_view = package.entry_data(2, sushi::ValidateEntry{});
+    auto monkey_model_view = package.entry_data(0, sushi::ValidateEntry{});
     if(monkey_model_view) {
         // TODO: Automate asset extraction from package
         std::istringstream monkey_model_stream(std::string{*monkey_model_view});
@@ -113,8 +113,9 @@ void Game::on_start() {
 
     sushi::DebugRendererService::get().add_aabb(sushi::Vec3{0.f, -1.f, 0.f}, sushi::Vec3{1.f, 0.5f, 1.f}, sushi::Colors::Magenta, 10'000);
 
-    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{0.f, 10.f, 0.f}), sushi::PhysicBoxShape(1.f, 1.f, 1.f), 10.f);
-    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{0.f, 0.f, 0.f}), sushi::PhysicBoxShape(100.f, 1.f, 100.f));
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{0.f, 10.f, 0.f}, glm::angleAxis(0.79f, sushi::Vec3{0.f, 0.f, 1.f})), sushi::PhysicBoxShape(1.f, 1.f, 1.f), 10.f);
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{0.f, 0.f, 0.f}), sushi::PhysicBoxShape(20.f, 0.1f, 20.f));
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{-0.5f, 1.f, -0.5f}), sushi::PhysicSphereShape(0.5f), 200.f);
 }
 
 void Game::on_frame(sushi::frame_duration last_frame) {

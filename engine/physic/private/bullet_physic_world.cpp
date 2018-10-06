@@ -16,7 +16,7 @@ BulletPhysicWorld::BulletPhysicWorld()
 , debug_draw{std::make_unique<BulletDebugDrawer>()}{
     dynamic_world->setGravity(btVector3{0.f, -9.8f, 0.f});
 
-    debug_draw->setDebugMode(btIDebugDraw::DBG_DrawWireframe | btIDebugDraw::DBG_DrawAabb);
+    debug_draw->setDebugMode(btIDebugDraw::DBG_DrawWireframe | btIDebugDraw::DBG_DrawAabb | btIDebugDraw::DBG_DrawContactPoints);
     dynamic_world->setDebugDrawer(debug_draw.get());
 }
 

@@ -16,4 +16,5 @@ BulletRigidBody::operator bool() const noexcept {
     return body;
 }
 
+
 }

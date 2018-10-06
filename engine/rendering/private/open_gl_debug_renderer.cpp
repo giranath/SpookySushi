@@ -13,13 +13,15 @@ static const std::size_t MAX_DEBUG_LINE_COUNT = 50'000;
 static const std::size_t MAX_DEBUG_AABBS_COUNT = 50'000;
 static const std::size_t MAX_DEBUG_CIRCLES_COUNT = 50'000;
 static const std::size_t MAX_DEBUG_SPHERES_COUNT = 50'000;
+static const std::size_t MAX_DEBUG_TRIANGLES_COUNT = 25'000;
 
 OpenGLDebugRenderer::OpenGLDebugRenderer(RendererInterface* parent)
 : renderer_{parent}
 , aabb_renderer{MAX_DEBUG_AABBS_COUNT}
 , line_renderer{MAX_DEBUG_LINE_COUNT}
 , circle_renderer{MAX_DEBUG_CIRCLES_COUNT}
-, sphere_renderer{MAX_DEBUG_SPHERES_COUNT} {
+, sphere_renderer{MAX_DEBUG_SPHERES_COUNT}
+, triangle_renderer{MAX_DEBUG_TRIANGLES_COUNT} {
 
 }
 
@@ -87,6 +89,7 @@ void OpenGLDebugRenderer::init() {
     line_renderer.init();
     circle_renderer.init();
     sphere_renderer.init();
+    triangle_renderer.init();
 }
 
 void OpenGLDebugRenderer::add_line(const Vec3& start_point, const Vec3& end_point, RGBColor line_color, uint32_t duration_ms, bool enable_depth) {
@@ -116,7 +119,7 @@ void OpenGLDebugRenderer::add_aabb(const Vec3& center, const Vec3& extend, RGBCo
 }
 
 void OpenGLDebugRenderer::add_triangle(const Vec3& a, const Vec3& b, const Vec3& c, RGBColor color, uint32_t duration_ms, bool enable_depth) {
-    throw std::logic_error{"unimplemented"};
+    triangle_renderer.emplace(a, b, c, color, duration_ms, enable_depth);
 }
 
 void OpenGLDebugRenderer::update(uint32_t dt_ms) {
@@ -136,6 +139,10 @@ void OpenGLDebugRenderer::update(uint32_t dt_ms) {
 
     JobsService::get().make_closure(async::worker::mode::background, [this, dt_ms](async::job&) {
         sphere_renderer.update(dt_ms);
+    }, &clean_job_root);
+
+    JobsService::get().make_closure(async::worker::mode::background, [this, dt_ms](async::job&) {
+        triangle_renderer.update(dt_ms);
     }, &clean_job_root);
 
     JobsService::get().foreground()->wait_for(&clean_job_root);
@@ -160,6 +167,10 @@ void OpenGLDebugRenderer::collect_garbages() {
         sphere_renderer.collect_garbages();
     }, &collect_root_job);
 
+    JobsService::get().make_closure(async::worker::mode::background, [this](async::job&) {
+        triangle_renderer.collect_garbages();
+    }, &collect_root_job);
+
     JobsService::get().foreground()->wait_for(&collect_root_job);
 }
 
@@ -177,6 +188,7 @@ void OpenGLDebugRenderer::draw() {
     line_renderer.batch_shapes();
     circle_renderer.batch_shapes();
     sphere_renderer.batch_shapes();
+    triangle_renderer.batch_shapes();
 
     // Enable wireframe
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -191,6 +203,7 @@ void OpenGLDebugRenderer::draw() {
     line_renderer.render();
     circle_renderer.render();
     sphere_renderer.render();
+    triangle_renderer.render();
 
     glEnable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
