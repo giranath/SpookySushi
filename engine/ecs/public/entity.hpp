@@ -22,6 +22,13 @@ struct Entity {
     Generation generation() const noexcept;
 
     static Entity make(Index index, Generation generation) noexcept;
+
+    bool operator<(const Entity& e) const noexcept;
+    bool operator>(const Entity& e) const noexcept;
+    bool operator==(const Entity& e) const noexcept;
+    bool operator!=(const Entity& e) const noexcept;
+    bool operator<=(const Entity& e) const noexcept;
+    bool operator>=(const Entity& e) const noexcept;
 };
 
 }

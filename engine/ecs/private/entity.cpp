@@ -28,4 +28,28 @@ Entity Entity::make(Index index, Generation generation) noexcept {
     return Entity((index << 8) | generation);
 }
 
+bool Entity::operator<(const Entity& e) const noexcept {
+    return index() < e.index();
+}
+
+bool Entity::operator>(const Entity& e) const noexcept {
+    return index() > e.index();
+}
+
+bool Entity::operator==(const Entity& e) const noexcept {
+    return identifier == e.identifier;
+}
+
+bool Entity::operator!=(const Entity& e) const noexcept {
+    return identifier != e.identifier;
+}
+
+bool Entity::operator<=(const Entity& e) const noexcept {
+    return index() <= e.index();
+}
+
+bool Entity::operator>=(const Entity& e) const noexcept {
+    return index() >= e.index();
+}
+
 }
