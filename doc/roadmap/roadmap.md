@@ -18,3 +18,7 @@ A packaging format has been developed for this and a tool has been written to pa
 Started to think about Windows port
 - The code should compile
 - The preferred renderer should be Direct3D (OpenGL should be allowed)
+
+##06/10/2018
+Bullet3 is integrated and a first draft of the debug renderer is now available.
+It misses depth enabling support

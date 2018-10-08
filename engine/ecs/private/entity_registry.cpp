@@ -15,7 +15,7 @@ Entity EntityRegistry::create() {
     else {
         generations.push_back(0);
         index = static_cast<uint32_t>(generations.size() - 1);
-        assert(index < (1u << Entity::IndexBits));
+        assert(index < Entity::max_index);
     }
 
     return Entity::make(index, generations[index]);

@@ -9,15 +9,14 @@ struct Entity {
     using Generation = uint8_t;
     using Index = uint32_t;
 
-    static const uint64_t IndexBits;
-    static const uint64_t IndexMask;
+    static const uint32_t index_mask;
+    static const uint32_t generation_mask;
+    static const uint32_t max_index;
 
-    static const uint64_t GenerationBits;
-    static const uint64_t GenerationMask;
-    uint64_t identifier;
+    uint32_t identifier;
 
     Entity() noexcept;
-    explicit Entity(uint64_t identifier) noexcept;
+    explicit Entity(uint32_t identifier) noexcept;
 
     Index index() const noexcept;
     Generation generation() const noexcept;
