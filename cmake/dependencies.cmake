@@ -3,6 +3,20 @@ include(ExternalProject)
 set(DEPENDENCIES_ROOT "${CMAKE_BINARY_DIR}/dependencies")
 
 #=======================================================================================================================
+# CATCH 2
+#=======================================================================================================================
+file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/catch2)
+
+ExternalProject_Add(Catch2
+        URL https://github.com/catchorg/Catch2/archive/v2.4.1.tar.gz
+        CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_ROOT}/catch2"
+        INSTALL_DIR "${DEPENDENCIES_ROOT}/catch2")
+add_library(libCatch2 IMPORTED INTERFACE GLOBAL)
+add_dependencies(libCatch2 Catch2)
+set_target_properties(libCatch2 PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/catch2/include")
+
+#=======================================================================================================================
 # SDL2
 #=======================================================================================================================
 file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/SDL2)

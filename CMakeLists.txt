@@ -24,6 +24,8 @@ set_property(CACHE SUSHI_RENDERING_BACKEND PROPERTY STRINGS OpenGL)
 # Find CMake official packages
 find_package(Threads REQUIRED)
 
+enable_testing()
+
 add_subdirectory(engine)
 if(BUILD_TOOLS)
     add_subdirectory(tool)
