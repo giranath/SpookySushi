@@ -18,6 +18,62 @@
 #include <string>
 #include <sstream>
 
+struct WithNormals {};
+
+sushi::StaticMeshDefinition make_cube(const float size, WithNormals) {
+    sushi::StaticMeshDefinition static_mesh;
+
+    // Front side
+    static_mesh.add({-size, -size, -size}, {0.f, 0.f, -1.f});
+    static_mesh.add({ size,  size, -size}, {0.f, 0.f, -1.f});
+    static_mesh.add({ size, -size, -size}, {0.f, 0.f, -1.f});
+    static_mesh.add({-size,  size, -size}, {0.f, 0.f, -1.f});
+    static_mesh.add({ size,  size, -size}, {0.f, 0.f, -1.f});
+    static_mesh.add({-size, -size, -size}, {0.f, 0.f, -1.f});
+
+    // Back side
+    static_mesh.add({-size, -size, size}, {0.f, 0.f, 1.f});
+    static_mesh.add({ size, -size, size}, {0.f, 0.f, 1.f});
+    static_mesh.add({ size,  size, size}, {0.f, 0.f, 1.f});
+    static_mesh.add({-size, -size, size}, {0.f, 0.f, 1.f});
+    static_mesh.add({ size,  size, size}, {0.f, 0.f, 1.f});
+    static_mesh.add({-size,  size, size}, {0.f, 0.f, 1.f});
+
+    // Left side
+    static_mesh.add({-size, -size, -size}, {-1.f, 0.f, 0.f});
+    static_mesh.add({-size, -size,  size}, {-1.f, 0.f, 0.f});
+    static_mesh.add({-size,  size,  size}, {-1.f, 0.f, 0.f});
+    static_mesh.add({-size, -size, -size}, {-1.f, 0.f, 0.f});
+    static_mesh.add({-size,  size,  size}, {-1.f, 0.f, 0.f});
+    static_mesh.add({-size,  size, -size}, {-1.f, 0.f, 0.f});
+
+    // Rigth side
+    static_mesh.add({size, -size, -size}, {1.f, 0.f, 0.f});
+    static_mesh.add({size,  size,  size}, {1.f, 0.f, 0.f});
+    static_mesh.add({size, -size,  size}, {1.f, 0.f, 0.f});
+    static_mesh.add({size,  size,  size}, {1.f, 0.f, 0.f});
+    static_mesh.add({size, -size, -size}, {1.f, 0.f, 0.f});
+    static_mesh.add({size,  size, -size}, {1.f, 0.f, 0.f});
+
+    // Top side
+    static_mesh.add({-size, size, -size}, {0.f, 1.f, 0.f});
+    static_mesh.add({ size, size,  size}, {0.f, 1.f, 0.f});
+    static_mesh.add({ size, size, -size}, {0.f, 1.f, 0.f});
+    static_mesh.add({-size, size, -size}, {0.f, 1.f, 0.f});
+    static_mesh.add({-size, size,  size}, {0.f, 1.f, 0.f});
+    static_mesh.add({ size, size,  size}, {0.f, 1.f, 0.f});
+
+    // Bottom side
+    static_mesh.add({-size, -size, -size}, {0.f, -1.f, 0.f});
+    static_mesh.add({ size, -size, -size}, {0.f, -1.f, 0.f});
+    static_mesh.add({ size, -size,  size}, {0.f, -1.f, 0.f});
+    static_mesh.add({ size, -size,  size}, {0.f, -1.f, 0.f});
+    static_mesh.add({-size, -size,  size}, {0.f, -1.f, 0.f});
+    static_mesh.add({-size, -size, -size}, {0.f, -1.f, 0.f});
+
+    return static_mesh;
+}
+
 sushi::StaticMeshDefinition make_cube(const float size) {
     sushi::StaticMeshDefinition static_mesh;
 
@@ -90,6 +146,7 @@ void Game::on_start() {
         mesh = sushi::StaticMeshBuilderService::get().build(sushi::StaticMeshDefinition{asset});
     }
     else {
+        mesh = sushi::StaticMeshBuilderService::get().build(make_cube(10.f, WithNormals{}));
         sushi::log_warning("sushi.game.start", "failed to load default.spkg");
     }
 

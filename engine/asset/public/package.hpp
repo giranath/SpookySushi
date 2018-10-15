@@ -46,6 +46,8 @@ std::ostream& operator<<(std::ostream& stream, const PackageEntry& entry);
 
 struct ValidateEntry{};
 
+// TODO: Let packages stream their content
+
 // A package hold
 class Package {
     PackageHeader header;
@@ -60,6 +62,7 @@ public:
 
     void add_entry(PackageEntry entry, const std::vector<uint8_t>& data);
 
+    // TODO: Return a stream
     std::optional<std::string_view> entry_data(PackageEntry::Identifier identifier) const noexcept;
     std::optional<std::string_view> entry_data(PackageEntry::Identifier identifier, ValidateEntry) const noexcept;
     bool is_entry_valid(PackageEntry::Identifier identifier) const noexcept;

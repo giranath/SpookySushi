@@ -161,39 +161,47 @@ public:
     StaticMeshPtr build(const StaticMeshDefinition& definition) override {
         static_assert(sizeof(vertex::Position) == sizeof(FloatPrecision) * 3);
 
-        gl::buffer vbo = gl::buffer::make();
-        gl::bind(gl::buffer_bind<GL_ARRAY_BUFFER>(vbo));
-        glBufferData(GL_ARRAY_BUFFER,
-                     definition.positions().size() * sizeof(vertex::Position),
-                     definition.positions().data(), GL_STATIC_DRAW);
-
-        gl::buffer normals = gl::buffer::make();
-        gl::bind(gl::buffer_bind<GL_ARRAY_BUFFER>(normals));
-        glBufferData(GL_ARRAY_BUFFER,
-                     definition.normals().size() * sizeof(vertex::Normal),
-                     definition.normals().data(), GL_STATIC_DRAW);
-
-        gl::buffer elements = gl::buffer::make();
-        gl::bind(gl::buffer_bind<GL_ELEMENT_ARRAY_BUFFER>(elements));
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                     definition.indices().size() * sizeof(vertex::Indice),
-                     &definition.indices().front(), GL_STATIC_DRAW);
+        gl::buffer vbo;
+        gl::buffer normals;
+        gl::buffer elements;
 
         gl::vertex_array vao = gl::vertex_array::make();
         gl::bind(vao);
 
+        // Position data
+        vbo = gl::buffer::make();
+        gl::bind(gl::buffer_bind<GL_ARRAY_BUFFER>(vbo));
+        glBufferData(GL_ARRAY_BUFFER,
+                     definition.positions().size() * sizeof(vertex::Position),
+                     definition.positions().data(), GL_STATIC_DRAW);
         glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-
         gl::bind(gl::buffer_bind<GL_ARRAY_BUFFER>(vbo));
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
-        gl::bind(gl::buffer_bind<GL_ARRAY_BUFFER>(normals));
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, nullptr);
+        // Normal data
+        if(definition.uses_normals()) {
+            // Create normal buffer
+            normals = gl::buffer::make();
+            gl::bind(gl::buffer_bind<GL_ARRAY_BUFFER>(normals));
+            glBufferData(GL_ARRAY_BUFFER,
+                         definition.normals().size() * sizeof(vertex::Normal),
+                         definition.normals().data(), GL_STATIC_DRAW);
+
+            glEnableVertexAttribArray(1);
+            gl::bind(gl::buffer_bind<GL_ARRAY_BUFFER>(normals));
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, nullptr);
+        }
 
         gl::bind(gl::vertex_array{});
 
+        // Indices data
         if(definition.uses_indices()) {
+            elements = gl::buffer::make();
+            gl::bind(gl::buffer_bind<GL_ELEMENT_ARRAY_BUFFER>(elements));
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                         definition.indices().size() * sizeof(vertex::Indice),
+                         &definition.indices().front(), GL_STATIC_DRAW);
+
             return std::make_unique<IndexedOpenGLStaticMesh<>>(definition.indices().size(), std::move(vao), std::move(vbo), std::move(normals), std::move(elements));
         }
         else {
