@@ -96,6 +96,7 @@ set_target_properties(libGlad PROPERTIES
 #=======================================================================================================================
 # Bullet Physic
 #=======================================================================================================================
+if("${SUSHI_PHYSIC_BACKEND}" STREQUAL "Bullet")
 file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/bullet3)
 ExternalProject_Add(Bullet3
         URL https://github.com/bulletphysics/bullet3/archive/2.87.zip
@@ -134,7 +135,8 @@ set_target_properties(libBulletDynamics PROPERTIES
 set_target_properties(libBulletLinearMath PROPERTIES
         IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}LinearMath${CMAKE_STATIC_LIBRARY_SUFFIX}"
         INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
-
+elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
+endif()
 #=======================================================================================================================
 # Rapidxml
 #=======================================================================================================================

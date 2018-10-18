@@ -20,6 +20,8 @@ include(cmake/dependencies.cmake)
 
 set(SUSHI_RENDERING_BACKEND "OpenGL" CACHE STRING "Specify the rendering backend to use")
 set_property(CACHE SUSHI_RENDERING_BACKEND PROPERTY STRINGS OpenGL)
+set(SUSHI_PHYSIC_BACKEND "Bullet" CACHE STRING "Specify the physic backend to use")
+set_property(CACHE SUSHI_PHYSIC_BACKEND PROPERTY STRINGS Bullet PhysX None)
 
 # Find CMake official packages
 find_package(Threads REQUIRED)
