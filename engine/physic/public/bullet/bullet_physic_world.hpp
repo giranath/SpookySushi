@@ -2,9 +2,10 @@
 #define SPOOKYSUSHI_BULLET_PHYSIC_WORLD_HPP
 
 #include "physic_world_traits.hpp"
-#include "bullet_rigid_body.hpp"
 #include "physic_shape.hpp"
 #include "physic_transform.hpp"
+
+#include "bullet_rigid_body.hpp"
 #include <memory>
 
 class btDefaultCollisionConfiguration;

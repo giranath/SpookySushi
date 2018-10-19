@@ -7,17 +7,24 @@
 #if defined(SUSHI_PHYSIC_BACKEND_BULLET)
 #include "bullet_physic_world.hpp"
 #elif defined(SUSHI_PHYSIC_BACKEND_PHYSX)
+#include "physx_physic_world.hpp"
 #else
 #error "You must specify a physic backend"
 #endif
 
 #include "physic_world_traits.hpp"
-
 #include <type_traits>
 
 namespace sushi {
 
+#if defined(SUSHI_PHYSIC_BACKEND_BULLET)
 using PhysicWorld = BulletPhysicWorld;
+#elif defined(SUSHI_PHYSIC_BACKEND_PHYSX)
+using PhysicWorld = PhysXPhysicWorld;
+#else
+using PhysicWorld = void;
+#endif
+
 using RigidBody = physic_world_traits<PhysicWorld>::rigid_body_type;
 
 //static_assert(!std::is_same_v<physic_world_traits<PhysicWorld>::rigid_body_type, void>, "invalid physic world type");

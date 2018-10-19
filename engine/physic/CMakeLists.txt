@@ -1,7 +1,7 @@
 if("${SUSHI_PHYSIC_BACKEND}" STREQUAL "Bullet")
     set(SUSHI_PHYSIC_BACKEND_BULLET ON)
 elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
-    set(SUSHI_PHYSIC_BACKEND_BULLET ON)
+    set(SUSHI_PHYSIC_BACKEND_PHYSX ON)
 endif()
 
 configure_file(physic_backend.in.hpp ${CMAKE_CURRENT_SOURCE_DIR}/public/physic_backend.hpp)
@@ -15,15 +15,24 @@ add_library(sushi-physic
         public/physic_shape.hpp)
 
 if("${SUSHI_PHYSIC_BACKEND}" STREQUAL "Bullet")
-    MESSAGE("bullet")
     target_sources(sushi-physic PRIVATE
-            private/bullet_debug_drawer.cpp
-            private/bullet_debug_drawer.hpp
-            private/bullet_rigid_body.cpp
-            public/bullet_physic_world.hpp
-            private/bullet_physic_world.cpp
-            public/bullet_rigid_body.hpp)
+            private/bullet/bullet_debug_drawer.cpp
+            private/bullet/bullet_debug_drawer.hpp
+            private/bullet/bullet_rigid_body.cpp
+            public/bullet/bullet_physic_world.hpp
+            private/bullet/bullet_physic_world.cpp
+            public/bullet/bullet_rigid_body.hpp)
+    target_include_directories(sushi-physic
+            PUBLIC public/bullet
+            PRIVATE private/bullet)
 elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
+    target_sources(sushi-physic PRIVATE
+            public/physx/physx_physic_world.hpp
+            public/physx/physx_rigid_body.hpp
+            private/physx/physx_physic_world.cpp)
+    target_include_directories(sushi-physic
+            PUBLIC public/physx
+            PRIVATE private/physx)
 endif()
 
 target_link_libraries(sushi-physic
