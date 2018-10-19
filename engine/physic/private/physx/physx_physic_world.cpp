@@ -18,4 +18,8 @@ PhysXPhysicWorld::rigid_body_type PhysXPhysicWorld::make_rigid_body(PhysicTransf
     return {};
 }
 
+void PhysXPhysicWorld::draw_debug() const {
+    // TODO: Draw debug informations
+}
+
 }
