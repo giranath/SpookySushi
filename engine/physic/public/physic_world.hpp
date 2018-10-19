@@ -1,8 +1,16 @@
 #ifndef SPOOKYSUSHI_PHYSIC_WORLD_HPP
 #define SPOOKYSUSHI_PHYSIC_WORLD_HPP
 
+#include "physic_backend.hpp"
+
 // TODO: Import good physic world implementation
+#if defined(SUSHI_PHYSIC_BACKEND_BULLET)
 #include "bullet_physic_world.hpp"
+#elif defined(SUSHI_PHYSIC_BACKEND_PHYSX)
+#else
+#error "You must specify a physic backend"
+#endif
+
 #include "physic_world_traits.hpp"
 
 #include <type_traits>

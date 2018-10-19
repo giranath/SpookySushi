@@ -119,45 +119,69 @@ set_target_properties(libGlad PROPERTIES
 # Bullet Physic
 #=======================================================================================================================
 if("${SUSHI_PHYSIC_BACKEND}" STREQUAL "Bullet")
-file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/bullet3)
-ExternalProject_Add(Bullet3
-        URL https://github.com/bulletphysics/bullet3/archive/2.87.zip
+    file(MAKE_DIRECTORY ${DEPENDENCIES_ROOT}/bullet3)
+    ExternalProject_Add(Bullet3
+            URL https://github.com/bulletphysics/bullet3/archive/2.87.zip
 
-        CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_ROOT}/bullet3" -DBUILD_CPU_DEMOS=OFF -DBUILD_PYBULLET=OFF -DBUILD_ENET=OFF -DBUILD_CLSOCKET=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_BULLET2_DEMOS=OFF -DBUILD_EXTRAS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_CMAKE_FILES=OFF -DUSE_GRAPHICAL_BENCHMARK=OFF
-        INSTALL_DIR "${DEPENDENCIES_ROOT}/bullet3")
+            CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_ROOT}/bullet3" -DBUILD_CPU_DEMOS=OFF -DBUILD_PYBULLET=OFF -DBUILD_ENET=OFF -DBUILD_CLSOCKET=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_BULLET2_DEMOS=OFF -DBUILD_EXTRAS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_CMAKE_FILES=OFF -DUSE_GRAPHICAL_BENCHMARK=OFF
+            INSTALL_DIR "${DEPENDENCIES_ROOT}/bullet3")
 
-add_library(libBullet3Common IMPORTED STATIC GLOBAL)
-add_library(libBullet3Collision IMPORTED STATIC GLOBAL)
-add_library(libBullet3Dynamics IMPORTED STATIC GLOBAL)
-add_library(libBulletCollision IMPORTED STATIC GLOBAL)
-add_library(libBulletDynamics IMPORTED STATIC GLOBAL)
-add_library(libBulletLinearMath IMPORTED STATIC GLOBAL)
-add_dependencies(libBullet3Common Bullet3)
-add_dependencies(libBullet3Collision Bullet3)
-add_dependencies(libBullet3Dynamics Bullet3)
-add_dependencies(libBulletCollision Bullet3)
-add_dependencies(libBulletDynamics Bullet3)
-add_dependencies(libBulletLinearMath Bullet3)
+    add_library(libBullet3Common IMPORTED STATIC GLOBAL)
+    add_library(libBullet3Collision IMPORTED STATIC GLOBAL)
+    add_library(libBullet3Dynamics IMPORTED STATIC GLOBAL)
+    add_library(libBulletCollision IMPORTED STATIC GLOBAL)
+    add_library(libBulletDynamics IMPORTED STATIC GLOBAL)
+    add_library(libBulletLinearMath IMPORTED STATIC GLOBAL)
+    add_dependencies(libBullet3Common Bullet3)
+    add_dependencies(libBullet3Collision Bullet3)
+    add_dependencies(libBullet3Dynamics Bullet3)
+    add_dependencies(libBulletCollision Bullet3)
+    add_dependencies(libBulletDynamics Bullet3)
+    add_dependencies(libBulletLinearMath Bullet3)
 
-set_target_properties(libBullet3Common PROPERTIES
-        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Bullet3Common${CMAKE_STATIC_LIBRARY_SUFFIX}"
-        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
-set_target_properties(libBullet3Collision PROPERTIES
-        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Bullet3Collision${CMAKE_STATIC_LIBRARY_SUFFIX}"
-        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
-set_target_properties(libBullet3Dynamics PROPERTIES
-        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Bullet3Dynamics${CMAKE_STATIC_LIBRARY_SUFFIX}"
-        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
-set_target_properties(libBulletCollision PROPERTIES
-        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}BulletCollision${CMAKE_STATIC_LIBRARY_SUFFIX}"
-        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
-set_target_properties(libBulletDynamics PROPERTIES
-        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}BulletDynamics${CMAKE_STATIC_LIBRARY_SUFFIX}"
-        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
-set_target_properties(libBulletLinearMath PROPERTIES
-        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}LinearMath${CMAKE_STATIC_LIBRARY_SUFFIX}"
-        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
+    set_target_properties(libBullet3Common PROPERTIES
+            IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Bullet3Common${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
+    set_target_properties(libBullet3Collision PROPERTIES
+            IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Bullet3Collision${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
+    set_target_properties(libBullet3Dynamics PROPERTIES
+            IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Bullet3Dynamics${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
+    set_target_properties(libBulletCollision PROPERTIES
+            IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}BulletCollision${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
+    set_target_properties(libBulletDynamics PROPERTIES
+            IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}BulletDynamics${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
+    set_target_properties(libBulletLinearMath PROPERTIES
+            IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}LinearMath${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
+
+    add_library(libBullet INTERFACE)
+    add_dependencies(libBullet
+            libBullet3Common
+            libBullet3Dynamics
+            libBullet3Collision
+            libBulletDynamics
+            libBulletCollision
+            libBulletLinearMath)
+    target_link_libraries(libBullet INTERFACE
+            libBullet3Common
+            libBullet3Dynamics
+            libBullet3Collision
+            libBulletDynamics
+            libBulletCollision
+            libBulletLinearMath)
+
+    add_library(PhysicBackend ALIAS libBullet)
+
 elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
+    add_library(libPhysX IMPORTED STATIC GLOBAL)
+
+    set_target_properties(libPhysX PROPERTIES
+            IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Bullet3Common${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
 endif()
 #=======================================================================================================================
 # Rapidxml
