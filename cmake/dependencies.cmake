@@ -177,11 +177,64 @@ if("${SUSHI_PHYSIC_BACKEND}" STREQUAL "Bullet")
     add_library(PhysicBackend ALIAS libBullet)
 
 elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
-    add_library(libPhysX IMPORTED STATIC GLOBAL)
+    find_path(PHYSX_SDK_INCLUDE_DIR PxPhysicsAPI.h
+            PATHS
+            ${PHYSX_SDK_DIR}
+            ENV PHYSX_SDK_DIR
+            PATH_SUFFIXES PhysX_3.4/Include
+            DOC "The location of PhysX SDK on this computer")
 
-    set_target_properties(libPhysX PROPERTIES
-            IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/bullet3/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Bullet3Common${CMAKE_STATIC_LIBRARY_SUFFIX}"
-            INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/bullet3/include/bullet")
+    if(PHYSX_SDK_INCLUDE_DIR)
+        set(PHYSX_SDK_BASE_DIR "${PHYSX_SDK_INCLUDE_DIR}/../../")
+    else()
+        MESSAGE(FATAL_ERROR "Couldn't found PhysX SDK")
+    endif()
+
+    if(${CMAKE_SYSTEM_NAME} MATCHES Linux)
+        set(PHYSX_BASE_TARGET_NAME "linux")
+    else()
+        MESSAGE(FATAL_ERROR "${CMAKE_SYSTEM_NAME} not supported yet")
+    endif()
+
+    find_library(PHYSX_SDK_LOW_LEVEL LowLevel
+                 PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+                 PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
+    find_library(PHYSX_SDK_LOW_LEVEL_AABB LowLevelAABB
+            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+            PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
+    find_library(PHYSX_SDK_LOW_LEVEL_DYNAMICS LowLevelDynamics
+            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+            PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
+    find_library(PHYSX_SDK_EXTENSIONS PhysX3Extensions
+            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+            PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
+
+    add_library(libPhysXLowLevel IMPORTED STATIC GLOBAL)
+    add_library(libPhysXLowLevelAABB IMPORTED STATIC GLOBAL)
+    add_library(libPhysXLowLevelDynamics IMPORTED STATIC GLOBAL)
+    add_library(libPhysXExtensions IMPORTED STATIC GLOBAL)
+
+    set_target_properties(libPhysXLowLevel PROPERTIES
+            IMPORTED_LOCATION "${PHYSX_SDK_LOW_LEVEL}"
+            INTERFACE_INCLUDE_DIRECTORIES "${PHYSX_SDK_INCLUDE_DIR}")
+    set_target_properties(libPhysXLowLevel PROPERTIES
+            IMPORTED_LOCATION "${PHYSX_SDK_LOW_LEVEL_AABB}"
+            INTERFACE_INCLUDE_DIRECTORIES "${PHYSX_SDK_INCLUDE_DIR}")
+    set_target_properties(libPhysXLowLevelDynamics PROPERTIES
+            IMPORTED_LOCATION "${PHYSX_SDK_LOW_LEVEL_DYNAMICS}"
+            INTERFACE_INCLUDE_DIRECTORIES "${PHYSX_SDK_INCLUDE_DIR}")
+    set_target_properties(libPhysXExtensions PROPERTIES
+            IMPORTED_LOCATION "${PHYSX_SDK_EXTENSIONS}"
+            INTERFACE_INCLUDE_DIRECTORIES "${PHYSX_SDK_INCLUDE_DIR}")
+
+    add_library(libPhysX INTERFACE)
+    target_link_libraries(libPhysX INTERFACE
+            libPhysXLowLevel
+            libPhysXLowLevel
+            libPhysXLowLevelDynamics
+            libPhysXExtensions)
+
+    add_library(PhysicBackend ALIAS libPhysX)
 endif()
 #=======================================================================================================================
 # Rapidxml
