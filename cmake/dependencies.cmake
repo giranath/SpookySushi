@@ -200,20 +200,23 @@ elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
                  PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
                  PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
     find_library(PHYSX_SDK_LOW_LEVEL_AABB LowLevelAABB
-            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
-            PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
+                 PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+                 PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
     find_library(PHYSX_SDK_LOW_LEVEL_DYNAMICS LowLevelDynamics
-            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
-            PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
+                 PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+                 PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
     find_library(PHYSX_SDK_EXTENSIONS PhysX3Extensions
-            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
-            PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
+                 PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+                 PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
 
     add_library(libPhysXLowLevel IMPORTED STATIC GLOBAL)
     add_library(libPhysXLowLevelAABB IMPORTED STATIC GLOBAL)
     add_library(libPhysXLowLevelDynamics IMPORTED STATIC GLOBAL)
     add_library(libPhysXExtensions IMPORTED STATIC GLOBAL)
+    add_library(libPhysXFoundation INTERFACE IMPORTED GLOBAL)
 
+    set_target_properties(libPhysXFoundation PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${PHYSX_SDK_BASE_DIR}/PxShared/include")
     set_target_properties(libPhysXLowLevel PROPERTIES
             IMPORTED_LOCATION "${PHYSX_SDK_LOW_LEVEL}"
             INTERFACE_INCLUDE_DIRECTORIES "${PHYSX_SDK_INCLUDE_DIR}")
@@ -229,6 +232,7 @@ elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
 
     add_library(libPhysX INTERFACE)
     target_link_libraries(libPhysX INTERFACE
+            libPhysXFoundation
             libPhysXLowLevel
             libPhysXLowLevel
             libPhysXLowLevelDynamics
