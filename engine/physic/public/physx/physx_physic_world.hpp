@@ -18,6 +18,8 @@ public:
     rigid_body_type make_rigid_body(PhysicTransform transform, PhysicSphereShape shape, float mass = 0.f);
     rigid_body_type make_rigid_body(PhysicTransform transform, PhysicBoxShape shape, float mass = 0.f);
     rigid_body_type make_rigid_body(PhysicTransform transform, PhysicCapsuleShape shape, float mass = 0.f);
+
+    void draw_debug() const;
 };
 
 template<>
@@ -25,7 +27,7 @@ struct physic_world_traits<PhysXPhysicWorld> {
     using value_type = PhysXPhysicWorld;
     using rigid_body_type = PhysXPhysicWorld::rigid_body_type;
 
-    static const bool can_draw_debug = false;
+    static const bool can_draw_debug = true;
 };
 
 }
