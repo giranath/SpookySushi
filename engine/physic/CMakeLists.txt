@@ -31,7 +31,9 @@ elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
             public/physx/physx_rigid_body.hpp
             private/physx/physx_physic_world.cpp
             private/physx/physx_foundation.cpp
-            private/physx/physx_foundation.hpp)
+            private/physx/physx_foundation.hpp
+            private/physx/physx_physics.h
+            private/physx/physx_physics.cpp)
     target_include_directories(sushi-physic
             PUBLIC public/physx
             PRIVATE private/physx)

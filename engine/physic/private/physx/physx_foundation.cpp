@@ -1,9 +1,12 @@
 #include "physx_foundation.hpp"
 
+#include <PxPhysics.h>
+#include <PxPhysicsVersion.h>
 #include <foundation/PxFoundationVersion.h>
 #include <foundation/PxFoundation.h>
 #include <extensions/PxDefaultAllocator.h>
 #include <extensions/PxDefaultErrorCallback.h>
+#include <common/PxTolerancesScale.h>
 
 using namespace physx;
 
@@ -22,4 +25,14 @@ PhysXFoundation::PhysXFoundation()
 PhysXFoundation::~PhysXFoundation() {
     foundation->release();
 }
+
+PhysXPhysics PhysXFoundation::make_physics() const {
+    PxPhysics* phs = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, PxTolerancesScale{});
+    if(!phs) {
+        throw CannotCreatePhysXPhysics{};
+    }
+
+    return PhysXPhysics(phs);
+}
+
 }
