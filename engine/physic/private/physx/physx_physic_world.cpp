@@ -1,6 +1,32 @@
 #include "physx_physic_world.hpp"
+#include "physx_foundation.hpp"
+
+#include <PxPhysics.h>
+#include <PxPhysicsVersion.h>
+#include <common/PxTolerancesScale.h>
 
 namespace sushi {
+
+struct PhysXPhysicWorld::impl {
+    PhysXFoundation foundation;
+    physx::PxPhysics* physics;
+
+    impl()
+    : foundation{}
+    , physics{PxCreatePhysics(PX_PHYSICS_VERSION, foundation.get(), physx::PxTolerancesScale())}{
+    }
+
+    ~impl() {
+        physics->release();
+    }
+};
+
+PhysXPhysicWorld::PhysXPhysicWorld()
+: pimpl(std::make_unique<PhysXPhysicWorld::impl>()) {
+
+}
+
+PhysXPhysicWorld::~PhysXPhysicWorld() = default;
 
 void PhysXPhysicWorld::step_simulation(float dt_ms) {
 

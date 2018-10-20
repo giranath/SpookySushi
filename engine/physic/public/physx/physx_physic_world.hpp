@@ -7,11 +7,20 @@
 
 #include "physx/physx_rigid_body.hpp"
 
+#include <memory>
+
 namespace sushi {
 
 class PhysXPhysicWorld {
+    struct impl;
+
+    std::unique_ptr<impl> pimpl;
+
 public:
     using rigid_body_type = PhysXRigidBody;
+
+    PhysXPhysicWorld();
+    ~PhysXPhysicWorld();
 
     void step_simulation(float dt_ms);
 
