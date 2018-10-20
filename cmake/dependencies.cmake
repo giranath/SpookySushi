@@ -192,6 +192,8 @@ elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
 
     if(${CMAKE_SYSTEM_NAME} MATCHES Linux)
         set(PHYSX_BASE_TARGET_NAME "linux")
+    elseif(${CMAKE_SYSTEM_NAME} MATCHES Darwin)
+        set(PHYSX_BASE_TARGET_NAME "osx")
     else()
         MESSAGE(FATAL_ERROR "${CMAKE_SYSTEM_NAME} not supported yet")
     endif()
@@ -237,6 +239,8 @@ elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
             libPhysXLowLevel
             libPhysXLowLevelDynamics
             libPhysXExtensions)
+    set_target_properties(libPhysX PROPERTIES
+        INTERFACE_COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>)
 
     add_library(PhysicBackend ALIAS libPhysX)
 endif()
