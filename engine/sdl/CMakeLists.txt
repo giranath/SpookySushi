@@ -7,7 +7,6 @@ add_library(sushi-sdl
         public/display.hpp)
 target_link_libraries(sushi-sdl
         PUBLIC libSDL2
-        INTERFACE libSDL2main
         PUBLIC sushi-core)
 target_include_directories(sushi-sdl
         PUBLIC public

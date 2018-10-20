@@ -95,7 +95,8 @@ void Game::on_start() {
     }
     else {
         sushi::log_critical("sushi.game", "cannot get model from package");
-        throw 5;
+
+        //throw 5;
     }
 
     controller.register_inputs();
@@ -163,7 +164,9 @@ void Game::on_render(sushi::ProxyRenderer renderer) {
     model_matrix_uniform.set(glm::scale(sushi::Mat4x4{1.f}, glm::vec3{0.001f, 0.001f, 0.001f}));
     model_color.set(sushi::Colors::Yellow);
 
-    mesh->render();
+    if(mesh) {
+        mesh->render();
+    }
 
     sushi::draw_physic_debug(physic);
 }
