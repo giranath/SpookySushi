@@ -5,6 +5,7 @@ namespace physx {
 
 class PxPhysics;
 class PxScene;
+class PxDefaultCpuDispatcher;
 
 }
 
@@ -15,6 +16,7 @@ class PhysXFoundation;
 class PhysXPhysics {
     friend PhysXFoundation;
     physx::PxPhysics* physics;
+    physx::PxDefaultCpuDispatcher* cpu_dispatcher;
 
     explicit PhysXPhysics(physx::PxPhysics* physics) noexcept;
 public:

@@ -22,7 +22,7 @@ if __name__ == "__main__":
                 mode = 2
                 first_row = True
             else:
-                thread_id, time_point, type, name = line.split()
+                thread_id, frame_index, time_point, type, name = line.split()
                 thread_id = int(thread_id, 16)
 
                 if not first_row:

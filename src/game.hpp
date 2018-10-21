@@ -17,6 +17,7 @@ class Game : public sushi::BaseGame {
     //std::unique_ptr<sushi::PhysicWorld> physic;
     sushi::PhysicWorld physic;
     uint32_t physic_update_elapsed_time;
+    sushi::PhysicWorld::rigid_body_type wrecking_ball_body;
 
     void prepare_shader();
 

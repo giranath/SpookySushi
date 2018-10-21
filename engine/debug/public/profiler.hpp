@@ -10,6 +10,7 @@
 #include <array>
 #include <atomic>
 #include <string>
+#include <unordered_map>
 
 namespace sushi { namespace debug {
 
@@ -49,6 +50,7 @@ class Profiler {
     async::scmp_queue<ProfileEvent> events_queue;
     std::atomic_bool is_running;
     std::uint64_t current_frame_index;
+    std::unordered_map<std::thread::id, std::string> thread_names;
 
     void execute_background_task();
 
@@ -61,6 +63,9 @@ public:
 
     void start() noexcept;
     void stop() noexcept;
+
+    void identify(std::thread::id thread, const std::string& name);
+    void identify(std::thread::id thread, std::string&& name);
 
     bool push(const ProfileEvent& event);
 

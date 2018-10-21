@@ -35,6 +35,8 @@ public:
 
     template<typename FN>
     void run(FrameDuration target_frame_duration, FN fn) {
+        sushi::debug::Profiler::get().identify(std::this_thread::get_id(), "main thread");
+
         sushi::debug::Profiler::get().start();
         sushi::JobsService::locate(jobs_.get());
         jobs_->start();

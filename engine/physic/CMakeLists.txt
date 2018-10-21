@@ -12,7 +12,8 @@ add_library(sushi-physic
         public/rigid_body_traits.hpp
         public/physic_transform.hpp
         public/physic_world.hpp
-        public/physic_shape.hpp)
+        public/physic_shape.hpp
+        public/physic_joints.hpp)
 
 if("${SUSHI_PHYSIC_BACKEND}" STREQUAL "Bullet")
     target_sources(sushi-physic PRIVATE
@@ -33,7 +34,8 @@ elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
             private/physx/physx_foundation.cpp
             private/physx/physx_foundation.hpp
             private/physx/physx_physics.h
-            private/physx/physx_physics.cpp)
+            private/physx/physx_physics.cpp
+            private/physx/physx_rigid_body.cpp)
     target_include_directories(sushi-physic
             PUBLIC public/physx
             PRIVATE private/physx)

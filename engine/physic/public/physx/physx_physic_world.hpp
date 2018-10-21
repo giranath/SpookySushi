@@ -3,6 +3,7 @@
 
 #include "physic_world_traits.hpp"
 #include "physic_shape.hpp"
+#include "physic_joints.hpp"
 #include "physic_transform.hpp"
 
 #include "physx/physx_rigid_body.hpp"
@@ -27,6 +28,8 @@ public:
     rigid_body_type make_rigid_body(PhysicTransform transform, PhysicSphereShape shape, float mass = 0.f);
     rigid_body_type make_rigid_body(PhysicTransform transform, PhysicBoxShape shape, float mass = 0.f);
     rigid_body_type make_rigid_body(PhysicTransform transform, PhysicCapsuleShape shape, float mass = 0.f);
+
+    void join(rigid_body_type a, rigid_body_type b, PhysicRopeJoint joint);
 
     void draw_debug() const;
 };

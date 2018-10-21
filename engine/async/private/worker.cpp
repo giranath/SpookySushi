@@ -1,6 +1,7 @@
 #include "../../platform/public/host_infos.hpp"
 #include "worker.hpp"
 #include "engine.hpp"
+#include "../../debug/public/profiler.hpp"
 
 #include <cassert>
 
@@ -81,7 +82,6 @@ worker::worker(engine& owner, std::size_t max_job_count, mode m, int worker_id)
 , thread{}
 , jobs_(max_job_count)
 , worker_id(worker_id) {
-
 }
 
 worker::~worker() noexcept {
@@ -100,6 +100,7 @@ void worker::start() noexcept {
     if(mode_ == mode::background) {
         thread = std::thread(&worker::run, std::ref(*this));
         thread_id = thread.get_id();
+        debug::Profiler::get().identify(thread.get_id(), "worker " + std::to_string(worker_id));
     }
     else {
         thread_id = std::this_thread::get_id();

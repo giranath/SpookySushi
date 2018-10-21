@@ -61,6 +61,14 @@ void Profiler::execute_background_task() {
                 << "system: " << SYSTEM_FULL_NAME << "\n"
                 << "\n";
 
+    profile_out << "thread identities:\n";
+    for(const auto& pair : thread_names) {
+        profile_out << std::left << std::setw(15) << pair.first
+                    << " : "
+                    << "\"" << pair.second << "\"\n";
+    }
+    profile_out << "\n";
+
     profile_out << "session events:\n"
                 << std::left << std::setw(15) << "thread_id"
                 << std::setw(15) << "frame_index"
@@ -105,6 +113,14 @@ void Profiler::stop() noexcept {
     if(background_thread.joinable()) {
         background_thread.join();
     }
+}
+
+void Profiler::identify(std::thread::id thread, const std::string& name) {
+    thread_names[thread] = name;
+}
+
+void Profiler::identify(std::thread::id thread, std::string&& name) {
+    thread_names[thread] = std::move(name);
 }
 
 bool Profiler::push(const ProfileEvent& event) {

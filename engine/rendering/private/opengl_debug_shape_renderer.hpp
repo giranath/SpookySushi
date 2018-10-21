@@ -11,6 +11,7 @@
 #include <vector>
 #include <algorithm>
 #include <iterator>
+#include <mutex>
 
 namespace sushi {
 
@@ -39,6 +40,14 @@ class OpenGLDebugShapeRenderer {
         return std::lower_bound(std::begin(shapes), std::end(shapes), false, [](const ShapeType& shape, bool is_dead) {
             return shape.is_dead() == is_dead;
         });
+    }
+
+    void sort() {
+        std::sort(std::begin(shapes), std::end(shapes));
+    }
+
+    bool full() const noexcept {
+        return shapes.size() == max;
     }
 
 public:
@@ -108,14 +117,6 @@ public:
         shapes.emplace_back(std::forward<Args>(arguments)...);
     }
 
-    bool full() const noexcept {
-        return shapes.size() == max;
-    }
-
-    void sort() {
-        std::sort(std::begin(shapes), std::end(shapes));
-    }
-
     void update(uint32_t dt) {
         std::for_each(std::begin(shapes), std::end(shapes), [dt](ShapeType& shape) {
             if(shape.cooldown > dt) {
@@ -132,7 +133,7 @@ public:
 
         auto it = find_first_dead_shape();
 
-        if(it != std::end(shapes)) {
+        if(it != std::end(shapes) && it->is_dead()) {
             shapes.erase(it, std::end(shapes));
         }
     }

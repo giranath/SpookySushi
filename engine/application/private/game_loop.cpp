@@ -200,6 +200,8 @@ constexpr Key sdl_to_sushi_key(int sdl_key) noexcept {
         CASE_KEYBOARD_ALPHA_KEY(x, X);
         CASE_KEYBOARD_ALPHA_KEY(y, Y);
         CASE_KEYBOARD_ALPHA_KEY(z, Z);
+        case SDLK_SPACE:
+            return Key::Space;
         default:
             return Key::Unsupported;
     }

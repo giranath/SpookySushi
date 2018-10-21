@@ -76,7 +76,7 @@ void Game::prepare_shader() {
 void Game::on_start() {
     prepare_shader();
 
-    main_camera.local_transform.translate(sushi::Vec3{0.f, 0.f, 2.f});
+    main_camera.local_transform.translate(sushi::Vec3{0.f, 0.f, 10.f});
     main_camera.local_transform.look_at(sushi::Vec3{0.f, 0.f, 0.f});
 
     // Extract monkey mesh from package
@@ -107,16 +107,15 @@ void Game::on_start() {
     //physic = sushi::make_physic_world();
     physic_update_elapsed_time = 0;
 
-    const sushi::Vec3 normal = glm::normalize(sushi::Vec3{1.f, 0.f, 1.f});
-    sushi::DebugRendererService::get().add_circle(sushi::Vec3{0.f, 0.f, 0.f}, normal, 2.f, sushi::Colors::Blue, 10'000);
-    //sushi::DebugRendererService::get().add_line(sushi::Vec3{0.f, 0.f, 0.f}, normal, sushi::Colors::Red, 18'000);
-    sushi::DebugRendererService::get().add_cross(sushi::Vec3{0.f, 0.f, 0.f}, 5'000, false);
+    wrecking_ball_body = physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{20.f, 15.f, 10.f}, glm::angleAxis(0.79f, sushi::Vec3{0.f, 0.f, 1.f})),
+                                                sushi::PhysicSphereShape(1.f), 10.f);
+    wrecking_ball_body.set_linear_damping(0.1f);
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{0.f, 0.f, 0.f}, glm::angleAxis(0.f, sushi::Vec3(0.f, 1.f, 0.f))),
+                           sushi::PhysicBoxShape(50.f, 1.f, 50.f), 0.f);
+    auto support = physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{10.f, 15.f, 10.f}, glm::angleAxis(0.f, sushi::Vec3(0.f, 1.f, 0.f))),
+                                          sushi::PhysicBoxShape(1.f, 1.f, 5.f), 0.f);
 
-    sushi::DebugRendererService::get().add_aabb(sushi::Vec3{0.f, -1.f, 0.f}, sushi::Vec3{1.f, 0.5f, 1.f}, sushi::Colors::Magenta, 10'000);
-
-    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{0.f, 10.f, 0.f}, glm::angleAxis(0.79f, sushi::Vec3{0.f, 0.f, 1.f})), sushi::PhysicBoxShape(1.f, 1.f, 1.f), 10.f);
-    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{0.f, 0.f, 0.f}), sushi::PhysicBoxShape(20.f, 0.1f, 20.f));
-    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{-0.5f, 1.f, -0.5f}), sushi::PhysicSphereShape(0.5f), 200.f);
+    physic.join(wrecking_ball_body, support, sushi::PhysicRopeJoint(10.f));
 }
 
 void Game::on_frame(sushi::frame_duration last_frame) {
@@ -139,6 +138,15 @@ void Game::on_frame(sushi::frame_duration last_frame) {
     const float PITCH_RATIO = (glm::pi<float>() / 8.0f) / 100.0f; // pi/2 per 100 horizontal pixel
     const float pitch_rad_value = pitch_value * PITCH_RATIO;
     const sushi::Quaternion pitch_quat = glm::angleAxis(pitch_rad_value, sushi::Vec3{1.f, 0.f, 0.f});
+
+    if(controller.should_apply_boost()) {
+        auto wrecking_ball_transform = wrecking_ball_body.transform();
+
+        const sushi::Vec3 forward(1.f, 0.f, 0.f);
+        const sushi::Vec3 rotated_forward = glm::normalize(wrecking_ball_transform.rotation * forward);
+
+        wrecking_ball_body.apply_force_at(sushi::Vec3{1.f, 0.f, 0.f}, rotated_forward * 10.f);
+    }
 
     main_camera.local_transform
             .translate(forward_movement + right_movement)

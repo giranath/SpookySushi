@@ -3,6 +3,7 @@
 #include <job_service.hpp>
 #include <log_service.hpp>
 #include <engine.hpp>
+#include <profiler.hpp>
 
 #include <iterator>
 #include <algorithm>
@@ -93,17 +94,17 @@ void OpenGLDebugRenderer::init() {
 }
 
 void OpenGLDebugRenderer::add_line(const Vec3& start_point, const Vec3& end_point, RGBColor line_color, uint32_t duration_ms, bool enable_depth) {
-    assert(!line_renderer.full());
+    //assert(!line_renderer.full());
     line_renderer.emplace(start_point, end_point, line_color, duration_ms, enable_depth);
 }
 
 void OpenGLDebugRenderer::add_sphere(const Vec3& center, float radius, RGBColor line_color, uint32_t duration_ms, bool enable_depth) {
-    assert(!sphere_renderer.full());
+    //assert(!sphere_renderer.full());
     sphere_renderer.emplace(center, radius, line_color, duration_ms, enable_depth);
 }
 
 void OpenGLDebugRenderer::add_circle(const Vec3& center, const Vec3& normal, float radius, RGBColor color, uint32_t duration_ms, bool enabled_depth) {
-    assert(!circle_renderer.full());
+    //assert(!circle_renderer.full());
     circle_renderer.emplace(center, radius, glm::normalize(normal), color, duration_ms, enabled_depth);
 }
 
@@ -114,64 +115,71 @@ void OpenGLDebugRenderer::add_cross(const Vec3& position, RGBColor color_x, RGBC
 }
 
 void OpenGLDebugRenderer::add_aabb(const Vec3& center, const Vec3& extend, RGBColor color, uint32_t duration_ms, bool enable_depth) {
-    assert(!aabb_renderer.full());
+    //assert(!aabb_renderer.full());
     aabb_renderer.emplace(center, extend, color, duration_ms, enable_depth);
 }
 
 void OpenGLDebugRenderer::add_triangle(const Vec3& a, const Vec3& b, const Vec3& c, RGBColor color, uint32_t duration_ms, bool enable_depth) {
+    //assert(!triangle_renderer.full());
     triangle_renderer.emplace(a, b, c, color, duration_ms, enable_depth);
 }
 
 void OpenGLDebugRenderer::update(uint32_t dt_ms) {
-    async::job clean_job_root;
+    //async::job clean_job_root;
+    //debug::ScopedProfile update_profile(69);
 
-    JobsService::get().make_closure(async::worker::mode::background, [this, dt_ms](async::job&) {
+    //JobsService::get().make_closure(async::worker::mode::background, [this, dt_ms](async::job&) {
+    //    debug::ScopedProfile profile(70);
         aabb_renderer.update(dt_ms);
-    }, &clean_job_root);
+    //}, &clean_job_root);
 
-    JobsService::get().make_closure(async::worker::mode::background, [this, dt_ms](async::job&) {
+    //JobsService::get().make_closure(async::worker::mode::background, [this, dt_ms](async::job&) {
+    //    debug::ScopedProfile profile(71);
         line_renderer.update(dt_ms);
-    }, &clean_job_root);
+    //}, &clean_job_root);
 
-    JobsService::get().make_closure(async::worker::mode::background, [this, dt_ms](async::job&) {
+    //JobsService::get().make_closure(async::worker::mode::background, [this, dt_ms](async::job&) {
+    //    debug::ScopedProfile profile(72);
         circle_renderer.update(dt_ms);
-    }, &clean_job_root);
+    //}, &clean_job_root);
 
-    JobsService::get().make_closure(async::worker::mode::background, [this, dt_ms](async::job&) {
+    //JobsService::get().make_closure(async::worker::mode::background, [this, dt_ms](async::job&) {
+    //    debug::ScopedProfile profile(73);
         sphere_renderer.update(dt_ms);
-    }, &clean_job_root);
+    //}, &clean_job_root);
 
-    JobsService::get().make_closure(async::worker::mode::background, [this, dt_ms](async::job&) {
+    //JobsService::get().make_closure(async::worker::mode::background, [this, dt_ms](async::job&) {
+    //    debug::ScopedProfile profile(74);
         triangle_renderer.update(dt_ms);
-    }, &clean_job_root);
+    //}, &clean_job_root);
 
-    JobsService::get().foreground()->wait_for(&clean_job_root);
+    //JobsService::get().foreground()->wait_for(&clean_job_root);
 }
 
 void OpenGLDebugRenderer::collect_garbages() {
-    async::job collect_root_job;
+    //async::job collect_root_job;
 
-    JobsService::get().make_closure(async::worker::mode::background, [this](async::job&) {
+    //JobsService::get().make_closure(async::worker::mode::background, [this](async::job&) {
         aabb_renderer.collect_garbages();
-    }, &collect_root_job);
+    //}, &collect_root_job);
 
-    JobsService::get().make_closure(async::worker::mode::background, [this](async::job&) {
+    //JobsService::get().make_closure(async::worker::mode::background, [this](async::job&) {
         line_renderer.collect_garbages();
-    }, &collect_root_job);
+    //}, &collect_root_job);
 
-    JobsService::get().make_closure(async::worker::mode::background, [this](async::job&) {
+    //JobsService::get().make_closure(async::worker::mode::background, [this](async::job&) {
         circle_renderer.collect_garbages();
-    }, &collect_root_job);
+    //}, &collect_root_job);
 
-    JobsService::get().make_closure(async::worker::mode::background, [this](async::job&) {
+    //JobsService::get().make_closure(async::worker::mode::background, [this](async::job&) {
         sphere_renderer.collect_garbages();
-    }, &collect_root_job);
+    //}, &collect_root_job);
 
-    JobsService::get().make_closure(async::worker::mode::background, [this](async::job&) {
+    //JobsService::get().make_closure(async::worker::mode::background, [this](async::job&) {
         triangle_renderer.collect_garbages();
-    }, &collect_root_job);
+    //}, &collect_root_job);
 
-    JobsService::get().foreground()->wait_for(&collect_root_job);
+    //JobsService::get().foreground()->wait_for(&collect_root_job);
 }
 
 void OpenGLDebugRenderer::draw() {
