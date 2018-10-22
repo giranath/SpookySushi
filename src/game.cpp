@@ -73,9 +73,24 @@ void Game::prepare_shader() {
     }
 }
 
-void Game::on_start() {
-    prepare_shader();
+void Game::prepare_physic_scene() {
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(0.f, 0.f, 0.f), glm::angleAxis(0.f, sushi::Vec3(0.f, 1.f, 0.f))),
+                           sushi::PhysicPlaneShape(sushi::Vec3(0.f, 1.f, 0.f)));
 
+    wrecking_ball_body = physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{20.f, 15.f, 10.f}, glm::angleAxis(0.79f, sushi::Vec3{0.f, 0.f, 1.f})),
+                                                sushi::PhysicSphereShape(1.f), 10.f);
+    wrecking_ball_body.set_linear_damping(0.1f);
+
+    auto support = physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{10.f, 15.f, 10.f}, glm::angleAxis(0.f, sushi::Vec3(0.f, 1.f, 0.f))),
+                                          sushi::PhysicBoxShape(1.f, 1.f, 5.f), 0.f);
+
+    auto j = physic.join(wrecking_ball_body, support, sushi::PhysicRopeJoint(10.f));
+
+    physic.destroy(j);
+    physic.destroy(wrecking_ball_body);
+}
+
+void Game::prepare_scene() {
     main_camera.local_transform.translate(sushi::Vec3{0.f, 0.f, 10.f});
     main_camera.local_transform.look_at(sushi::Vec3{0.f, 0.f, 0.f});
 
@@ -86,7 +101,6 @@ void Game::on_start() {
 
     auto monkey_model_view = package.entry_data(0, sushi::ValidateEntry{});
     if(monkey_model_view) {
-        // TODO: Automate asset extraction from package
         std::istringstream monkey_model_stream(std::string{*monkey_model_view});
         sushi::MeshAsset asset;
         monkey_model_stream >> asset;
@@ -95,36 +109,31 @@ void Game::on_start() {
     }
     else {
         sushi::log_critical("sushi.game", "cannot get model from package");
-
-        //throw 5;
     }
 
-    controller.register_inputs();
-
-    //sushi::set_relative_mouse_mode(true);
-
-    sushi::log_info("sushi.game", "creating physic world...");
-    //physic = sushi::make_physic_world();
-    physic_update_elapsed_time = 0;
-
-    wrecking_ball_body = physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{20.f, 15.f, 10.f}, glm::angleAxis(0.79f, sushi::Vec3{0.f, 0.f, 1.f})),
-                                                sushi::PhysicSphereShape(1.f), 10.f);
-    wrecking_ball_body.set_linear_damping(0.1f);
-    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{0.f, 0.f, 0.f}, glm::angleAxis(0.f, sushi::Vec3(0.f, 1.f, 0.f))),
-                           sushi::PhysicBoxShape(50.f, 1.f, 50.f), 0.f);
-    auto support = physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{10.f, 15.f, 10.f}, glm::angleAxis(0.f, sushi::Vec3(0.f, 1.f, 0.f))),
-                                          sushi::PhysicBoxShape(1.f, 1.f, 5.f), 0.f);
-
-    physic.join(wrecking_ball_body, support, sushi::PhysicRopeJoint(10.f));
+    prepare_physic_scene();
 }
 
-void Game::on_frame(sushi::frame_duration last_frame) {
-    // Execute physic simulation
+void Game::on_start() {
+    controller.register_inputs();
+    physic_update_elapsed_time = 0;
+
+    prepare_shader();
+    prepare_scene();
+
+    //sushi::set_relative_mouse_mode(true);
+}
+
+void Game::update_physic(sushi::frame_duration last_frame) {
     physic_update_elapsed_time += std::chrono::duration_cast<std::chrono::milliseconds>(last_frame).count();
     while(physic_update_elapsed_time > 16) {
         physic.step_simulation(1.f / 60.f);
         physic_update_elapsed_time -= 16;
     }
+}
+
+void Game::on_frame(sushi::frame_duration last_frame) {
+    update_physic(last_frame);
 
     const sushi::Vec3 forward_movement = main_camera.local_transform.forward() * controller.get_move_forward_value() * 0.1f;
     const sushi::Vec3 right_movement = main_camera.local_transform.right() * controller.get_move_strate_value() * 0.1f;
@@ -139,7 +148,7 @@ void Game::on_frame(sushi::frame_duration last_frame) {
     const float pitch_rad_value = pitch_value * PITCH_RATIO;
     const sushi::Quaternion pitch_quat = glm::angleAxis(pitch_rad_value, sushi::Vec3{1.f, 0.f, 0.f});
 
-    if(controller.should_apply_boost()) {
+    if(controller.should_apply_boost() && wrecking_ball_body) {
         auto wrecking_ball_transform = wrecking_ball_body.transform();
 
         const sushi::Vec3 forward(1.f, 0.f, 0.f);

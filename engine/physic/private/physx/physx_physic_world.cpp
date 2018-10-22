@@ -153,13 +153,48 @@ PhysXPhysicWorld::rigid_body_type PhysXPhysicWorld::make_rigid_body(PhysicTransf
     return PhysXRigidBody(body);
 }
 
-// TODO: Return joint
-void PhysXPhysicWorld::join(rigid_body_type a, rigid_body_type b, PhysicRopeJoint joint) {
+PhysXPhysicWorld::rigid_body_type PhysXPhysicWorld::make_rigid_body(PhysicTransform transform, PhysicPlaneShape shape, float mass) {
+    PxShape* px_shape = pimpl->physics.get().createShape(PxPlaneGeometry(), *pimpl->material);
+    PxTransform plane_transform = PxTransformFromPlaneEquation(PxPlane(shape.normal.x, shape.normal.y, shape.normal.z, shape.distance));
+    PxTransform px_transform(to_px_vec3(transform.translation), to_px_quat(transform.rotation));
+    PxRigidActor* body = nullptr;
+    if(mass == 0.f) {
+        // Static
+        body = pimpl->physics.get().createRigidStatic(px_transform * plane_transform);
+    }
+    else {
+        // Rigid
+        PxRigidDynamic* dynamic = pimpl->physics.get().createRigidDynamic(px_transform * plane_transform);
+        PxRigidBodyExt::updateMassAndInertia(*dynamic, mass);
+
+        body = dynamic;
+    }
+    body->attachShape(*px_shape);
+    px_shape->release();
+
+    pimpl->scene->addActor(*body);
+
+    return PhysXRigidBody(body);
+}
+
+PhysXPhysicWorld::joint_type PhysXPhysicWorld::join(rigid_body_type a, rigid_body_type b, PhysicRopeJoint joint) {
     PxDistanceJoint* px_joint = PxDistanceJointCreate(pimpl->physics.get(),
                                                       a.rigid_body, PxTransform(PxVec3(0.f, 0.f, 0.f)),
                                                       b.rigid_body, PxTransform(PxVec3(0.f, 0.f, 0.f)));
 
     px_joint->setMaxDistance(joint.length);
+
+    return joint_type{px_joint};
+}
+
+void PhysXPhysicWorld::destroy(rigid_body_type& body) {
+    pimpl->scene->removeActor(*body.rigid_body);
+    body.rigid_body = nullptr;
+}
+
+void PhysXPhysicWorld::destroy(joint_type& join) {
+    join.joint->release();
+    join.joint = nullptr;
 }
 
 void PhysXPhysicWorld::draw_debug() const {

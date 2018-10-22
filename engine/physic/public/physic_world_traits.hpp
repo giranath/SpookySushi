@@ -12,6 +12,7 @@ template<typename T>
 struct physic_world_traits {
     using value_type = T;
     using rigid_body_type = void;
+    using joint_type = void;
 
     static const bool can_draw_debug = false;
 };

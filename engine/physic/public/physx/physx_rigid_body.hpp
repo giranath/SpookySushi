@@ -15,6 +15,8 @@ namespace sushi {
 
 class PhysXPhysicWorld;
 
+struct RigidBodyNotBound {};
+
 class PhysXRigidBody {
     friend PhysXPhysicWorld;
     physx::PxRigidActor* rigid_body;
@@ -23,7 +25,8 @@ class PhysXRigidBody {
 public:
     PhysXRigidBody() noexcept;
 
-    explicit operator bool() const noexcept { return rigid_body; }
+    explicit operator bool() const noexcept { return good(); }
+    bool good() const noexcept { return rigid_body; }
 
     void set_linear_damping(float damp);
     void apply_force_at(const Vec3& position, const Vec3& force);

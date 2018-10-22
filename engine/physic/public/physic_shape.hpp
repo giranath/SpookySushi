@@ -1,6 +1,8 @@
 #ifndef SPOOKYSUSHI_PHYSIC_SHAPE_HPP
 #define SPOOKYSUSHI_PHYSIC_SHAPE_HPP
 
+#include <types.hpp>
+
 namespace sushi {
 
 struct PhysicSphereShape {
@@ -38,6 +40,23 @@ struct PhysicCapsuleShape {
     : radius{radius}
     , height{height}
     , axis{axis} {
+
+    }
+};
+
+struct PhysicPlaneShape {
+    Vec3 normal;
+    float distance;
+
+    constexpr PhysicPlaneShape() noexcept
+    : normal{0.f, 1.f, 0.f}
+    , distance{0.f} {
+
+    }
+
+    constexpr PhysicPlaneShape(const Vec3& normal, float distance = 0.f) noexcept
+    : normal{normal}
+    , distance{distance} {
 
     }
 };

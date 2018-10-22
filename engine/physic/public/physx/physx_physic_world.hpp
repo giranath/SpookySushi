@@ -7,6 +7,7 @@
 #include "physic_transform.hpp"
 
 #include "physx/physx_rigid_body.hpp"
+#include "physx/physx_joint.hpp"
 
 #include <memory>
 
@@ -19,6 +20,7 @@ class PhysXPhysicWorld {
 
 public:
     using rigid_body_type = PhysXRigidBody;
+    using joint_type = PhysXJoint;
 
     PhysXPhysicWorld();
     ~PhysXPhysicWorld();
@@ -28,8 +30,12 @@ public:
     rigid_body_type make_rigid_body(PhysicTransform transform, PhysicSphereShape shape, float mass = 0.f);
     rigid_body_type make_rigid_body(PhysicTransform transform, PhysicBoxShape shape, float mass = 0.f);
     rigid_body_type make_rigid_body(PhysicTransform transform, PhysicCapsuleShape shape, float mass = 0.f);
+    rigid_body_type make_rigid_body(PhysicTransform transform, PhysicPlaneShape shape, float mass = 0.f);
 
-    void join(rigid_body_type a, rigid_body_type b, PhysicRopeJoint joint);
+    joint_type join(rigid_body_type a, rigid_body_type b, PhysicRopeJoint joint);
+
+    void destroy(rigid_body_type& body);
+    void destroy(joint_type& join);
 
     void draw_debug() const;
 };
@@ -38,6 +44,7 @@ template<>
 struct physic_world_traits<PhysXPhysicWorld> {
     using value_type = PhysXPhysicWorld;
     using rigid_body_type = PhysXPhysicWorld::rigid_body_type;
+    using joint_type = PhysXPhysicWorld::joint_type;
 
     static const bool can_draw_debug = true;
 };
