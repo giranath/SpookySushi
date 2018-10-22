@@ -3,6 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
+#include <glm/gtx/quaternion.hpp>
 
 namespace sushi {
 
@@ -11,10 +12,10 @@ Mat4x4 Camera::projection() const noexcept {
 }
 
 Mat4x4 Camera::view() const noexcept {
-    const Vec3& eye_position = local_transform.translation();
-    const Vec3& direction = local_transform.forward();
+    const Mat4x4 translation = glm::inverse(glm::translate(glm::mat4{1.f}, local_transform.translation()));
+    const Mat4x4 rotation = glm::toMat4(local_transform.rotation());
 
-    return glm::lookAt(eye_position, eye_position + direction, local_transform.up());
+    return rotation * translation;
 }
 
 }

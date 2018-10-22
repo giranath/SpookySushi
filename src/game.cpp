@@ -77,22 +77,21 @@ void Game::prepare_physic_scene() {
     physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(0.f, 0.f, 0.f), glm::angleAxis(0.f, sushi::Vec3(0.f, 1.f, 0.f))),
                            sushi::PhysicPlaneShape(sushi::Vec3(0.f, 1.f, 0.f)));
 
-    wrecking_ball_body = physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{20.f, 15.f, 10.f}, glm::angleAxis(0.79f, sushi::Vec3{0.f, 0.f, 1.f})),
+    wrecking_ball_body = physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{20.f, 15.f, 10.f}, glm::angleAxis(0.0f, sushi::Vec3{0.f, 1.f, 0.f})),
                                                 sushi::PhysicSphereShape(1.f), 10.f);
     wrecking_ball_body.set_linear_damping(0.1f);
 
-    auto support = physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{10.f, 15.f, 10.f}, glm::angleAxis(0.f, sushi::Vec3(0.f, 1.f, 0.f))),
-                                          sushi::PhysicBoxShape(1.f, 1.f, 5.f), 0.f);
-
-    auto j = physic.join(wrecking_ball_body, support, sushi::PhysicRopeJoint(10.f));
-
-    physic.destroy(j);
-    physic.destroy(wrecking_ball_body);
+    // Add 5 towers
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(0.f, 10.f, 0.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f));
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(-50.f, 10.f, 30.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f));
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(-30.f, 10.f, 10.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f));
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(-70.f, 10.f, -30.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f));
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(-110.f, 10.f, 0.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f));
 }
 
 void Game::prepare_scene() {
-    main_camera.local_transform.translate(sushi::Vec3{0.f, 0.f, 10.f});
-    main_camera.local_transform.look_at(sushi::Vec3{0.f, 0.f, 0.f});
+    main_camera.local_transform.reset();
+    main_camera.local_transform.set_translation(sushi::Vec3{40.f, 16.f, 10.f});
 
     // Extract monkey mesh from package
     sushi::Package package;
@@ -116,10 +115,13 @@ void Game::prepare_scene() {
 
 void Game::on_start() {
     controller.register_inputs();
+    camera_controller.set_camera(&main_camera);
+    camera_controller.set_target(&player_transform);
     physic_update_elapsed_time = 0;
 
     prepare_shader();
     prepare_scene();
+    //camera_controller.update(sushi::frame_duration{});
 
     //sushi::set_relative_mouse_mode(true);
 }
@@ -130,24 +132,20 @@ void Game::update_physic(sushi::frame_duration last_frame) {
         physic.step_simulation(1.f / 60.f);
         physic_update_elapsed_time -= 16;
     }
+
+    // Update player's transform
+    const sushi::PhysicTransform new_player_transform = wrecking_ball_body.transform();
+    player_transform.set_translation(new_player_transform.translation);
+    player_transform.set_rotation(new_player_transform.rotation);
 }
 
 void Game::on_frame(sushi::frame_duration last_frame) {
     update_physic(last_frame);
 
-    const sushi::Vec3 forward_movement = main_camera.local_transform.forward() * controller.get_move_forward_value() * 0.1f;
-    const sushi::Vec3 right_movement = main_camera.local_transform.right() * controller.get_move_strate_value() * 0.1f;
+    // Update camera
+    camera_controller.update(last_frame);
 
-    const float yaw_value = -controller.get_camera_yaw_value();
-    const float YAW_RATIO = (glm::pi<float>() / 8.0f) / 100.0f; // pi/2 per 100 horizontal pixel
-    const float yaw_rad_value = yaw_value * YAW_RATIO;
-    const sushi::Quaternion yaw_quat = glm::angleAxis(yaw_rad_value, sushi::Vec3{0.f, 1.f, 0.f});
-
-    const float pitch_value = controller.get_camera_pitch_value();
-    const float PITCH_RATIO = (glm::pi<float>() / 8.0f) / 100.0f; // pi/2 per 100 horizontal pixel
-    const float pitch_rad_value = pitch_value * PITCH_RATIO;
-    const sushi::Quaternion pitch_quat = glm::angleAxis(pitch_rad_value, sushi::Vec3{1.f, 0.f, 0.f});
-
+    // Player controls
     if(controller.should_apply_boost() && wrecking_ball_body) {
         auto wrecking_ball_transform = wrecking_ball_body.transform();
 
@@ -157,9 +155,13 @@ void Game::on_frame(sushi::frame_duration last_frame) {
         wrecking_ball_body.apply_force_at(sushi::Vec3{1.f, 0.f, 0.f}, rotated_forward * 10.f);
     }
 
-    main_camera.local_transform
-            .translate(forward_movement + right_movement)
-            .set_rotation(yaw_quat * main_camera.local_transform.rotation() * pitch_quat);
+    if(controller.should_shoot_left_grappling()) {
+
+    }
+
+    if(controller.should_shoot_right_grappling()) {
+
+    }
 }
 
 void Game::on_late_frame(sushi::frame_duration last_frame) {

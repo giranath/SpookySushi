@@ -10,7 +10,7 @@ add_library(sushi-input
         private/input_processor.cpp
         public/input_processor.hpp
         private/axis_input_processor.cpp
-        public/axis_input_processor.hpp)
+        public/axis_input_processor.hpp public/action_input_processor.hpp private/action_input_processor.cpp)
 target_link_libraries(sushi-input
         PUBLIC sushi-core
         PRIVATE sushi-service)

@@ -10,6 +10,10 @@ void InputProcessor::process() const noexcept {
     InputBusReader& inputs_reader = InputBusService::get();
 
     for(BaseInputProcessor* processor : processors) {
+        processor->reset();
+    }
+
+    for(BaseInputProcessor* processor : processors) {
         processor->process(inputs_reader.begin(), inputs_reader.end());
     }
 }

@@ -188,13 +188,17 @@ PhysXPhysicWorld::joint_type PhysXPhysicWorld::join(rigid_body_type a, rigid_bod
 }
 
 void PhysXPhysicWorld::destroy(rigid_body_type& body) {
-    pimpl->scene->removeActor(*body.rigid_body);
-    body.rigid_body = nullptr;
+    if(body) {
+        pimpl->scene->removeActor(*body.rigid_body);
+        body.rigid_body = nullptr;
+    }
 }
 
 void PhysXPhysicWorld::destroy(joint_type& join) {
-    join.joint->release();
-    join.joint = nullptr;
+    if(join) {
+        join.joint->release();
+        join.joint = nullptr;
+    }
 }
 
 void PhysXPhysicWorld::draw_debug() const {

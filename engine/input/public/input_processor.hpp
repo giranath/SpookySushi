@@ -9,6 +9,7 @@ namespace sushi {
 class BaseInputProcessor {
 public:
     virtual ~BaseInputProcessor() = default;
+    virtual void reset() {}
     virtual bool process(InputBusReader::const_iterator begin, InputBusReader::const_iterator end) = 0;
 };
 
@@ -24,6 +25,12 @@ public:
     virtual ~AxisInputProcessor() = default;
     virtual float value() const = 0;
     virtual bool is_normalized() const { return true; }
+};
+
+class ActionInputProcessor : public BaseInputProcessor {
+public:
+    virtual ~ActionInputProcessor() = default;
+    virtual bool is_active() const = 0;
 };
 
 class InputProcessor {

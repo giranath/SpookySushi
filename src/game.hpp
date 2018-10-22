@@ -2,6 +2,7 @@
 #define SPOOKYSUSHI_GAME_HPP
 
 #include "game_controller.hpp"
+#include "camera_controller.hpp"
 
 #include <program.hpp>
 #include <base_game.hpp>
@@ -12,9 +13,10 @@
 class Game : public sushi::BaseGame {
     sushi::Camera main_camera;
     GameController controller;
+    CameraController camera_controller;
     sushi::gl::program default_shader;
     sushi::StaticMeshPtr mesh;
-    //std::unique_ptr<sushi::PhysicWorld> physic;
+    sushi::Transform player_transform;
     sushi::PhysicWorld physic;
     uint32_t physic_update_elapsed_time;
     sushi::PhysicWorld::rigid_body_type wrecking_ball_body;

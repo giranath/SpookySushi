@@ -13,7 +13,7 @@ struct PhysicTransform {
 
     explicit PhysicTransform(Vec3 translation) noexcept
     : translation{translation}
-    , rotation{} {
+    , rotation{1.f, 0.f, 0.f, 0.f} {
 
     }
 

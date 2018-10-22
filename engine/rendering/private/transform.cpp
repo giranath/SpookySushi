@@ -6,7 +6,7 @@ namespace sushi {
 
 Transform::Transform() noexcept
 : translation_{}
-, rotation_{Vec3{0.f, 0.f, 0.f}}
+, rotation_{1.f, 0.f, 0.f, 0.f}
 , scale_{1.f, 1.f, 1.f}
 , cached_transform{}
 , is_dirty{true} {
@@ -94,14 +94,18 @@ Transform& Transform::scale(float uniform_scale) noexcept {
     return *this;
 }
 
+static Quaternion direction_to_quat(const Vec3& direction) noexcept {
+    const float angle = std::atan2(direction.x, direction.z);
+    return Quaternion{0.f, std::sinf(angle / 2.f), 0.f, std::cosf(angle / 2.f)};
+}
+
 Transform& Transform::look_at(const Vec3& target) noexcept {
+#if 0
     const Vec3 target_direction = glm::normalize(target - translation_);
     const Vec3 initial_direction = forward();
 
     const float cos_theta = glm::dot(initial_direction, target_direction);
 
-    //Vec3 rotation_axis;
-    //float angle;
     Vec3 rotation_axis;
     Quaternion rotation_quat;
     if(cos_theta < -1 + 0.001f) {
@@ -123,6 +127,9 @@ Transform& Transform::look_at(const Vec3& target) noexcept {
     }
 
     rotation_ *= rotation_quat;
+#endif
+
+    rotation_ = glm::toQuat(glm::lookAt(translation(), target, Vec3{0.f, 1.f, 0.f}));
 
     is_dirty = true;
     return *this;
@@ -130,7 +137,7 @@ Transform& Transform::look_at(const Vec3& target) noexcept {
 
 Transform& Transform::reset() noexcept {
     translation_ = Vec3{};
-    rotation_ = Quaternion{Vec3{0.f, 0.f, 0.f}};
+    rotation_ = Quaternion{1.f, 0.f, 0.f, 0.f};
     scale_ = Vec3{1.f, 1.f, 1.f};
     is_dirty = true;
 
