@@ -156,7 +156,12 @@ void Game::on_frame(sushi::frame_duration last_frame) {
     }
 
     if(controller.should_shoot_left_grappling()) {
+        auto raycast = physic.raycast(main_camera.local_transform.translation(), main_camera.local_transform.forward(), 1000.f);
 
+        if(raycast) {
+            physic.join(wrecking_ball_body, raycast.rigidbody(), sushi::PhysicRopeJoint(raycast.distance()));
+            sushi::DebugRendererService::get().add_sphere(raycast.rigidbody().transform().translation, 0.25f, sushi::Colors::Orange, 1000);
+        }
     }
 
     if(controller.should_shoot_right_grappling()) {

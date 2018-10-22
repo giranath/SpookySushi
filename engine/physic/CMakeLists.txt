@@ -13,7 +13,7 @@ add_library(sushi-physic
         public/physic_transform.hpp
         public/physic_world.hpp
         public/physic_shape.hpp
-        public/physic_joints.hpp)
+        public/physic_joints.hpp public/raycast_result.hpp)
 
 if("${SUSHI_PHYSIC_BACKEND}" STREQUAL "Bullet")
     target_sources(sushi-physic PRIVATE

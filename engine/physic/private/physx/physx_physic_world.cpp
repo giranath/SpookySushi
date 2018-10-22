@@ -201,6 +201,20 @@ void PhysXPhysicWorld::destroy(joint_type& join) {
     }
 }
 
+PhysXPhysicWorld::raycast_result PhysXPhysicWorld::raycast(const Vec3& starting_point, const Vec3& direction, float max_distance) {
+    PxRaycastBuffer hit;
+    const bool status = pimpl->scene->raycast(to_px_vec3(starting_point), to_px_vec3(direction), max_distance, hit);
+
+    if(status) {
+        return raycast_result{rigid_body_type{hit.block.actor},
+                              to_vec3(hit.block.position),
+                              to_vec3(hit.block.normal),
+                              hit.block.distance};
+    }
+
+    return raycast_result{};
+}
+
 void PhysXPhysicWorld::draw_debug() const {
     const PxRenderBuffer& rb = pimpl->scene->getRenderBuffer();
     for(PxU32 i=0; i < rb.getNbLines(); ++i)
