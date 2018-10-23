@@ -1,7 +1,7 @@
 #ifndef SPOOKYSUSHI_WINDOW_CONFIG_HPP
 #define SPOOKYSUSHI_WINDOW_CONFIG_HPP
 
-#include "xml.hpp"
+#include <xml.hpp>
 #include <string>
 #include <rapidxml.hpp>
 

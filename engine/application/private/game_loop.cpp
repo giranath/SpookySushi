@@ -1,20 +1,20 @@
 #include "game_loop.hpp"
 #include "window_config.hpp"
-#include "window.hpp"
-#include "display.hpp"
-#include "opengl.hpp"
-#include "sdl_event.hpp"
-#include "../../rendering/public/renderer_interface.hpp"
-#include "../../rendering/public/opengl_renderer.hpp"
-#include "../../rendering/public/proxy_renderer.hpp"
+#include <window.hpp>
+#include <display.hpp>
+#include <opengl.hpp>
+#include <sdl_event.hpp>
+#include <renderer_interface.hpp>
+#include <opengl_renderer.hpp>
+#include <proxy_renderer.hpp>
 #include <static_mesh_builder_service.hpp>
 #include <debug_draw_service.hpp>
 #include <input_bus_service.hpp>
-#include "../../input/public/input_factory.hpp"
-#include "../../input/public/input_event.hpp"
-#include "../../input/public/input_bus.hpp"
-#include "../../service/public/service_locator.hpp"
-#include "../../input/public/input_processor.hpp"
+#include <input_factory.hpp>
+#include <input_event.hpp>
+#include <input_bus.hpp>
+#include <service_locator.hpp>
+#include <input_processor.hpp>
 
 #include <SDL.h>
 
@@ -244,6 +244,17 @@ const InputEvent* process_os_event(const SDL_Event& ev, InputFactory& input_fact
         default:
             return nullptr;
     }
+}
+
+std::vector<std::string> get_arguments(int argc, char* argv[]) {
+    std::vector<std::string> args;
+    args.reserve(static_cast<std::size_t>(argc));
+
+    std::transform(argv, argv + argc,
+                   std::back_inserter(args),
+                   [](const char* a) { return std::string{a}; });
+
+    return args;
 }
 
 int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_duration) {

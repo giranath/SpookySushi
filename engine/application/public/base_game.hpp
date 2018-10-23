@@ -2,7 +2,7 @@
 #define SPOOKYSUSHI_BASE_GAME_HPP
 
 #include <chrono>
-#include "../../rendering/public/proxy_renderer.hpp"
+#include <proxy_renderer.hpp>
 
 namespace sushi {
 

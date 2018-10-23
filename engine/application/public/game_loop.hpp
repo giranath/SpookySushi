@@ -19,6 +19,8 @@ using Arguments = std::vector<Argument>;
 using GameClock = std::chrono::high_resolution_clock;
 using FrameDuration = typename GameClock::duration;
 
+std::vector<std::string> get_arguments(int argc, char* argv[]);
+
 int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_duration = std::chrono::microseconds(16700));
 void sdl_log_output(void* userdata, int category, SDL_LogPriority priority, const char* message);
 

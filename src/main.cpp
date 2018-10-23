@@ -1,21 +1,8 @@
 #include "game.hpp"
-#include <application/public/game_loop.hpp>
-#include <algorithm>
-#include <iterator>
-
-std::vector<std::string> get_arguments(int argc, char* argv[]) {
-    std::vector<std::string> args;
-    args.reserve(static_cast<std::size_t>(argc));
-
-    std::transform(argv, argv + argc,
-                   std::back_inserter(args),
-                   [](const char* a) { return std::string{a}; });
-
-    return args;
-}
+#include <game_loop.hpp>
 
 int main(int argc, char* argv[]) {
     Game g;
 
-    return sushi::run_game(g, get_arguments(argc, argv));
+    return sushi::run_game(g, sushi::get_arguments(argc, argv));
 }

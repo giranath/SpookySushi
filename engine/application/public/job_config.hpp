@@ -1,7 +1,7 @@
 #ifndef SPOOKYSUSHI_JOB_CONFIG_HPP
 #define SPOOKYSUSHI_JOB_CONFIG_HPP
 
-#include "xml.hpp"
+#include <xml.hpp>
 
 namespace sushi {
 
