@@ -40,7 +40,7 @@ void PhysXRigidBody::apply_force_at(const Vec3& position, const Vec3& force) {
     }
 }
 
-PhysicTransform PhysXRigidBody::transform() const noexcept {
+PhysicTransform PhysXRigidBody::transform() const {
     if (good()) {
         PxTransform current_global_pose = rigid_body->getGlobalPose();
 

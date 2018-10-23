@@ -219,27 +219,45 @@ elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
     find_library(PHYSX_SDK_LOW_LEVEL_PARTICLES LowLevelParticles
                  PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
                  PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
-    find_library(PHYSX_SDK_COMMON PhysX3Common
-                 PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
-                 PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
     find_library(PHYSX_SDK_SIMULATION_CONTROLLER SimulationController
                  PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
                  PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
     find_library(PHYSX_SDK_SCENE_QUERY SceneQuery
                  PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
                  PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
-    find_library(PHYSX_SHARED_FOUNDATION PxFoundation
-                 PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
-                 PATHS ${PHYSX_SDK_BASE_DIR}/PxShared/lib)
     find_library(PHYSX_SHARED_TASK PxTask
                  PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
                  PATHS ${PHYSX_SDK_BASE_DIR}/PxShared/lib)
+
+if(APPLE)
+    find_library(PHYSX_SHARED_FOUNDATION PxFoundation
+            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+            PATHS ${PHYSX_SDK_BASE_DIR}/PxShared/lib)
     find_library(PHYSX_SHARED_PVD PxPvdSDK
-                 PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
-                 PATHS ${PHYSX_SDK_BASE_DIR}/PxShared/lib)
+            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+            PATHS ${PHYSX_SDK_BASE_DIR}/PxShared/lib)
     find_library(PHYSX_SDK_PHYSX3 PhysX3
-                 PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
-                 PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
+            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+            PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
+    find_library(PHYSX_SDK_COMMON PhysX3Common
+            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+            PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    find_library(PHYSX_SHARED_FOUNDATION PxFoundation_x64
+            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+            PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Bin)
+    find_library(PHYSX_SHARED_PVD PxPvdSDK_x64
+            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+            PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Bin)
+    find_library(PHYSX_SDK_PHYSX3 PhysX3_x64
+            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+            PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Bin)
+    find_library(PHYSX_SDK_COMMON PhysX3Common_x64
+            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+            PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Bin)
+else()
+    MESSAGE(FATAL_ERROR "unsupported platform")
+endif()
 
     add_library(libPhysXLowLevel IMPORTED STATIC GLOBAL)
     add_library(libPhysXLowLevelAABB IMPORTED STATIC GLOBAL)
@@ -247,13 +265,23 @@ elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
     add_library(libPhysXExtensions IMPORTED STATIC GLOBAL)
     add_library(libPhysXLowLevelCloth IMPORTED STATIC GLOBAL)
     add_library(libPhysXLowLevelParticles IMPORTED STATIC GLOBAL)
-    add_library(libPhysXCommon IMPORTED STATIC GLOBAL)
     add_library(libPhysXSimulationController IMPORTED STATIC GLOBAL)
-    add_library(libPhysXFoundation STATIC IMPORTED GLOBAL)
     add_library(libPhysXTask STATIC IMPORTED GLOBAL)
-    add_library(libPhysXPvd STATIC IMPORTED GLOBAL)
-    add_library(libPhysX3 STATIC IMPORTED GLOBAL)
     add_library(libPhysXSceneQuery STATIC IMPORTED GLOBAL)
+
+if(APPLE)
+    add_library(libPhysXFoundation STATIC IMPORTED GLOBAL)
+    add_library(libPhysXPvd STATIC IMPORTED GLOBAL)
+    add_library(libPhysXCommon IMPORTED STATIC GLOBAL)
+    add_library(libPhysX3 STATIC IMPORTED GLOBAL)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    add_library(libPhysXFoundation SHARED IMPORTED GLOBAL)
+    add_library(libPhysXPvd SHARED IMPORTED GLOBAL)
+    add_library(libPhysXCommon IMPORTED SHARED GLOBAL)
+    add_library(libPhysX3 SHARED IMPORTED GLOBAL)
+else()
+    MESSAGE(FATAL_ERROR "unsupported platform")
+endif()
 
     set_target_properties(libPhysXFoundation PROPERTIES
             IMPORTED_LOCATION "${PHYSX_SHARED_FOUNDATION}"
@@ -263,9 +291,6 @@ elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
             INTERFACE_INCLUDE_DIRECTORIES "${PHYSX_SDK_BASE_DIR}/PxShared/include")
     set_target_properties(libPhysXPvd PROPERTIES
             IMPORTED_LOCATION "${PHYSX_SHARED_PVD}"
-            INTERFACE_INCLUDE_DIRECTORIES "${PHYSX_SDK_BASE_DIR}/PxShared/include")
-    set_target_properties(libPhysXFoundation PROPERTIES
-            IMPORTED_LOCATION "${PHYSX_SHARED_FOUNDATION}"
             INTERFACE_INCLUDE_DIRECTORIES "${PHYSX_SDK_BASE_DIR}/PxShared/include")
     set_target_properties(libPhysXLowLevel PROPERTIES
             IMPORTED_LOCATION "${PHYSX_SDK_LOW_LEVEL}"
@@ -312,7 +337,8 @@ elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
             libPhysXSimulationController
             libPhysXExtensions
             libPhysXSceneQuery
-            libPhysX3)
+            libPhysX3
+            )
     set_target_properties(libPhysX PROPERTIES
         INTERFACE_COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>)
 

@@ -1,5 +1,7 @@
 #include "action_input_processor.hpp"
 
+#include <algorithm>
+
 namespace sushi {
 
 KeyActionInputProcessor::KeyActionInputProcessor(Key key)

@@ -30,7 +30,7 @@ public:
 
     void set_linear_damping(float damp);
     void apply_force_at(const Vec3& position, const Vec3& force);
-    PhysicTransform transform() const noexcept;
+    PhysicTransform transform() const;
 };
 
 template<>

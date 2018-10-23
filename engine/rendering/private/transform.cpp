@@ -2,6 +2,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
 
+#include <cmath>
+
 namespace sushi {
 
 Transform::Transform() noexcept
@@ -96,7 +98,7 @@ Transform& Transform::scale(float uniform_scale) noexcept {
 
 static Quaternion direction_to_quat(const Vec3& direction) noexcept {
     const float angle = std::atan2(direction.x, direction.z);
-    return Quaternion{0.f, std::sinf(angle / 2.f), 0.f, std::cosf(angle / 2.f)};
+    return Quaternion{0.f, std::sin(angle / 2.f), 0.f, std::cos(angle / 2.f)};
 }
 
 Transform& Transform::look_at(const Vec3& target) noexcept {
