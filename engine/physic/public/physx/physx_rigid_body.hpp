@@ -31,6 +31,9 @@ public:
     void set_linear_damping(float damp);
     void apply_force_at(const Vec3& position, const Vec3& force);
     PhysicTransform transform() const;
+
+    void set_query_filter_mask(uint32_t filter_mask);
+    uint32_t query_filter_mask() const;
 };
 
 template<>

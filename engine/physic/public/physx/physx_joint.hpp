@@ -21,6 +21,10 @@ public:
     operator bool() const noexcept { return good(); }
     bool good() const noexcept { return joint; }
 
+    bool is_collision_enabled() const noexcept;
+    void enable_collision() noexcept;
+    void disable_collision() noexcept;
+
 };
 
 }

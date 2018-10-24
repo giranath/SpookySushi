@@ -43,6 +43,7 @@ public:
 
     // Scene queries
     raycast_result raycast(const Vec3& starting_point, const Vec3& direction, float max_distance);
+    raycast_result raycast(const Vec3& starting_point, const Vec3& direction, float max_distance, uint32_t collision_mask);
 
     void draw_debug() const;
 };

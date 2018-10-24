@@ -82,11 +82,11 @@ void Game::prepare_physic_scene() {
     wrecking_ball_body.set_linear_damping(0.1f);
 
     // Add 5 towers
-    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(0.f, 10.f, 0.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f));
-    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(-50.f, 10.f, 30.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f));
-    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(-30.f, 10.f, 10.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f));
-    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(-70.f, 10.f, -30.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f));
-    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(-110.f, 10.f, 0.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f));
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(0.f, 10.f, 0.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f)).set_query_filter_mask(1);
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(-50.f, 10.f, 30.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f)).set_query_filter_mask(1);
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(-30.f, 10.f, 10.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f)).set_query_filter_mask(1);
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(-70.f, 10.f, -30.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f)).set_query_filter_mask(1);
+    physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(-110.f, 10.f, 0.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f)).set_query_filter_mask(1);
 }
 
 void Game::prepare_scene() {
@@ -156,10 +156,10 @@ void Game::on_frame(sushi::frame_duration last_frame) {
     }
 
     if(controller.should_shoot_left_grappling()) {
-        auto raycast = physic.raycast(main_camera.local_transform.translation(), main_camera.local_transform.forward(), 1000.f);
+        auto raycast = physic.raycast(main_camera.local_transform.translation(), main_camera.local_transform.forward(), 1000.f, 1);
 
         if(raycast) {
-            physic.join(wrecking_ball_body, raycast.rigidbody(), sushi::PhysicRopeJoint(raycast.distance()));
+            physic.join(wrecking_ball_body, raycast.rigidbody(), sushi::PhysicRopeJoint(raycast.distance())).enable_collision();
             sushi::DebugRendererService::get().add_sphere(raycast.rigidbody().transform().translation, 0.25f, sushi::Colors::Orange, 1000);
         }
     }

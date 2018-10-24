@@ -55,4 +55,27 @@ PhysicTransform PhysXRigidBody::transform() const {
     return PhysicTransform();
 }
 
+void PhysXRigidBody::set_query_filter_mask(uint32_t filter_mask) {
+    if(!good()) throw RigidBodyNotBound{};
+
+    std::vector<PxShape*> shapes(rigid_body->getNbShapes(), nullptr);
+    rigid_body->getShapes(shapes.data(), shapes.size(), 0);
+
+    PxFilterData filter_data;
+    filter_data.word0 = filter_mask;
+    for(PxShape* shape : shapes) {
+        shape->setQueryFilterData(filter_data);
+    }
+}
+
+uint32_t PhysXRigidBody::query_filter_mask() const {
+    if(!good()) throw RigidBodyNotBound{};
+    if(rigid_body->getNbShapes() == 0) throw std::out_of_range("this rigid body has no shapes");
+
+    PxShape* first_shape = nullptr;
+    rigid_body->getShapes(&first_shape, 1, 0);
+
+    return first_shape->getQueryFilterData().word0;
+}
+
 }
