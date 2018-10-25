@@ -74,12 +74,17 @@ void Game::prepare_shader() {
 }
 
 void Game::prepare_physic_scene() {
+    // Sol
     physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(0.f, 0.f, 0.f), glm::angleAxis(0.f, sushi::Vec3(0.f, 1.f, 0.f))),
                            sushi::PhysicPlaneShape(sushi::Vec3(0.f, 1.f, 0.f)));
 
-    wrecking_ball_body = physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{20.f, 15.f, 10.f}, glm::angleAxis(0.0f, sushi::Vec3{0.f, 1.f, 0.f})),
+    wrecking_ball_body = physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3{0.f, 10.f, 0.f}),
                                                 sushi::PhysicSphereShape(1.f), 10.f);
     wrecking_ball_body.set_linear_damping(0.1f);
+    wrecking_ball_body.set_angular_damping(0.6);
+    sushi::MovementLock wrecking_lock;
+    wrecking_lock.lock(sushi::RotationLock::Tilt).lock(sushi::RotationLock::Roll);
+    wrecking_ball_body.set_movement_lock(wrecking_lock);
 
     // Add 5 towers
     physic.make_rigid_body(sushi::PhysicTransform(sushi::Vec3(0.f, 10.f, 0.f)), sushi::PhysicBoxShape(5.f, 20.f, 5.f)).set_query_filter_mask(1);
@@ -121,7 +126,6 @@ void Game::on_start() {
 
     prepare_shader();
     prepare_scene();
-    //camera_controller.update(sushi::frame_duration{});
 
     //sushi::set_relative_mouse_mode(true);
 
@@ -158,10 +162,18 @@ void Game::on_frame(sushi::frame_duration last_frame) {
     const float move_forward = controller.get_move_forward_value();
     const float move_right = controller.get_move_strate_value();
 
+    const bool have_forward_movement = move_forward > 0.f;
+    const bool have_right_movement = move_right > 0.f;
+
+    const bool have_movement = have_forward_movement || have_right_movement;
+
     const sushi::Vec3 forward_movement = wrecking_ball_body.transform().to_transform().forward() * move_forward;
     const sushi::Vec3 right_movement = wrecking_ball_body.transform().to_transform().right() * move_right;
 
-    const sushi::Vec3 normalized_direction = glm::normalize(forward_movement + right_movement);
+    sushi::Vec3 normalized_direction = forward_movement + right_movement;
+    if(have_movement) {
+        normalized_direction = glm::normalize(normalized_direction);
+    }
 
     wrecking_ball_body.apply_force_at(sushi::Vec3{}, normalized_direction * 10.f);
 
@@ -187,7 +199,7 @@ void Game::on_frame(sushi::frame_duration last_frame) {
     }
 
     if (left_grappling_joint) {
-        //sushi::DebugRendererService::get().add_line(wrecking_ball_body.transform().translation, raycast.rigidbody().transform().translation, sushi::Colors::Yellow);
+        sushi::DebugRendererService::get().add_line(wrecking_ball_body.transform().translation, left_grappling_joint.rigid_bodies().second.transform().translation, sushi::Colors::Yellow);
     }
 
     if(controller.should_shoot_right_grappling()) {
@@ -228,9 +240,7 @@ void Game::on_render(sushi::ProxyRenderer renderer) {
         mesh->render();
     }
 
-    if(sushi::DebugRendererService::is_located()) {
-        sushi::draw_physic_debug(physic);
-    }
+    sushi::draw_physic_debug(physic);
 }
 
 void Game::on_stop() {

@@ -4,6 +4,7 @@
 #include "rigid_body_traits.hpp"
 #include "physic_transform.hpp"
 #include <types.hpp>
+#include <physic_movement_lock.hpp>
 
 namespace physx {
 
@@ -30,11 +31,14 @@ public:
     bool good() const noexcept { return rigid_body; }
 
     void set_linear_damping(float damp);
+    void set_angular_damping(float damp);
     void apply_force_at(const Vec3& position, const Vec3& force);
     PhysicTransform transform() const;
 
     void set_query_filter_mask(uint32_t filter_mask);
     uint32_t query_filter_mask() const;
+
+    void set_movement_lock(MovementLock lock);
 };
 
 template<>

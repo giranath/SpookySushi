@@ -32,10 +32,6 @@ public:
     static reference& get() noexcept {
         return *ServiceLocator::service();
     }
-
-    static bool is_located() noexcept {
-        return ServiceLocator::service() != nullptr;
-    }
 };
 
 }

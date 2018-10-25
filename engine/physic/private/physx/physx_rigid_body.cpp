@@ -29,6 +29,17 @@ void PhysXRigidBody::set_linear_damping(float damp) {
     }
 }
 
+void PhysXRigidBody::set_angular_damping(float damp) {
+    if(good() && rigid_body->is<PxRigidDynamic>()) {
+        PxRigidDynamic* dynamic = rigid_body->is<PxRigidDynamic>();
+
+        dynamic->setAngularDamping(damp);
+    }
+    else {
+        throw RigidBodyNotBound{};
+    }
+}
+
 void PhysXRigidBody::apply_force_at(const Vec3& position, const Vec3& force) {
     if(good() && rigid_body->is<PxRigidDynamic>()) {
         PxRigidDynamic* dynamic = rigid_body->is<PxRigidDynamic>();
@@ -80,6 +91,22 @@ uint32_t PhysXRigidBody::query_filter_mask() const {
     rigid_body->getShapes(&first_shape, 1, 0);
 
     return first_shape->getQueryFilterData().word0;
+}
+
+void PhysXRigidBody::set_movement_lock(MovementLock lock) {
+    if(!good()) throw RigidBodyNotBound{};
+
+    PxRigidDynamic* dynamic = rigid_body->is<PxRigidDynamic>();
+    if(dynamic) {
+        PxRigidDynamicLockFlags lock_flags;
+
+        dynamic->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, lock.is_locked(RotationLock::Head));
+        dynamic->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, lock.is_locked(RotationLock::Roll));
+        dynamic->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, lock.is_locked(RotationLock::Tilt));
+        dynamic->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_LINEAR_X, lock.is_locked(TranslationLock::XAxis));
+        dynamic->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_LINEAR_Y, lock.is_locked(TranslationLock::YAxis));
+        dynamic->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_LINEAR_Z, lock.is_locked(TranslationLock::ZAxis));
+    }
 }
 
 }
