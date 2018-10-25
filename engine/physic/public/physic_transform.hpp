@@ -2,6 +2,7 @@
 #define SPOOKYSUSHI_PHYSICTRANSFORM_HPP
 
 #include <types.hpp>
+#include <transform.hpp>
 
 namespace sushi {
 
@@ -27,6 +28,10 @@ struct PhysicTransform {
     : translation{translation}
     , rotation{rotation} {
 
+    }
+
+    Transform to_transform() const noexcept {
+        return Transform(translation, rotation);
     }
 };
 

@@ -43,7 +43,7 @@ if(MSVC)
             INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/SDL2/include/SDL2")
     set_target_properties(libSDL2main PROPERTIES
             IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/SDL2/lib/${CMAKE_STATIC_LIBRARY_PREFIX}SDL2main${CMAKE_STATIC_LIBRARY_SUFFIX}"
-            IMPORTED_LOCATION_DEBUG "${DEPENDENCIES_ROOT}/SDL2/lib/${CMAKE_STATIC_LIBRARY_PREFIX}SDL2main${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            IMPORTED_LOCATION_DEBUG "${DEPENDENCIES_ROOT}/SDL2/lib/${CMAKE_STATIC_LIBRARY_PREFIX}SDL2maind${CMAKE_STATIC_LIBRARY_SUFFIX}"
             INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/SDL2/include/SDL2")
 
     target_link_libraries(libSDL2 INTERFACE libSDL2Runtime libSDL2main)
@@ -198,34 +198,34 @@ elseif("${SUSHI_PHYSIC_BACKEND}" STREQUAL "PhysX")
     elseif(${CMAKE_SYSTEM_NAME} MATCHES Darwin)
         set(PHYSX_BASE_TARGET_NAME "osx")
     else()
-        MESSAGE(FATAL_ERROR "${CMAKE_SYSTEM_NAME} not supported yet")
+		set(PHYSX_BASE_TARGET_NAME "vc15win")
     endif()
 
-    find_library(PHYSX_SDK_LOW_LEVEL LowLevel
+    find_library(PHYSX_SDK_LOW_LEVEL LowLevelDEBUG
                  PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
                  PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
-    find_library(PHYSX_SDK_LOW_LEVEL_AABB LowLevelAABB
+    find_library(PHYSX_SDK_LOW_LEVEL_AABB LowLevelAABBDEBUG
                  PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
                  PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
-    find_library(PHYSX_SDK_LOW_LEVEL_DYNAMICS LowLevelDynamics
+    find_library(PHYSX_SDK_LOW_LEVEL_DYNAMICS LowLevelDynamicsDEBUG
                  PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
                  PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
-    find_library(PHYSX_SDK_EXTENSIONS PhysX3Extensions
+    find_library(PHYSX_SDK_EXTENSIONS PhysX3ExtensionsDEBUG
                  PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
                  PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
-    find_library(PHYSX_SDK_LOW_LEVEL_CLOTH LowLevelCloth
+    find_library(PHYSX_SDK_LOW_LEVEL_CLOTH LowLevelClothDEBUG
                  PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
                  PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
-    find_library(PHYSX_SDK_LOW_LEVEL_PARTICLES LowLevelParticles
+    find_library(PHYSX_SDK_LOW_LEVEL_PARTICLES LowLevelParticlesDEBUG
                  PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
                  PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
-    find_library(PHYSX_SDK_SIMULATION_CONTROLLER SimulationController
+    find_library(PHYSX_SDK_SIMULATION_CONTROLLER SimulationControllerDEBUG
                  PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
                  PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
-    find_library(PHYSX_SDK_SCENE_QUERY SceneQuery
+    find_library(PHYSX_SDK_SCENE_QUERY SceneQueryDEBUG
                  PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
                  PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
-    find_library(PHYSX_SHARED_TASK PxTask
+    find_library(PHYSX_SHARED_TASK PxTaskDEBUG_x64
                  PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
                  PATHS ${PHYSX_SDK_BASE_DIR}/PxShared/lib)
 
@@ -256,7 +256,18 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
             PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
             PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Bin)
 else()
-    MESSAGE(FATAL_ERROR "unsupported platform")
+    find_library(PHYSX_SHARED_FOUNDATION PxFoundationDEBUG_x64
+            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+            PATHS ${PHYSX_SDK_BASE_DIR}/PxShared/lib)
+    find_library(PHYSX_SHARED_PVD PxPvdSDKDEBUG_x64
+            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+            PATHS ${PHYSX_SDK_BASE_DIR}/PxShared/lib)
+    find_library(PHYSX_SDK_PHYSX3 PhysX3DEBUG_x64
+            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+            PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
+    find_library(PHYSX_SDK_COMMON PhysX3CommonDEBUG_x64
+            PATH_SUFFIXES ${PHYSX_BASE_TARGET_NAME}32 ${PHYSX_BASE_TARGET_NAME}64
+            PATHS ${PHYSX_SDK_BASE_DIR}/PhysX_3.4/Lib)
 endif()
 
     add_library(libPhysXLowLevel IMPORTED STATIC GLOBAL)
@@ -280,7 +291,10 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     add_library(libPhysXCommon IMPORTED SHARED GLOBAL)
     add_library(libPhysX3 SHARED IMPORTED GLOBAL)
 else()
-    MESSAGE(FATAL_ERROR "unsupported platform")
+	add_library(libPhysXFoundation STATIC IMPORTED GLOBAL)
+    add_library(libPhysXPvd STATIC IMPORTED GLOBAL)
+    add_library(libPhysXCommon IMPORTED STATIC GLOBAL)
+    add_library(libPhysX3 STATIC IMPORTED GLOBAL)
 endif()
 
     set_target_properties(libPhysXFoundation PROPERTIES
@@ -390,6 +404,14 @@ ExternalProject_Add(zlib
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_ROOT}/zlib)
 add_library(libZlib IMPORTED STATIC GLOBAL)
 add_dependencies(libZlib zlib)
-set_target_properties(libZlib PROPERTIES
-        IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/zlib/lib/${CMAKE_STATIC_LIBRARY_PREFIX}z${CMAKE_STATIC_LIBRARY_SUFFIX}"
-        INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/zlib/include")
+
+if(WIN32)
+	set_target_properties(libZlib PROPERTIES
+			IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/zlib/lib/zlibstatic${CMAKE_STATIC_LIBRARY_SUFFIX}"
+			IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/zlib/lib/zlibstaticd${CMAKE_STATIC_LIBRARY_SUFFIX}"
+			INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/zlib/include")
+else()
+	set_target_properties(libZlib PROPERTIES
+			IMPORTED_LOCATION "${DEPENDENCIES_ROOT}/zlib/lib/${CMAKE_STATIC_LIBRARY_PREFIX}z${CMAKE_STATIC_LIBRARY_SUFFIX}"
+			INTERFACE_INCLUDE_DIRECTORIES "${DEPENDENCIES_ROOT}/zlib/include")
+endif()

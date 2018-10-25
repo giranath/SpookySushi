@@ -277,9 +277,6 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
     sushi::Window main_window = create_window(engine_configurations.window);
 
     std::unique_ptr<sushi::RendererInterface> renderer = std::make_unique<sushi::OpenGLRenderer>(main_window);
-    sushi::StaticMeshBuilderService::locate(&renderer->static_mesh_builder());
-    sushi::DebugRendererService::locate(&renderer->debug_renderer());
-    sushi::ProxyRenderer proxy_renderer(renderer.get());
 
     // Input bus setup
     log_info("sushi.bootstrap", "preparing inputs...");
@@ -296,6 +293,10 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
     if(!renderer->initialize()) {
         return 1;
     }
+
+    sushi::StaticMeshBuilderService::locate(&renderer->static_mesh_builder());
+    sushi::DebugRendererService::locate(&renderer->debug_renderer());
+    sushi::ProxyRenderer proxy_renderer(renderer.get());
 
     log_info("sushi.bootstrap", "starting game loop...");
     game.on_start();

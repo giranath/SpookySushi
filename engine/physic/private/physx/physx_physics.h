@@ -22,6 +22,8 @@ class PhysXPhysics {
 public:
     PhysXPhysics(const PhysXPhysics&) = delete;
     PhysXPhysics& operator=(const PhysXPhysics&) = delete;
+    PhysXPhysics(PhysXPhysics&&) = default;
+    PhysXPhysics& operator=(PhysXPhysics&&) = default;
 
     ~PhysXPhysics() noexcept;
 

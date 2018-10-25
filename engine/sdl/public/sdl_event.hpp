@@ -1,6 +1,7 @@
 #ifndef SPOOKYSUSHI_EVENT_HPP
 #define SPOOKYSUSHI_EVENT_HPP
 
+#include <types.hpp>
 #include <SDL.h>
 
 #include <iterator>
@@ -17,6 +18,12 @@ public:
 };
 
 void set_relative_mouse_mode(bool is_relative);
+
+struct MouseCoords {
+    int x;
+    int y;
+};
+MouseCoords current_mouse_coords() noexcept;
 
 class PollEventIterator {
     SDL_Event event;

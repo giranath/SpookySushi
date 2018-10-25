@@ -26,6 +26,7 @@ using PhysicWorld = void;
 #endif
 
 using RigidBody = physic_world_traits<PhysicWorld>::rigid_body_type;
+using Joint = physic_world_traits<PhysicWorld>::joint_type;
 
 //static_assert(!std::is_same_v<physic_world_traits<PhysicWorld>::rigid_body_type, void>, "invalid physic world type");
 static_assert(is_rigid_body<physic_world_traits<PhysicWorld>::rigid_body_type>::value, "physic world does not support rigid bodies");

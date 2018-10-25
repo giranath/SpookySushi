@@ -55,7 +55,7 @@ std::string to_string(const ipv4_address& address) {
     return std::string(inet_ntoa(addr));
 }
 
-const ipv4_address ipv4_address::any{INADDR_ANY};
-const ipv4_address ipv4_address::loopback{INADDR_LOOPBACK};
+const ipv4_address ipv4_address::any(static_cast<uint32_t>(INADDR_ANY));
+const ipv4_address ipv4_address::loopback(static_cast<uint32_t>(INADDR_LOOPBACK));
 
 }}

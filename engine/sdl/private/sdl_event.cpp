@@ -10,6 +10,14 @@ void set_relative_mouse_mode(bool is_relative) {
     }
 }
 
+MouseCoords current_mouse_coords() noexcept {
+    MouseCoords coords;
+
+    SDL_GetMouseState(&coords.x, &coords.y);
+
+    return coords;
+}
+
 PollEventIterator::PollEventIterator(bool has_next) noexcept
 : event()
 , has_next{has_next} {

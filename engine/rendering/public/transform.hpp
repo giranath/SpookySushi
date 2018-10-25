@@ -14,6 +14,7 @@ class Transform {
 
 public:
     Transform() noexcept;
+    Transform(Vec3 translation, Quaternion quat) noexcept;
 
     Vec3 up() const noexcept;
     Vec3 forward() const noexcept;

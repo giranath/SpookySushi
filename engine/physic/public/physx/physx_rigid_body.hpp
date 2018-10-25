@@ -14,11 +14,12 @@ class PxRigidActor;
 namespace sushi {
 
 class PhysXPhysicWorld;
-
+class PhysXJoint;
 struct RigidBodyNotBound {};
 
 class PhysXRigidBody {
     friend PhysXPhysicWorld;
+    friend PhysXJoint;
     physx::PxRigidActor* rigid_body;
 
     explicit PhysXRigidBody(physx::PxRigidActor* rigid_body) noexcept;

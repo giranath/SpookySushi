@@ -15,6 +15,14 @@ Transform::Transform() noexcept
 
 }
 
+Transform::Transform(Vec3 translation, Quaternion quat) noexcept
+: translation_{translation}
+, rotation_{quat}
+, scale_{1.f, 1.f, 1.f}
+, cached_transform{}
+, is_dirty{true} {
+}
+
 Vec3 Transform::up() const noexcept {
     return rotation_ * Vec3{0.f, 1.f, 0.f};
 }

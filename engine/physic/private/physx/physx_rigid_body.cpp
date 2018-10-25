@@ -64,7 +64,11 @@ void PhysXRigidBody::set_query_filter_mask(uint32_t filter_mask) {
     PxFilterData filter_data;
     filter_data.word0 = filter_mask;
     for(PxShape* shape : shapes) {
+        shape->acquireReference();
+        rigid_body->detachShape(*shape);
         shape->setQueryFilterData(filter_data);
+        rigid_body->attachShape(*shape);
+        shape->release();
     }
 }
 

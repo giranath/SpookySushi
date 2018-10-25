@@ -59,11 +59,16 @@ std::thread::id LogEntry::thread_id() const noexcept {
 }
 
 std::ostream& operator<<(std::ostream& os, const LogEntry& entry) noexcept {
+#if defined(_WIN32)
+    #pragma message "implement strftime"
+    char time_buffer[] = "[not implemented]";
+#else
     char time_buffer[128];
     std::fill(time_buffer, time_buffer + 128, 0);
 
     const std::time_t t = LogEntry::clock::to_time_t(entry.time_point());
     strftime(time_buffer, 128, "[%H:%M:%S %z]", std::localtime(&t));
+#endif
 
     return os << entry.priority() << " "
               << entry.category() << " "

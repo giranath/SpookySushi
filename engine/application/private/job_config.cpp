@@ -3,6 +3,7 @@
 #include <thread>
 #include <algorithm>
 #include <iterator>
+#include <cctype>
 
 namespace sushi {
 

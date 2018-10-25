@@ -3,7 +3,12 @@
 #include <fstream>
 #include <iterator>
 #include <iomanip>
-#include <unistd.h>
+
+#if defined(_WIN32)
+#pragma message("Need to implement get pid for Windows")
+#else
+    #include <unistd.h>
+#endif
 
 namespace sushi { namespace debug {
 
@@ -57,7 +62,11 @@ void Profiler::execute_background_task() {
     std::ofstream profile_out("profile.prof", std::ios::binary);
 
     profile_out << "session infos:\n"
+#if _WIN32
+                << "pid:    " << "NOT SUPPORTED YET" << "\n"
+#else
                 << "pid:    " << getpid() << "\n"
+#endif
                 << "system: " << SYSTEM_FULL_NAME << "\n"
                 << "\n";
 

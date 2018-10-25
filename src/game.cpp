@@ -124,6 +124,8 @@ void Game::on_start() {
     //camera_controller.update(sushi::frame_duration{});
 
     //sushi::set_relative_mouse_mode(true);
+
+    sushi::DebugRendererService::get().add_line(sushi::Vec3{0.f, 0.f, 0.f}, sushi::Vec3{100.f, 100.f, 100.f}, sushi::Colors::Blue, 1000);
 }
 
 void Game::update_physic(sushi::frame_duration last_frame) {
@@ -149,23 +151,57 @@ void Game::on_frame(sushi::frame_duration last_frame) {
     if(controller.should_apply_boost() && wrecking_ball_body) {
         auto wrecking_ball_transform = wrecking_ball_body.transform();
 
-        const sushi::Vec3 forward(1.f, 0.f, 0.f);
-        const sushi::Vec3 rotated_forward = glm::normalize(wrecking_ball_transform.rotation * forward);
-
-        wrecking_ball_body.apply_force_at(sushi::Vec3{1.f, 0.f, 0.f}, rotated_forward * 10.f);
+        wrecking_ball_body.apply_force_at(sushi::Vec3{0.f, 0.f, 0.f}, 
+                                          wrecking_ball_transform.to_transform().forward() * 50.f);
     }
 
+    const float move_forward = controller.get_move_forward_value();
+    const float move_right = controller.get_move_strate_value();
+
+    const sushi::Vec3 forward_movement = wrecking_ball_body.transform().to_transform().forward() * move_forward;
+    const sushi::Vec3 right_movement = wrecking_ball_body.transform().to_transform().right() * move_right;
+
+    const sushi::Vec3 normalized_direction = glm::normalize(forward_movement + right_movement);
+
+    wrecking_ball_body.apply_force_at(sushi::Vec3{}, normalized_direction * 10.f);
+
     if(controller.should_shoot_left_grappling()) {
-        auto raycast = physic.raycast(main_camera.local_transform.translation(), main_camera.local_transform.forward(), 1000.f, 1);
+        const sushi::MouseCoords coords = sushi::current_mouse_coords();
+        const float viewport_x = ((2.f * coords.x) / 1024.f) - 1.f;
+        const float viewport_y = 1.f - (2.f * coords.y) / 768.f;
+
+        const auto world_ray = main_camera.ray_from_viewport(sushi::Vec2{viewport_x, viewport_y});
+        const auto temp = main_camera.local_transform.forward();
+
+        auto raycast = physic.raycast(world_ray.origin, world_ray.direction, 1000.f, 1);
 
         if(raycast) {
-            physic.join(wrecking_ball_body, raycast.rigidbody(), sushi::PhysicRopeJoint(raycast.distance())).enable_collision();
+            if (left_grappling_joint) {
+                physic.destroy(left_grappling_joint);
+            }
+
+            left_grappling_joint = physic.join(wrecking_ball_body, raycast.rigidbody(), sushi::PhysicRopeJoint(raycast.distance()));
+            left_grappling_joint.enable_collision();
             sushi::DebugRendererService::get().add_sphere(raycast.rigidbody().transform().translation, 0.25f, sushi::Colors::Orange, 1000);
         }
     }
 
-    if(controller.should_shoot_right_grappling()) {
+    if (left_grappling_joint) {
+        //sushi::DebugRendererService::get().add_line(wrecking_ball_body.transform().translation, raycast.rigidbody().transform().translation, sushi::Colors::Yellow);
+    }
 
+    if(controller.should_shoot_right_grappling()) {
+        auto raycast = physic.raycast(main_camera.local_transform.translation(), main_camera.local_transform.forward(), 1000.f, 1);
+
+        if(raycast) {
+            if (right_grappling_joint) {
+                physic.destroy(right_grappling_joint);
+            }
+
+            right_grappling_joint = physic.join(wrecking_ball_body, raycast.rigidbody(), sushi::PhysicRopeJoint(raycast.distance()));
+            right_grappling_joint.enable_collision();
+            sushi::DebugRendererService::get().add_sphere(raycast.rigidbody().transform().translation, 0.25f, sushi::Colors::Red, 1000);
+        }
     }
 }
 
@@ -192,7 +228,9 @@ void Game::on_render(sushi::ProxyRenderer renderer) {
         mesh->render();
     }
 
-    sushi::draw_physic_debug(physic);
+    if(sushi::DebugRendererService::is_located()) {
+        sushi::draw_physic_debug(physic);
+    }
 }
 
 void Game::on_stop() {

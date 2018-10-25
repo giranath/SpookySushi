@@ -31,7 +31,7 @@ private:
     Type type_;
     uint64_t frame_index;
 
-    static const std::size_t PAYLOAD_SIZE = sizeof(name) + sizeof(time_point_) + sizeof(thread_id) + sizeof(type_) + sizeof(frame_index);
+    static const std::size_t PAYLOAD_SIZE = sizeof(decltype(name)) + sizeof(decltype(time_point_)) + sizeof(decltype(thread_id)) + sizeof(decltype(type_)) + sizeof(decltype(frame_index));
     static const std::size_t PADDING_SIZE = CACHE_LINE_SIZE - PAYLOAD_SIZE;
     std::array<uint8_t, PADDING_SIZE> padding;
 public:

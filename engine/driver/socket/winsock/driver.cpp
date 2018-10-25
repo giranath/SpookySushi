@@ -2,7 +2,7 @@
 
 namespace sushi { namespace driver { namespace socket {
 
-struct WSADATA g_wsadata;
+WSADATA g_wsadata;
 
 bool start() noexcept {
     int result = WSAStartup(MAKEWORD(2, 2), &g_wsadata);

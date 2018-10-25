@@ -21,6 +21,9 @@ class Game : public sushi::BaseGame {
     uint32_t physic_update_elapsed_time;
     sushi::PhysicWorld::rigid_body_type wrecking_ball_body;
 
+    sushi::PhysicWorld::joint_type left_grappling_joint;
+    sushi::PhysicWorld::joint_type right_grappling_joint;
+
     void prepare_shader();
 
     void prepare_physic_scene();

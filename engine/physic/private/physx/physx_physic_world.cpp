@@ -29,7 +29,7 @@ struct PhysXPhysicWorld::impl {
 
     impl()
     : foundation{}
-    , physics{foundation.make_physics()}
+    , physics(foundation.make_physics())
     , scene{physics.make_scene()}{
         material = physics.get().createMaterial(0.5f, 0.5f, 0.6f);
     }
@@ -238,11 +238,13 @@ void PhysXPhysicWorld::draw_debug() const {
     for(PxU32 i=0; i < rb.getNbLines(); ++i)
     {
         const PxDebugLine& line = rb.getLines()[i];
+
         DebugRendererService::get().add_line(to_vec3(line.pos0), to_vec3(line.pos1), to_rgb(line.color0));
     }
 
     for(PxU32 i = 0; i < rb.getNbTriangles(); ++i) {
         const PxDebugTriangle& triangle = rb.getTriangles()[i];
+        
         DebugRendererService::get().add_triangle(to_vec3(triangle.pos0), to_vec3(triangle.pos1), to_vec3(triangle.pos2), to_rgb(triangle.color0));
     }
 }

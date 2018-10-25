@@ -4,7 +4,11 @@
 #include <iostream>
 #include <algorithm>
 #include <cassert>
+
+#if defined(_WIN32)
+#else
 #include <fcntl.h>
+#endif
 
 namespace sushi { namespace network {
 
@@ -32,21 +36,31 @@ struct tcp_socket::impl {
 };
 
 bool tcp_socket::set_non_blocking() noexcept {
+#if defined(_WIN32)
+    #pragma message "implement set_non_blocking on tcp_socket"
+    return false;
+#else
     int flags = fcntl(pimpl->socket, F_GETFL, 0);
     if(flags == -1) return false;
 
     flags = flags | O_NONBLOCK;
 
     return fcntl(pimpl->socket, F_SETFL, flags) == 0;
+#endif
 }
 
 bool tcp_socket::set_blocking() noexcept {
+#if defined(_WIN32)
+    #pragma message "implement set_blocking on tcp_socket"
+    return false;
+#else
     int flags = fcntl(pimpl->socket, F_GETFL, 0);
     if(flags == -1) return false;
 
     flags = flags & ~O_NONBLOCK;
 
     return fcntl(pimpl->socket, F_SETFL, flags) == 0;
+#endif
 }
 
 tcp_socket::tcp_socket()
@@ -189,7 +203,13 @@ std::size_t tcp_socket::send(const char* data, std::size_t len) noexcept {
 
     if(!connected()) return 0;
 
-    ssize_t res = ::send(pimpl->socket, reinterpret_cast<const void*>(data), len, 0);
+#if defined(_WIN32)
+    using send_value_type = int;
+#else
+    using send_value_type = ssize_t;
+#endif
+
+    send_value_type res = ::send(pimpl->socket, reinterpret_cast<const char*>(data), len, 0);
 
     if(res == -1) {
         last_error = errno;
@@ -208,7 +228,12 @@ std::size_t tcp_socket::wait(char* dest, std::size_t len) noexcept {
 
     if(!connected()) return 0;
 
-    ssize_t res = ::recv(pimpl->socket, reinterpret_cast<void*>(dest), len, 0);
+#if defined(_WIN32)
+    using recv_value_type = int;
+#else
+    using recv_value_type = ssize_t;
+#endif
+    const recv_value_type res = ::recv(pimpl->socket, reinterpret_cast<char*>(dest), len, 0);
 
     if(res == -1) {
         last_error = errno;
