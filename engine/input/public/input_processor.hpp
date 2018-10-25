@@ -29,8 +29,14 @@ public:
 
 class ActionInputProcessor : public BaseInputProcessor {
 public:
+    enum State {
+        Start,
+        End,
+        Inactive
+    };
+
     virtual ~ActionInputProcessor() = default;
-    virtual bool is_active() const = 0;
+    virtual State state() const = 0;
 };
 
 class InputProcessor {

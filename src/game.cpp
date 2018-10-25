@@ -128,8 +128,6 @@ void Game::on_start() {
     prepare_scene();
 
     //sushi::set_relative_mouse_mode(true);
-
-    sushi::DebugRendererService::get().add_line(sushi::Vec3{0.f, 0.f, 0.f}, sushi::Vec3{100.f, 100.f, 100.f}, sushi::Colors::Blue, 1000);
 }
 
 void Game::update_physic(sushi::frame_duration last_frame) {

@@ -11,11 +11,11 @@ class KeyActionInputProcessor : public ActionInputProcessor {
     bool active;
     bool is_pressed;
 public:
-    KeyActionInputProcessor(Key key);
+    explicit KeyActionInputProcessor(Key key);
 
     bool process(InputBusReader::const_iterator begin, InputBusReader::const_iterator end) override;
-    bool is_active() const override;
     void reset() override;
+    State state() const override;
 };
 
 }

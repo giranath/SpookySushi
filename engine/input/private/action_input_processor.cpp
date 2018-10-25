@@ -27,7 +27,10 @@ bool KeyActionInputProcessor::process(InputBusReader::const_iterator begin, Inpu
                         is_pressed = true;
                         break;
                     case KeyState::Released:
-                        is_pressed = false;
+                        if(is_pressed) {
+                            is_pressed = false;
+                            active = true;
+                        }
                         break;
                 }
                 is_handled = true;
@@ -42,8 +45,12 @@ void KeyActionInputProcessor::reset() {
     active = false;
 }
 
-bool KeyActionInputProcessor::is_active() const {
-    return active;
+ActionInputProcessor::State KeyActionInputProcessor::state() const {
+    if(active) {
+        return is_pressed ? Start : End;
+    }
+
+    return State::Inactive;
 }
 
 }
