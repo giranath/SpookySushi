@@ -26,6 +26,8 @@ public:
     bool should_apply_boost() const noexcept;
     bool should_shoot_left_grappling() const noexcept;
     bool should_shoot_right_grappling() const noexcept;
+    bool should_release_left_grappling() const noexcept;
+    bool should_release_right_grappling() const noexcept;
 };
 
 

@@ -55,9 +55,17 @@ bool GameController::should_apply_boost() const noexcept {
 }
 
 bool GameController::should_shoot_left_grappling() const noexcept {
-    return shoot_left_grappling->is_active();
+    return shoot_left_grappling->state() == sushi::ActionInputProcessor::Start;
 }
 
 bool GameController::should_shoot_right_grappling() const noexcept {
-    return shoot_right_grappling->is_active();
+    return shoot_right_grappling->state() == sushi::ActionInputProcessor::Start;
+}
+
+bool GameController::should_release_left_grappling() const noexcept {
+    return shoot_left_grappling->state() == sushi::ActionInputProcessor::End;
+}
+
+bool GameController::should_release_right_grappling() const noexcept {
+    return shoot_right_grappling->state() == sushi::ActionInputProcessor::End;
 }
