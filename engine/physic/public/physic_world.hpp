@@ -3,7 +3,6 @@
 
 #include "physic_backend.hpp"
 
-// TODO: Import good physic world implementation
 #if defined(SUSHI_PHYSIC_BACKEND_BULLET)
 #include "bullet_physic_world.hpp"
 #elif defined(SUSHI_PHYSIC_BACKEND_PHYSX)

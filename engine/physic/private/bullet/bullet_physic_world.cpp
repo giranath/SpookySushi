@@ -1,5 +1,6 @@
 #include "bullet_physic_world.hpp"
 #include "bullet_debug_drawer.hpp"
+#include <types.hpp>
 
 #include <btBulletDynamicsCommon.h>
 
@@ -100,6 +101,58 @@ BulletPhysicWorld::rigid_body_type BulletPhysicWorld::make_rigid_body(PhysicTran
     dynamic_world->addRigidBody(body);
 
     return rigid_body_type{body};
+}
+
+BulletPhysicWorld::rigid_body_type BulletPhysicWorld::make_rigid_body(PhysicTransform transform, PhysicPlaneShape shape) {
+    btCollisionShape* b_shape = new btStaticPlaneShape(btVector3{shape.normal.x, shape.normal.y, shape.normal.z},
+                                                       shape.distance);
+
+    btRigidBody* body = make_bullet_rigid_body(transform, b_shape, 0.f);
+    dynamic_world->addRigidBody(body);
+
+    return rigid_body_type{body};
+}
+
+// Joints
+BulletPhysicWorld::joint_type BulletPhysicWorld::join(rigid_body_type a, rigid_body_type b, PhysicRopeJoint joint) {
+    throw 5;
+    return joint_type{};
+}
+
+void BulletPhysicWorld::destroy(rigid_body_type& body) {
+    dynamic_world->removeRigidBody(body.body);
+    body.body = nullptr;
+}
+
+void BulletPhysicWorld::destroy(joint_type& join) {
+    dynamic_world->removeConstraint(join.constraints);
+    join.constraints = nullptr;
+}
+
+// Scene queries
+BulletPhysicWorld::raycast_result BulletPhysicWorld::raycast(const Vec3& starting_point, const Vec3& direction, float max_distance) {
+    const Vec3 destination = starting_point + direction * max_distance;
+    const btVector3 from{starting_point.x, starting_point.y, starting_point.z};
+    const btVector3 to{destination.x, destination.y, destination.z};
+
+    btCollisionWorld::ClosestRayResultCallback callback(from, to);
+    dynamic_world->rayTest(from, to, callback);
+}
+
+BulletPhysicWorld::raycast_result BulletPhysicWorld::raycast(const Vec3& starting_point, const Vec3& direction, float max_distance, uint32_t collision_mask) {
+    const Vec3 destination = starting_point + direction * max_distance;
+    const btVector3 from{starting_point.x, starting_point.y, starting_point.z};
+    const btVector3 to{destination.x, destination.y, destination.z};
+
+    btCollisionWorld::ClosestRayResultCallback callback(from, to);
+    dynamic_world->rayTest(from, to, callback);
+
+    const btRigidBody* body = btRigidBody::upcast(callback.m_collisionObject);
+
+    return raycast_result(BulletRigidBody{const_cast<btRigidBody*>(body)},
+                          Vec3(callback.m_hitPointWorld.getX(), callback.m_hitPointWorld.getY(), callback.m_hitPointWorld.getZ()),
+                          Vec3(callback.m_hitNormalWorld.getX(), callback.m_hitNormalWorld.getY(), callback.m_hitNormalWorld.getZ()),
+                          (callback.m_hitPointWorld - from).length());
 }
 
 void BulletPhysicWorld::draw_debug() const {

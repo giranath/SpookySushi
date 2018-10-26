@@ -25,7 +25,9 @@ if("${SUSHI_PHYSIC_BACKEND}" STREQUAL "Bullet")
             private/bullet/bullet_rigid_body.cpp
             public/bullet/bullet_physic_world.hpp
             private/bullet/bullet_physic_world.cpp
-            public/bullet/bullet_rigid_body.hpp)
+            public/bullet/bullet_rigid_body.hpp
+            public/bullet/bullet_joint.hpp
+            private/bullet/bullet_joint.cpp)
     target_include_directories(sushi-physic
             PUBLIC public/bullet
             PRIVATE private/bullet)

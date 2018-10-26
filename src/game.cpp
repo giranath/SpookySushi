@@ -83,7 +83,7 @@ void Game::prepare_physic_scene() {
     wrecking_ball_body.set_linear_damping(0.1f);
     wrecking_ball_body.set_angular_damping(0.6);
     sushi::MovementLock wrecking_lock;
-    wrecking_lock.lock(sushi::RotationLock::Tilt).lock(sushi::RotationLock::Roll);
+    wrecking_lock.lock(sushi::RotationLock::Pitch).lock(sushi::RotationLock::Yaw).lock(sushi::RotationLock::Roll);
     wrecking_ball_body.set_movement_lock(wrecking_lock);
 
     // Add 5 towers

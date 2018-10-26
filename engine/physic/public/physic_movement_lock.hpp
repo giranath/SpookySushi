@@ -6,9 +6,9 @@
 namespace sushi {
 
 enum class RotationLock : uint8_t {
-    Head = 1,
-    Roll = (1 << 1),
-    Tilt = (1 << 2)
+    Pitch = 1,
+    Yaw = (1 << 1),
+    Roll = (1 << 2)
 };
 
 enum class TranslationLock : uint8_t {
