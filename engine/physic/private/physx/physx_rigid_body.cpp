@@ -100,9 +100,9 @@ void PhysXRigidBody::set_movement_lock(MovementLock lock) {
     if(dynamic) {
         PxRigidDynamicLockFlags lock_flags;
 
-        dynamic->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, lock.is_locked(RotationLock::Head));
-        dynamic->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, lock.is_locked(RotationLock::Roll));
-        dynamic->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, lock.is_locked(RotationLock::Tilt));
+        dynamic->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, lock.is_locked(RotationLock::Yaw));
+        dynamic->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, lock.is_locked(RotationLock::Pitch));
+        dynamic->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, lock.is_locked(RotationLock::Roll));
         dynamic->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_LINEAR_X, lock.is_locked(TranslationLock::XAxis));
         dynamic->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_LINEAR_Y, lock.is_locked(TranslationLock::YAxis));
         dynamic->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_LINEAR_Z, lock.is_locked(TranslationLock::ZAxis));
