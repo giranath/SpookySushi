@@ -110,34 +110,6 @@ static Quaternion direction_to_quat(const Vec3& direction) noexcept {
 }
 
 Transform& Transform::look_at(const Vec3& target) noexcept {
-#if 0
-    const Vec3 target_direction = glm::normalize(target - translation_);
-    const Vec3 initial_direction = forward();
-
-    const float cos_theta = glm::dot(initial_direction, target_direction);
-
-    Vec3 rotation_axis;
-    Quaternion rotation_quat;
-    if(cos_theta < -1 + 0.001f) {
-        rotation_axis = glm::cross(Vec3(0.f, 0.f, 1.f), initial_direction);
-        if(glm::length2(rotation_axis) < 0.01f) {
-            rotation_axis = glm::cross(Vec3{1.f, 0.f, 0.f}, initial_direction);
-        }
-
-        rotation_axis = glm::normalize(rotation_axis);
-        rotation_quat = glm::angleAxis(glm::pi<float>(), rotation_axis);
-    }
-    else {
-        rotation_axis = glm::cross(initial_direction, target_direction);
-
-        const float s = glm::sqrt((1.f + cos_theta) * 2.f);
-        const float inv_s = 1 / s;
-
-        rotation_quat = Quaternion(s * 0.5f, rotation_axis.x * inv_s, rotation_axis.y * inv_s, rotation_axis.z * inv_s);
-    }
-
-    rotation_ *= rotation_quat;
-#else
     const Vec3 target_direction = glm::normalize(target - translation());
     const Vec3 identity_direction(0.f, 0.f, 1.f);
 
@@ -145,7 +117,7 @@ Transform& Transform::look_at(const Vec3& target) noexcept {
     const float angle = glm::dot(identity_direction, target_direction);
 
     rotation_ = Quaternion(angle, axis);
-#endif
+
     is_dirty = true;
     return *this;
 }
