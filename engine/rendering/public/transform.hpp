@@ -10,6 +10,7 @@ class Transform {
     Quaternion rotation_;
     Vec3 scale_;
     mutable Mat4x4 cached_transform;
+    mutable Mat4x4 cached_inverse_transform;
     mutable bool is_dirty;
 
 public:
@@ -42,6 +43,10 @@ public:
     Transform& reset() noexcept;
 
     const Mat4x4& matrix() const noexcept;
+    const Mat4x4& inverse_matrix() const noexcept;
+    const Mat4x4 translation_matrix() const noexcept;
+    const Mat4x4 rotation_matrix() const noexcept;
+    const Mat4x4 scaling_matrix() const noexcept;
 
     // Apply the parent transform to the child transform
     friend Transform operator*(const Transform& parent, const Transform& child) noexcept;

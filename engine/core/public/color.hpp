@@ -51,9 +51,9 @@ struct RGBColor {
                 b = 255;
                 break;
             case Colors::Brown:
-                r = 0;
-                g = 0;
-                b = 255;
+                r = 139;
+                g = 69;
+                b = 19;
                 break;
             case Colors::Cyan:
                 r = 0;

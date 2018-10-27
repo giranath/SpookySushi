@@ -8,7 +8,7 @@ namespace sushi {
 
 Transform::Transform() noexcept
 : translation_{}
-, rotation_{1.f, 0.f, 0.f, 0.f}
+, rotation_{}
 , scale_{1.f, 1.f, 1.f}
 , cached_transform{}
 , is_dirty{true} {
@@ -137,10 +137,15 @@ Transform& Transform::look_at(const Vec3& target) noexcept {
     }
 
     rotation_ *= rotation_quat;
+#else
+    const Vec3 target_direction = glm::normalize(target - translation());
+    const Vec3 identity_direction(0.f, 0.f, 1.f);
+
+    const Vec3 axis = glm::cross(identity_direction, target_direction);
+    const float angle = glm::dot(identity_direction, target_direction);
+
+    rotation_ = Quaternion(angle, axis);
 #endif
-
-    rotation_ = glm::toQuat(glm::lookAt(translation(), target, Vec3{0.f, 1.f, 0.f}));
-
     is_dirty = true;
     return *this;
 }
@@ -156,15 +161,34 @@ Transform& Transform::reset() noexcept {
 
 const Mat4x4& Transform::matrix() const noexcept {
     if(is_dirty) {
-        const Mat4x4 translation = glm::translate(glm::mat4{1.f}, translation_);
-        const Mat4x4 rotation = glm::mat4_cast(glm::normalize(rotation_));
-        const Mat4x4 scale = glm::scale(glm::mat4{1.f}, scale_);
-
-        cached_transform = translation * rotation * scale;//scale * rotation * translation;
+        cached_transform = translation_matrix() * rotation_matrix() * scaling_matrix();
+        cached_inverse_transform = glm::inverse(cached_transform);
         is_dirty = false;
     }
 
     return cached_transform;
+}
+
+const Mat4x4& Transform::inverse_matrix() const noexcept {
+    if(is_dirty) {
+        cached_transform = translation_matrix() * rotation_matrix() * scaling_matrix();
+        cached_inverse_transform = glm::inverse(cached_transform);
+        is_dirty = false;
+    }
+
+    return cached_inverse_transform;
+}
+
+const Mat4x4 Transform::translation_matrix() const noexcept {
+    return glm::translate(glm::mat4{1.f}, translation_);
+}
+
+const Mat4x4 Transform::rotation_matrix() const noexcept {
+    return glm::mat4_cast(glm::normalize(rotation_));
+}
+
+const Mat4x4 Transform::scaling_matrix() const noexcept {
+    return glm::scale(glm::mat4{1.f}, scale_);
 }
 
 Transform operator*(const Transform& parent, const Transform& child) noexcept {

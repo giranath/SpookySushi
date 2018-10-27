@@ -96,7 +96,7 @@ void Game::prepare_physic_scene() {
 
 void Game::prepare_scene() {
     main_camera.local_transform.reset();
-    main_camera.local_transform.set_translation(sushi::Vec3{40.f, 16.f, 10.f});
+    main_camera.local_transform.translate(sushi::Vec3(0.f, 10.f, 40.f));
 
     // Extract monkey mesh from package
     sushi::Package package;
@@ -165,8 +165,8 @@ void Game::on_frame(sushi::frame_duration last_frame) {
 
     const bool have_movement = have_forward_movement || have_right_movement;
 
-    const sushi::Vec3 forward_movement = wrecking_ball_body.transform().to_transform().forward() * move_forward;
-    const sushi::Vec3 right_movement = wrecking_ball_body.transform().to_transform().right() * move_right;
+    const sushi::Vec3 forward_movement = main_camera.local_transform.forward() * move_forward;
+    const sushi::Vec3 right_movement = main_camera.local_transform.right() * move_right;
 
     sushi::Vec3 normalized_direction = forward_movement + right_movement;
     if(have_movement) {
@@ -175,6 +175,7 @@ void Game::on_frame(sushi::frame_duration last_frame) {
 
     wrecking_ball_body.apply_force_at(sushi::Vec3{}, normalized_direction * 10.f);
 
+#if 0
     if(controller.should_shoot_left_grappling()) {
         const sushi::MouseCoords coords = sushi::current_mouse_coords();
         const float viewport_x = ((2.f * coords.x) / 1024.f) - 1.f;
@@ -195,6 +196,7 @@ void Game::on_frame(sushi::frame_duration last_frame) {
             sushi::DebugRendererService::get().add_sphere(raycast.rigidbody().transform().translation, 0.25f, sushi::Colors::Orange, 1000);
         }
     }
+#endif
 
     if (left_grappling_joint) {
         sushi::DebugRendererService::get().add_line(wrecking_ball_body.transform().translation, left_grappling_joint.rigid_bodies().second.transform().translation, sushi::Colors::Yellow);
