@@ -27,6 +27,19 @@ using Mat4x4 = glm::tmat4x4<FloatPrecision>;
 // Quaternion types
 using Quaternion = glm::tquat<FloatPrecision>;
 
+// A ray
+struct Ray {
+    Vec3 origin;
+    Vec3 direction;
+
+    Ray() noexcept = default;
+    Ray(Vec3 origin, Vec3 direction) noexcept
+            : origin{origin}
+            , direction{direction} {
+
+    }
+};
+
 }
 
 #endif

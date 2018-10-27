@@ -196,13 +196,23 @@ void Game::on_frame(sushi::frame_duration last_frame) {
             sushi::DebugRendererService::get().add_sphere(raycast.rigidbody().transform().translation, 0.25f, sushi::Colors::Orange, 1000);
         }
     }
+    else if(controller.should_release_left_grappling()) {
+        physic.destroy(left_grappling_joint);
+    }
 
     if (left_grappling_joint) {
         sushi::DebugRendererService::get().add_line(wrecking_ball_body.transform().translation, left_grappling_joint.rigid_bodies().second.transform().translation, sushi::Colors::Yellow);
     }
 
     if(controller.should_shoot_right_grappling()) {
-        auto raycast = physic.raycast(main_camera.local_transform.translation(), main_camera.local_transform.forward(), 1000.f, 1);
+        const sushi::MouseCoords coords = sushi::current_mouse_coords();
+        const float viewport_x = ((2.f * coords.x) / 1024.f) - 1.f;
+        const float viewport_y = 1.f - (2.f * coords.y) / 768.f;
+
+        const auto world_ray = main_camera.ray_from_viewport_coord(sushi::Vec2{viewport_x, viewport_y});
+        const auto temp = main_camera.local_transform.forward();
+
+        auto raycast = physic.raycast(world_ray.origin, world_ray.direction, 1000.f, 1);
 
         if(raycast) {
             if (right_grappling_joint) {
@@ -211,8 +221,15 @@ void Game::on_frame(sushi::frame_duration last_frame) {
 
             right_grappling_joint = physic.join(wrecking_ball_body, raycast.rigidbody(), sushi::PhysicRopeJoint(raycast.distance()));
             right_grappling_joint.enable_collision();
-            sushi::DebugRendererService::get().add_sphere(raycast.rigidbody().transform().translation, 0.25f, sushi::Colors::Red, 1000);
+            sushi::DebugRendererService::get().add_sphere(raycast.rigidbody().transform().translation, 0.25f, sushi::Colors::Orange, 1000);
         }
+    }
+    else if(controller.should_release_right_grappling()) {
+        physic.destroy(right_grappling_joint);
+    }
+
+    if (right_grappling_joint) {
+        sushi::DebugRendererService::get().add_line(wrecking_ball_body.transform().translation, right_grappling_joint.rigid_bodies().second.transform().translation, sushi::Colors::Orange);
     }
 }
 

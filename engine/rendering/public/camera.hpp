@@ -6,19 +6,12 @@
 
 namespace sushi {
 
-struct Ray {
-    Vec3 origin;
-    Vec3 direction;
+// TODO: Set projection with composition
 
-    Ray() noexcept = default;
-    Ray(Vec3 origin, Vec3 direction) noexcept
-    : origin{origin}
-    , direction{direction} {
-
-    }
-};
-
-struct Camera {
+class Camera {
+    Vec4 ray_eye(Vec4 ray_clip) const noexcept;
+    Vec4 ray_clip(Vec2 coord) const noexcept;
+public:
     Transform local_transform;
 
     Mat4x4 projection() const noexcept;
