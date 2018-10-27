@@ -22,3 +22,6 @@ Started to think about Windows port
 ##06/10/2018
 Bullet3 is integrated and a first draft of the debug renderer is now available.
 It misses depth enabling support
+
+##27/10/2018
+Fixed camera transforms

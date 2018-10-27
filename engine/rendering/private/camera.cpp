@@ -15,7 +15,7 @@ Mat4x4 Camera::projection() const noexcept {
 Mat4x4 Camera::view() const noexcept {
     return glm::lookAt(local_transform.translation(),
                        local_transform.translation() + local_transform.forward(),
-                       Vec3{0.f, 1.f, 0.f});
+                       local_transform.up());
 }
 
 Vec4 Camera::ray_eye(Vec4 ray_clip) const noexcept {
