@@ -30,6 +30,8 @@ class Game : public sushi::BaseGame {
     void prepare_scene();
 
     void update_physic(sushi::frame_duration last_frame);
+
+    void handle_inputs(sushi::frame_duration last_frame);
 public:
     void on_start() override;
     void on_frame(sushi::frame_duration last_frame) override;

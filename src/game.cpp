@@ -143,17 +143,12 @@ void Game::update_physic(sushi::frame_duration last_frame) {
     player_transform.set_rotation(new_player_transform.rotation);
 }
 
-void Game::on_frame(sushi::frame_duration last_frame) {
-    update_physic(last_frame);
-
-    // Update camera
-    camera_controller.update(last_frame);
-
+void Game::handle_inputs(sushi::frame_duration last_frame) {
     // Player controls
     if(controller.should_apply_boost() && wrecking_ball_body) {
         auto wrecking_ball_transform = wrecking_ball_body.transform();
 
-        wrecking_ball_body.apply_force_at(sushi::Vec3{0.f, 0.f, 0.f}, 
+        wrecking_ball_body.apply_force_at(sushi::Vec3{0.f, 0.f, 0.f},
                                           wrecking_ball_transform.to_transform().forward() * 50.f);
     }
 
@@ -231,6 +226,13 @@ void Game::on_frame(sushi::frame_duration last_frame) {
     if (right_grappling_joint) {
         sushi::DebugRendererService::get().add_line(wrecking_ball_body.transform().translation, right_grappling_joint.rigid_bodies().second.transform().translation, sushi::Colors::Orange);
     }
+}
+
+void Game::on_frame(sushi::frame_duration last_frame) {
+    update_physic(last_frame);
+    handle_inputs(last_frame);
+
+    camera_controller.update(last_frame);
 }
 
 void Game::on_late_frame(sushi::frame_duration last_frame) {
