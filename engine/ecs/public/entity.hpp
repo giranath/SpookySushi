@@ -21,8 +21,14 @@ struct Entity {
     Index index() const noexcept;
     Generation generation() const noexcept;
 
+    bool good() const noexcept;
+    explicit operator bool() const noexcept;
+
     static Entity make(Index index, Generation generation) noexcept;
+    static const Entity invalid;
 };
+
+
 
 }
 

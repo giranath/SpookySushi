@@ -170,7 +170,6 @@ void Game::handle_inputs(sushi::frame_duration last_frame) {
 
     wrecking_ball_body.apply_force_at(sushi::Vec3{}, normalized_direction * 10.f);
 
-
     if(controller.should_shoot_left_grappling()) {
         const sushi::MouseCoords coords = sushi::current_mouse_coords();
         const float viewport_x = ((2.f * coords.x) / 1024.f) - 1.f;

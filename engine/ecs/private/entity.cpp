@@ -1,4 +1,5 @@
 #include "../public/entity.hpp"
+#include <limits>
 
 namespace sushi {
 
@@ -24,8 +25,19 @@ Entity::Generation Entity::generation() const noexcept {
     return static_cast<Generation>(identifier & generation_mask);
 }
 
+bool Entity::good() const noexcept {
+    return identifier < std::numeric_limits<uint32_t>::max();
+}
+
+Entity::operator bool() const noexcept {
+    return good();
+}
+
+
 Entity Entity::make(Index index, Generation generation) noexcept {
     return Entity((index << 8) | generation);
 }
+
+const Entity Entity::invalid = Entity(std::numeric_limits<uint32_t>::max());
 
 }

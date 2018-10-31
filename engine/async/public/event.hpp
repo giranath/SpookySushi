@@ -78,11 +78,19 @@ public:
     }
 
     void operator()(Args&&... arguments) {
-        std::lock_guard<std::mutex> lock(mutex);
+        locked_call(std::forward<Args>(arguments)...);
+    }
+
+    void unlocked_call(Args&&... arguments) {
         // Calls every stored handlers
         for(std::size_t i = 0; i < count; ++i) {
             handlers[i](std::forward<Args>(arguments)...);
         }
+    }
+
+    void locked_call(Args&&... arguments) {
+        std::lock_guard<std::mutex> lock(mutex);
+        unlocked_call(std::forward<Args>(arguments)...);
     }
 };
 
