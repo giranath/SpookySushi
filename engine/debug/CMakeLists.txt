@@ -8,3 +8,7 @@ target_include_directories(sushi-debug
         PRIVATE private)
 target_link_libraries(sushi-debug
         PUBLIC sushi-async)
+if(ENABLE_PROFILING)
+    target_compile_definitions(sushi-debug
+            PUBLIC SUSHI_ENABLE_PROFILING)
+endif()

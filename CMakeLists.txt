@@ -15,6 +15,8 @@ endif(MSVC)
 # Project configurations
 set(SUSHI_CACHE_LINE_SIZE 64 CACHE STRING "Specify the cache line size")
 option(BUILD_TOOLS "Build all tools when enabled" OFF)
+option(ENABLE_EDITOR "Enable editor related functionalities" OFF)
+option(ENABLE_PROFILING "Enable code profiling" OFF)
 
 include(cmake/detect_std_support.cmake)
 include(cmake/detect_kernel_support.cmake)

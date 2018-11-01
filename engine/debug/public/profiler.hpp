@@ -25,6 +25,7 @@ public:
         instant
     };
 private:
+#ifdef SUSHI_ENABLE_PROFILING
     uint32_t name;
     Clock::time_point time_point_;
     std::thread::id thread_id;
@@ -34,6 +35,7 @@ private:
     static const std::size_t PAYLOAD_SIZE = sizeof(decltype(name)) + sizeof(decltype(time_point_)) + sizeof(decltype(thread_id)) + sizeof(decltype(type_)) + sizeof(decltype(frame_index));
     static const std::size_t PADDING_SIZE = CACHE_LINE_SIZE - PAYLOAD_SIZE;
     std::array<uint8_t, PADDING_SIZE> padding;
+#endif
 public:
     ProfileEvent() = default;
     ProfileEvent(uint32_t name, Type t, uint64_t frame_index);
@@ -46,12 +48,13 @@ public:
 std::ostream& operator<<(std::ostream& os, ProfileEvent::Type type);
 
 class Profiler {
+#ifdef SUSHI_ENABLE_PROFILING
     std::thread background_thread;
     async::scmp_queue<ProfileEvent> events_queue;
     std::atomic_bool is_running;
     std::uint64_t current_frame_index;
     std::unordered_map<std::thread::id, std::string> thread_names;
-
+#endif
     void execute_background_task();
 
     Profiler() noexcept;
