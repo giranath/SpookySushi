@@ -19,6 +19,7 @@
 #include <string>
 #include <sstream>
 
+
 sushi::StaticMeshDefinition make_cube(const float size) {
     sushi::StaticMeshDefinition static_mesh;
 
@@ -118,6 +119,12 @@ void Game::prepare_scene() {
     prepare_physic_scene();
 }
 
+#ifdef SUSHI_EDITOR
+void Game::setup_editor(sushi::EditorEndpoint& editor) {
+
+}
+#endif
+
 void Game::on_start() {
     controller.register_inputs();
     camera_controller.set_camera(&main_camera);
@@ -126,6 +133,9 @@ void Game::on_start() {
 
     prepare_shader();
     prepare_scene();
+
+    int values[] = { 1, 2, 3, 4, 5, 6 };
+    std::vector<int> dest;
 
     //sushi::set_relative_mouse_mode(true);
 }

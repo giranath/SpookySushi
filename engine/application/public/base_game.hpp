@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <proxy_renderer.hpp>
+#include <editor_endpoint.hpp>
 
 namespace sushi {
 
@@ -13,6 +14,11 @@ class InputEvent;
 
 class BaseGame {
 public:
+    // Called once before on_start to setup game specific editor endpoints
+#ifdef SUSHI_EDITOR
+    virtual void setup_editor(EditorEndpoint& editor) = 0;
+#endif
+
     // Called once when the Game started
     virtual void on_start() = 0;
 

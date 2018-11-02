@@ -14,6 +14,7 @@ add_subdirectory(physic)
 add_subdirectory(plugin)
 add_subdirectory(asset)
 add_subdirectory(scene)
+add_subdirectory(editor)
 
 add_library(sushi-engine
         application/private/game_loop.cpp
@@ -24,7 +25,9 @@ add_library(sushi-engine
         application/private/game_loop_config.cpp
         application/public/game_loop_config.hpp
         application/private/job_config.cpp
-        application/public/job_config.hpp)
+        application/public/job_config.hpp
+        application/public/editor_config.hpp
+        application/private/editor_config.cpp)
 target_link_libraries(sushi-engine
         PUBLIC sushi-network
         PUBLIC sushi-opengl
@@ -41,8 +44,10 @@ target_link_libraries(sushi-engine
         PUBLIC sushi-plugin
         PUBLIC sushi-asset
         PUBLIC sushi-scene
+        PUBLIC sushi-editor
         PUBLIC libRapidxml
         PRIVATE ${CMAKE_THREAD_LIBS_INIT})
+
 target_include_directories(sushi-engine
         INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
         PUBLIC application/public

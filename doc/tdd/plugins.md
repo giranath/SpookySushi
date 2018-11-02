@@ -8,6 +8,7 @@ Two types of plugins are supported:
 ## Runtime Plugin
 
 ### Lifetime ###
+```
 +-------------------------+
 |       INACTIVE          |˂⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻+
 +-------------------------+                       |
@@ -37,7 +38,7 @@ Two types of plugins are supported:
 +-------------------------+                       |
            |                                      |
            +⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻⎻+
-
+```
 ### Required exposed functions
 ```
 int plugin_start()

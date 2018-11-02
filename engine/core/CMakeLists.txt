@@ -11,7 +11,8 @@ add_library(sushi-core
         private/compress.cpp
         public/color.hpp
         public/bounding_box.hpp
-        private/bounding_box.cpp)
+        private/bounding_box.cpp
+        public/endian.hpp)
 
 target_link_libraries(sushi-core
         PUBLIC libGlm

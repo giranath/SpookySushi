@@ -33,6 +33,9 @@ class Game : public sushi::BaseGame {
 
     void handle_inputs(sushi::frame_duration last_frame);
 public:
+#ifdef SUSHI_EDITOR
+    void setup_editor(sushi::EditorEndpoint& editor) override;
+#endif
     void on_start() override;
     void on_frame(sushi::frame_duration last_frame) override;
     void on_late_frame(sushi::frame_duration last_frame) override;

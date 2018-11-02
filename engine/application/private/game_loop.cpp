@@ -17,6 +17,7 @@
 #include <input_processor.hpp>
 
 #include <SDL.h>
+#include <editor_endpoint.hpp>
 
 namespace sushi {
 
@@ -297,6 +298,16 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
     sushi::StaticMeshBuilderService::locate(&renderer->static_mesh_builder());
     sushi::DebugRendererService::locate(&renderer->debug_renderer());
     sushi::ProxyRenderer proxy_renderer(renderer.get());
+
+#ifdef SUSHI_EDITOR
+    log_info("sushi.bootstrap", "initializing editor endpoint");
+    sushi::EditorEndpoint editor_endpoint;
+
+    // TODO: Setup editor endpoint
+    game.setup_editor(editor_endpoint);
+#else
+    log_info("sushi.bootstrap", "this version is not build with an editor endpoint");
+#endif
 
     log_info("sushi.bootstrap", "starting game loop...");
     game.on_start();
