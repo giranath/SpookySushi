@@ -33,8 +33,13 @@ public:
     /// Called every frame to render the current state
     virtual void on_render(sushi::ProxyRenderer renderer) {};
 
-    // Called once when the Game is stopped
+    /// Called once when the Game is stopped
     virtual void on_stop() = 0;
+
+    /// Called when the display surface size changed
+    /// \param new_width The new surface's width
+    /// \param new_height The new surface's height
+    virtual void adapt_to_new_size(uint32_t new_width, uint32_t new_height) {}
 };
 
 }

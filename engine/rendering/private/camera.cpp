@@ -1,4 +1,5 @@
 #include "camera.hpp"
+#include "camera_len.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -8,8 +9,18 @@
 
 namespace sushi {
 
+Camera::Camera(std::shared_ptr<CameraLen> len)
+: len_{std::move(len)} {
+    if(len_ == nullptr) throw MissingLen{};
+}
+
+Camera::Camera(std::unique_ptr<CameraLen> len)
+: len_{std::move(len)}{
+    if(len_ == nullptr) throw MissingLen{};
+}
+
 Mat4x4 Camera::projection() const noexcept {
-    return glm::perspective(70.f, 800.f / 600.f, 0.1f, 1000.f);
+    return len_->projection();
 }
 
 Mat4x4 Camera::view() const noexcept {

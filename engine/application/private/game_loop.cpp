@@ -333,6 +333,18 @@ int run_game(BaseGame& game, const Arguments& args, FrameDuration target_frame_d
             if(ev.type == SDL_QUIT) {
                 return false;
             }
+            else if(ev.type == SDL_WINDOWEVENT) {
+
+                switch(ev.window.event) {
+                    case SDL_WINDOWEVENT_SIZE_CHANGED:
+                        assert(ev.window.data1 >= 0);
+                        assert(ev.window.data2 >= 0);
+                        game.adapt_to_new_size(static_cast<uint32_t>(ev.window.data1), static_cast<uint32_t>(ev.window.data2));
+                        break;
+                    default:
+                        break;
+                }
+            }
             else {
                 const InputEvent* event = process_os_event(ev, input_factory);
 

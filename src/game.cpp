@@ -49,6 +49,14 @@ sushi::StaticMeshDefinition make_cube(const float size) {
     return static_mesh;
 }
 
+Game::Game()
+: main_camera_len{std::make_shared<sushi::InfinitePerspectiveCameraLen>(70.f, 800.f / 600.f, 0.001f/*, 1000.f*/)}
+, main_camera{main_camera_len}
+, viewport_width{800u}
+, viewport_height{600u} {
+
+}
+
 void Game::prepare_shader() {
     std::ifstream vertex_shader_source("asset/shader/default_vertex.glsl");
     std::ifstream fragment_shader_source("asset/shader/default_fragment.glsl");
@@ -182,8 +190,8 @@ void Game::handle_inputs(sushi::frame_duration last_frame) {
 
     if(controller.should_shoot_left_grappling()) {
         const sushi::MouseCoords coords = sushi::current_mouse_coords();
-        const float viewport_x = ((2.f * coords.x) / 1024.f) - 1.f;
-        const float viewport_y = 1.f - (2.f * coords.y) / 768.f;
+        const float viewport_x = ((2.f * coords.x) / static_cast<float>(viewport_width)) - 1.f;
+        const float viewport_y = 1.f - (2.f * coords.y) / static_cast<float>(viewport_height);
 
         const auto world_ray = main_camera.ray_from_viewport_coord(sushi::Vec2{viewport_x, viewport_y});
         const auto temp = main_camera.local_transform.forward();
@@ -272,4 +280,12 @@ void Game::on_render(sushi::ProxyRenderer renderer) {
 
 void Game::on_stop() {
     sushi::set_relative_mouse_mode(false);
+}
+
+void Game::adapt_to_new_size(uint32_t new_width, uint32_t new_height) {
+    glViewport(0, 0, new_width, new_height);
+    main_camera_len->set_aspect(static_cast<float>(new_width) / static_cast<float>(new_height));
+
+    viewport_width = new_width;
+    viewport_height = new_height;
 }

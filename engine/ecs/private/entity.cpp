@@ -18,11 +18,15 @@ Entity::Entity(uint32_t identifier) noexcept
 }
 
 Entity::Index Entity::index() const noexcept {
-    return static_cast<Index>((identifier & index_mask) >> 8);
+    return static_cast<Index>((value() & index_mask) >> 8);
 }
 
 Entity::Generation Entity::generation() const noexcept {
-    return static_cast<Generation>(identifier & generation_mask);
+    return static_cast<Generation>(value() & generation_mask);
+}
+
+uint32_t Entity::value() const noexcept {
+    return identifier;
 }
 
 bool Entity::good() const noexcept {
@@ -31,6 +35,10 @@ bool Entity::good() const noexcept {
 
 Entity::operator bool() const noexcept {
     return good();
+}
+
+Entity::operator uint32_t() const noexcept {
+    return value();
 }
 
 

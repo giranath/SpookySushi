@@ -29,6 +29,11 @@ bool EntityRegistry::is_alive(const Entity& e) const noexcept {
 
 void EntityRegistry::destroy(const Entity& e) {
     const Entity::Index index = e.index();
+
+    // Make sure we're removing an entity that is alive
+    assert(index < generations.size());
+    assert(generations[index] == e.generation());
+
     ++generations[index];
     free_indices.push_back(index);
 }
