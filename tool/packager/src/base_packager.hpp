@@ -20,6 +20,7 @@ struct PackagedContent {
 
 class BasePackager {
 public:
+    virtual ~BasePackager() = default;
     virtual std::vector<PackagedContent> package(const std::string& filepath) = 0;
 };
 
